@@ -15,7 +15,6 @@ class PresentAnimator: NSObject, UIViewControllerAnimatedTransitioning{
     }
     
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-//        AppDelegate.shared.window?.windowLevel = UIWindowLevelStatusBar+0.00001
         
         if let toVC = transitionContext.viewController(forKey: .to), let fromVC = transitionContext.viewController(forKey: .from){
             
