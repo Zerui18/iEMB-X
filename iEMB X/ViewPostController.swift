@@ -316,7 +316,6 @@ extension ViewPostController: UITableViewDataSource, UITableViewDelegate{
     
 }
 
-fileprivate var previousVal: CGFloat?
 fileprivate var startingVal: CGFloat?
 fileprivate var isUpward = false
 fileprivate var isAtTop = false
@@ -332,17 +331,14 @@ extension ViewPostController: UIGestureRecognizerDelegate{
     }
     
     @objc func pan(_ sender: UIPanGestureRecognizer){
-        print(scrollView.contentOffset)
         switch sender.state{
         case .began:
-            previousVal = sender.location(in: nil).y
-            startingVal = previousVal
             interactor.hasStarted = true
         case .changed:
             let currentY = sender.location(in: nil).y
             if interactor.hasStarted{
                 // calc local properties
-                let isup = previousVal! <= currentY
+                let isup = sender.velocity(in: view).y > 0
                 let istop = scrollView.contentOffset.y <= 0
                 if istop{
                     if !isAtTop{
@@ -376,13 +372,11 @@ extension ViewPostController: UIGestureRecognizerDelegate{
                     }
                 }
             }
-            previousVal = currentY
         default:
             interactor.complete(extraCondition: sender.velocity(in: nil).y > 400)
             // reset stats
             isAtTop = false
             isUpward = false
-            previousVal = nil
             startingVal = nil
         }
     }
@@ -403,7 +397,6 @@ extension ViewPostController: UIGestureRecognizerDelegate{
         default:
             interactor.complete(extraCondition: sender.velocity(in: nil).x > 300)
             // reset stats
-            previousVal = nil
             startingVal = nil
         }
     }
@@ -424,7 +417,6 @@ extension ViewPostController: UIGestureRecognizerDelegate{
         default:
             interactor.complete(extraCondition: sender.velocity(in: nil).x < -300)
             // reset stats
-            previousVal = nil
             startingVal = nil
         }
     }
