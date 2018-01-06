@@ -333,6 +333,7 @@ extension ViewPostController: UIGestureRecognizerDelegate{
     @objc func pan(_ sender: UIPanGestureRecognizer){
         switch sender.state{
         case .began:
+            startingVal = sender.location(in: nil).x
             interactor.hasStarted = true
         case .changed:
             let currentY = sender.location(in: nil).y

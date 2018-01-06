@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import QuartzCore
 
 fileprivate let systemFontNormal = UIFont.systemFont(ofSize: 20, weight: UIFont.Weight.medium)
 fileprivate let systemFontHeavy = UIFont.systemFont(ofSize: 20, weight: UIFont.Weight.heavy)
