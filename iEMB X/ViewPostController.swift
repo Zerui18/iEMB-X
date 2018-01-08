@@ -421,11 +421,7 @@ extension ViewPostController: UIGestureRecognizerDelegate{
             startingVal = nil
         }
     }
-    
-    override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
-        super.dismiss(animated: flag)
-        scrollView.contentOffset = CGPoint.zero
-    }
+
 }
 
 fileprivate let subfont = UIFont.systemFont(ofSize: 13)

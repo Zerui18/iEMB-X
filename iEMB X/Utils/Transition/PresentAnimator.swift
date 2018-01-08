@@ -28,7 +28,7 @@ class PresentAnimator: NSObject, UIViewControllerAnimatedTransitioning{
             
             toVC.view.transform = CGAffineTransform(scaleX: 0.73, y: 0.73).translatedBy(x: 0, y: screenBounds.height/2)
             toVC.view.alpha = 0
-            toVC.view.layer.cornerRadius = 15
+            toVC.view.layer.cornerRadius = 40
             
             UIView.animateKeyframes(withDuration: transitionDuration(using: transitionContext), delay: 0, options: [], animations: {
                 UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.65){
@@ -37,7 +37,7 @@ class PresentAnimator: NSObject, UIViewControllerAnimatedTransitioning{
                     toVC.view.transform = toVC.view.transform.translatedBy(x: 0, y: -screenBounds.height/2)
                     darkenEffect.backgroundColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0.4049845951)
                 }
-                UIView.addKeyframe(withRelativeStartTime: 0.65, relativeDuration: 0.35){
+                UIView.addKeyframe(withRelativeStartTime: 0.65, relativeDuration: 0.25){
                     toVC.view.transform = CGAffineTransform(scaleX: 1, y: 1)
                     toVC.view.layer.cornerRadius = 0
                     darkenEffect.backgroundColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0.95)

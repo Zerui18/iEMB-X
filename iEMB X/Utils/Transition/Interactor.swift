@@ -8,13 +8,16 @@
 
 import UIKit
 
+fileprivate let completionFraction: CGFloat = 0.4
+
 class Interactor: UIPercentDrivenInteractiveTransition {
+    
     var hasStarted = false
     var shouldFinish = false
     
     override func update(_ percentComplete: CGFloat) {
         super.update(percentComplete)
-        shouldFinish = percentComplete > 0.4
+        shouldFinish = percentComplete > completionFraction
     }
     
     func complete(extraCondition condition: Bool = false){
