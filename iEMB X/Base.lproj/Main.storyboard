@@ -139,7 +139,7 @@
                                 <rect key="frame" x="8" y="45" width="359" height="767"/>
                                 <subviews>
                                     <visualEffectView opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6kH-8o-cCC">
-                                        <rect key="frame" x="0.0" y="50" width="359" height="402.66666666666669"/>
+                                        <rect key="frame" x="0.0" y="10" width="359" height="402.66666666666669"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="4SP-cA-3TB">
                                             <rect key="frame" x="0.0" y="0.0" width="359" height="402.66666666666669"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -233,7 +233,7 @@
                                     <constraint firstAttribute="trailing" secondItem="6kH-8o-cCC" secondAttribute="trailing" id="ThS-QG-jqa"/>
                                     <constraint firstItem="6kH-8o-cCC" firstAttribute="centerX" secondItem="yg6-TX-RlF" secondAttribute="centerX" id="iVF-VK-hVG"/>
                                     <constraint firstItem="6kH-8o-cCC" firstAttribute="leading" secondItem="yg6-TX-RlF" secondAttribute="leading" id="oNA-R9-1pK"/>
-                                    <constraint firstItem="6kH-8o-cCC" firstAttribute="top" secondItem="yg6-TX-RlF" secondAttribute="top" constant="50" id="ucX-vD-irT"/>
+                                    <constraint firstItem="6kH-8o-cCC" firstAttribute="top" secondItem="yg6-TX-RlF" secondAttribute="top" constant="10" id="ucX-vD-irT"/>
                                 </constraints>
                             </scrollView>
                             <button opaque="NO" clipsSubviews="YES" alpha="0.0" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Zje-52-tPf">
