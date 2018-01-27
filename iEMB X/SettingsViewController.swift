@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import EMBClient
 
 var backgroungFetchInterval: TimeInterval{
     get{
@@ -82,14 +83,14 @@ class SettingsViewController: UIViewController {
         alr.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         alr.addAction(UIAlertAction(title: "Clear", style: .default){_ in
             do{
-                _ = try context.execute(NSBatchDeleteRequest(fetchRequest: Attachment.fetchRequest()))
-                allPosts.forEach{
+                _ = try CoreDataHelper.shared.mainContext.execute(NSBatchDeleteRequest(fetchRequest: Attachment.fetchRequest()))
+                EMBClient.shared.allPosts.forEach{
                     $0.value.forEach{
                         $0.content = nil
                         $0.contentData = nil
                     }
                 }
-                try context.save()
+                try CoreDataHelper.shared.saveContext()
             }
             catch{
                 print(error)
@@ -103,15 +104,10 @@ class SettingsViewController: UIViewController {
         alr.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         alr.addAction(UIAlertAction(title: "Logout", style: .destructive, handler: { _ in
             do{
-                try EMBReader.resetCache()
-                userDefaults.removeObject(forKey: "u")
-                userDefaults.removeObject(forKey: "p")
+                EMBUser.shared.logout()
+                try EMBClient.shared.resetCache()
                 for boardID in menuViewController.boardIds{
                     userDefaults.removeObject(forKey: "lastRefreshed_\(boardID)")
-                }
-                for key in allPosts.keys{
-                    largestPostIds[key] = 0
-                    allPosts[key]!.removeAll()
                 }
                 menuViewController.boardVCs.forEach{
                     let ctr = ($0.viewControllers[0] as! BoardTableController)

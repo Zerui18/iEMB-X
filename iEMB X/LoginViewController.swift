@@ -7,12 +7,10 @@
 //
 
 import UIKit
+import EMBClient
 
 class LoginViewController: UIViewController, UITextFieldDelegate{
     
-    override var prefersStatusBarHidden: Bool{
-        return false
-    }
     override var preferredStatusBarStyle: UIStatusBarStyle{
         return .lightContent
     }
@@ -60,20 +58,17 @@ class LoginViewController: UIViewController, UITextFieldDelegate{
         if let u = usernameField.text, let p = passwordField.text, !u.isEmpty, !p.isEmpty{
             view.isUserInteractionEnabled = false
             activityIndicator.startAnimating()
-            UIView.animate(withDuration: 0.3, animations: {
+            UIView.animate(withDuration: 0.3){
                 self.usernameField.alpha = 0.0
                 self.passwordField.alpha = 0.0
                 self.loginButton.alpha = 0.0
-            })
+            }
             
-            EMBReader.login(username: u, password: p){success, error in
+            EMBClient.shared.login(username: u, password: p){success, error in
                 DispatchQueue.main.async {
                     if success{
-                        if EMBReader.storedUser() != nil{
-                            try! EMBReader.resetCache()
-                        }
-                        userDefaults.set(u, forKey: "u")
-                        userDefaults.set(p, forKey: "p")
+                        try! EMBClient.shared.resetCache()
+                        backgroungFetchInterval = 30 * 60
                         self.dismiss(animated: true){
                             menuViewController.presentedBoardVC.reloadBoard()
                         }

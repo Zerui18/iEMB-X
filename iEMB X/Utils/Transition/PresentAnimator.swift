@@ -11,12 +11,12 @@ import UIKit
 class PresentAnimator: NSObject, UIViewControllerAnimatedTransitioning{
     
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        return Constants.transitionDuraction
+        return Constants.presentTransitionDuration
     }
     
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         
-        if let toVC = transitionContext.viewController(forKey: .to), let fromVC = transitionContext.viewController(forKey: .from){
+        if let toVC = transitionContext.viewController(forKey: .to){
             
             let containerView = transitionContext.containerView
             containerView.addSubview(toVC.view)
@@ -32,12 +32,11 @@ class PresentAnimator: NSObject, UIViewControllerAnimatedTransitioning{
             
             UIView.animateKeyframes(withDuration: transitionDuration(using: transitionContext), delay: 0, options: [], animations: {
                 UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.65){
-                    (fromVC as? BoardTableController)?.shouldHideStatusBar = true
                     toVC.view.alpha = 1
                     toVC.view.transform = toVC.view.transform.translatedBy(x: 0, y: -screenBounds.height/2)
                     darkenEffect.backgroundColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0.4049845951)
                 }
-                UIView.addKeyframe(withRelativeStartTime: 0.65, relativeDuration: 0.25){
+                UIView.addKeyframe(withRelativeStartTime: 0.65, relativeDuration: 0.35){
                     toVC.view.transform = CGAffineTransform(scaleX: 1, y: 1)
                     toVC.view.layer.cornerRadius = 0
                     darkenEffect.backgroundColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0.95)

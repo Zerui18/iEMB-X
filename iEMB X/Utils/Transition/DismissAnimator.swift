@@ -12,7 +12,7 @@ import UIKit
 class DismissAnimator: NSObject, UIViewControllerAnimatedTransitioning{
     
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        return Constants.transitionDuraction
+        return Constants.dismissTransitionDuraction
     }
     
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
@@ -30,13 +30,13 @@ class DismissAnimator: NSObject, UIViewControllerAnimatedTransitioning{
             containerView.insertSubview(darkenEffect, belowSubview: fromVC.view)
             
             UIView.animateKeyframes(withDuration: transitionDuration(using: transitionContext), delay: 0, options: [], animations: {
-                UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.25){
+                UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.35){
                     fromVC.view.layer.transform = CATransform3DMakeScale(0.73, 0.73, 0.73)
                     fromVC.view.layer.cornerRadius = 40
                     darkenEffect.backgroundColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0.4049845951)
                 }
-                UIView.addKeyframe(withRelativeStartTime: 0.35, relativeDuration: 0.75){
-                    fromVC.view.layer.transform = CATransform3DTranslate(fromVC.view.layer.transform, 0, screenBounds.height/2, 0)
+                UIView.addKeyframe(withRelativeStartTime: 0.35, relativeDuration: 0.65){
+                    fromVC.view.layer.transform = CATransform3DTranslate(fromVC.view.layer.transform, 0, screenBounds.height/4, 0)
                     fromVC.view.alpha = 0
                     darkenEffect.backgroundColor = .clear
                 }

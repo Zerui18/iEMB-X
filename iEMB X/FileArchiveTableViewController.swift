@@ -10,17 +10,12 @@ import UIKit
 import QuickLook
 
 class FileArchiveTableViewController: UITableViewController{
-    
-    override var prefersStatusBarHidden: Bool{
-        return false
-    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Cached Files"
-        if #available(iOS 11, *){
-            navigationItem.largeTitleDisplayMode = .automatic
-        }
+        tableView.tableFooterView = UIView()
+        navigationItem.largeTitleDisplayMode = .automatic
         do{
             files = try FileManager.default.contentsOfDirectory(at: Constants.cachedFilesURL, includingPropertiesForKeys: nil, options: [])
         }

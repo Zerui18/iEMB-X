@@ -9,27 +9,6 @@
 import UIKit
 import Foundation
 
-extension String{
-    var toURL: URL?{
-        return URL(string: self)
-    }
-    var toInt: Int?{
-        return Int(self)
-    }
-    
-    var removingHTMLEncoding: String{
-        var result = self
-        for (enc, ori) in Constants.htmlEscaped{
-            result = result.replacingOccurrences(of: enc, with: ori)
-        }
-        return result
-    }
-}
-
-infix operator ~
-func ~(_ lhs: String, _ rhs: NSRegularExpression)-> NSTextCheckingResult?{
-    return rhs.firstMatch(in: lhs, options: [], range: NSRange.init(location: 0, length: lhs.count))
-}
 
 extension UIViewController{
     func present(in parent: UIViewController, animated: Bool = true, completion: (()->Void)? = nil){
@@ -78,8 +57,3 @@ extension UIView{
     }
 }
 
-extension NSAttributedString{
-    func enumerateAttribute(named attrName: NSAttributedStringKey, block: (Any?, NSRange, UnsafeMutablePointer<ObjCBool>)-> Void){
-        enumerateAttribute(attrName, in: NSMakeRange(0, length), options: [], using: block)
-    }
-}

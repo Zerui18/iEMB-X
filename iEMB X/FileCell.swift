@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import EMBClient
 
 class FileCell: UITableViewCell {
     

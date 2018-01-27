@@ -7,11 +7,7 @@
 //
 
 import UIKit
-import CariocaMenu
-
-var allPosts: [Int:[Post]] = [1039:[], 1048:[], 1049:[], 1050:[], 1053:[]]
-
-var largestPostIds: [Int: Int] = [1039:0, 1048:0, 1049:0, 1050:0, 1053:0]
+import Custom_UI
 
 class MenuViewController: UITableViewController{
     
@@ -43,7 +39,7 @@ class MenuViewController: UITableViewController{
             return cell
         }
         let boardId = boardIds[indexPath.row]
-        cell.titleLabel.text = Constants.idToBoardName[boardId]
+        cell.titleLabel.text = Constants.idToBoardName[boardId]!
         cell.iconView.image = boardIcons[indexPath.row]
         if indexPath == cariocaMenu.selectedIndexPath{
             cell.applySelectedStyle()

@@ -7,8 +7,9 @@
 //
 
 import UIKit
+import Custom_UI
+import EMBClient
 import UserNotifications
-import CariocaMenu
 
 let baseViewController = BaseViewController()
 var menuViewController: MenuViewController = {
@@ -28,16 +29,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         AppDelegate.shared = self
-        Post.initializePosts()
         setupBaseUI()
         window?.makeKeyAndVisible()
         setupFileDirectory()
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { (_, _) in
         }
         
-        if EMBReader.storedUser() == nil{
+        if !EMBUser.shared.hasSavedCredentials(){
             Constants.mainStoryboard.instantiateViewController(withIdentifier: "loginVC").present(in: window!.rootViewController!)
         }
+        NotificationCenter.default.addObserver(self, selector: #selector(presentLoginScreen), name: .embLoginCredentialsInvalid, object: nil)
         return true
     }
     
@@ -53,6 +54,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         cariocaMenu.showIndicator(position: CariocaMenuIndicatorViewPosition.center, offset: 0)
     }
     
+        
     private func setupFileDirectory(){
         if !FileManager.default.fileExists(atPath: Constants.cachedFilesURL.path){
             do{
@@ -72,11 +74,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
     }
+    
+    @objc private func presentLoginScreen(){
+        DispatchQueue.main.async {
+            menuViewController.presentedBoardVC.navigationController?.popToRootViewController(animated: false)
+            Constants.mainStoryboard.instantiateViewController(withIdentifier: "loginVC").present(in: self.window!.rootViewController!)
+        }
+    }
 
     func applicationWillResignActive(_ application: UIApplication) {
-        if EMBReader.isLoggedIn{
+        if EMBUser.shared.hasSavedCredentials(){
             UIApplication.shared.setMinimumBackgroundFetchInterval(backgroungFetchInterval)
-            saveContext()
+            try? CoreDataHelper.shared.saveContext()
         }
         else{
             UIApplication.shared.setMinimumBackgroundFetchInterval(UIApplicationBackgroundFetchIntervalNever)
@@ -84,9 +93,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        if EMBReader.storedUser() != nil{
-            Post.initializePosts()
-            EMBReader.updatePostsFor(board: 1048, completion: { (posts) in
+        if EMBUser.shared.hasSavedCredentials(){
+            EMBClient.shared.updatePosts(forBoard: 1048, completion: { (posts, error) in
                 if posts != nil{
                     if posts!.isEmpty{
                         completionHandler(.noData)

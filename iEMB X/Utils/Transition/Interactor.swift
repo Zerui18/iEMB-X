@@ -8,7 +8,7 @@
 
 import UIKit
 
-fileprivate let completionFraction: CGFloat = 0.4
+fileprivate let completionFraction: CGFloat = 0.45
 
 class Interactor: UIPercentDrivenInteractiveTransition {
     

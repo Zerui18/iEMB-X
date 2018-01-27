@@ -7,7 +7,11 @@
 //
 
 import UIKit
+import EMBClient
 
+fileprivate var allPosts: [Int: [Post]]{
+    return EMBClient.shared.allPosts
+}
 
 class BoardTableController: UITableViewController{
     
@@ -16,21 +20,6 @@ class BoardTableController: UITableViewController{
     
     var isFiltering = false
     let interactor = Interactor()
-    
-    var shouldHideStatusBar = false{
-        didSet{
-            if oldValue != shouldHideStatusBar{
-                self.setNeedsStatusBarAppearanceUpdate()
-            }
-        }
-    }
-    override var prefersStatusBarHidden: Bool{
-        return shouldHideStatusBar
-    }
-    
-    override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation{
-        return .slide
-    }
         
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,7 +42,6 @@ class BoardTableController: UITableViewController{
                 if context.isCancelled{
                     UIView.animate(withDuration: 0.3){
                         self.hideUIComponents()
-                        self.shouldHideStatusBar = true
                         if index != nil{
                             (self.tableView.cellForRow(at: index!) as! PostCell).showSelection()
                         }
@@ -93,6 +81,7 @@ class BoardTableController: UITableViewController{
         updateLastReadDisplay()
         
         tableView.separatorStyle = .none
+        NotificationCenter.default.addObserver(self, selector: #selector(postDidUpdate(_:)), name: .postContentDidLoad, object: nil)
     }
     
     @objc func openFiles(){
@@ -102,7 +91,7 @@ class BoardTableController: UITableViewController{
     @objc func reloadBoard(){
         refreshControl?.beginRefreshing()
         navigationItem.rightBarButtonItem?.isEnabled = false
-        EMBReader.updatePostsFor(board: currentBoard) { (posts) in
+        EMBClient.shared.updatePosts(forBoard: currentBoard) { (posts, error) in
                 if posts != nil{
                     userDefaults.set(Date().timeIntervalSince1970, forKey: "lastRefreshed_\(self.currentBoard)")
                     if posts!.count > 0{
@@ -119,14 +108,28 @@ class BoardTableController: UITableViewController{
                 }
                 else{
                     notificationFeedback(ofType: .error)
-                    DispatchQueue.main.async {
-                        simpleAlert(title: "Error", message: "failed to load posts for board \(self.currentBoard)").present(in: self)
+                    if (error! as NSError).domain != "com.Zerui.EMBClient.AuthError"{
+                        DispatchQueue.main.async {
+                            simpleAlert(title: "Error", message: "failed to load posts for board \(self.currentBoard)").present(in: self)
+                        }
                     }
                 }
                 DispatchQueue.main.async {
                     self.refreshControl?.endRefreshing()
                     self.navigationItem.rightBarButtonItem?.isEnabled = true
                 }
+        }
+    }
+    
+    @objc private func postDidUpdate(_ notification: Notification){
+        if let post = notification.object as? Post, post.board == Int64(currentBoard){
+            reloadCell(forPost: post)
+        }
+    }
+    
+    func reloadCell(forPost post: Post){
+        if post.board == Int64(currentBoard), let postIndex = EMBClient.shared.allPosts[currentBoard]?.index(of: post){
+            tableView.reloadRows(at: [IndexPath(row: postIndex, section: 0)], with: .automatic)
         }
     }
     
@@ -155,7 +158,7 @@ extension BoardTableController{
         vc.post = (isFiltering ? filteredPosts:allPosts[currentBoard]!)[indexPath.row]
         vc.transitioningDelegate = self
         vc.present(in: self)
-        UIView.animate(withDuration: Constants.transitionDuraction) {
+        UIView.animate(withDuration: Constants.presentTransitionDuration) {
             self.hideUIComponents()
         }
     }

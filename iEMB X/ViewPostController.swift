@@ -7,19 +7,16 @@
 //
 
 import UIKit
+import EMBClient
 import SafariServices
 import Custom_UI
 
 class ViewPostController: UIViewController{
     
-    override var prefersStatusBarHidden: Bool{
-        return true
-    }
-    
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var postContainerView: UIVisualEffectView!
     @IBOutlet weak var postContentTextView: UITextView!
-    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var attachmentsTable: UITableView!
     @IBOutlet weak var tableViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var attachmentsLabel: UILabel!
     @IBOutlet weak var labelHeightConstraint: NSLayoutConstraint!
@@ -38,11 +35,21 @@ class ViewPostController: UIViewController{
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if let selected = tableView.indexPathForSelectedRow{
+        if let selected = attachmentsTable.indexPathForSelectedRow{
             transitionCoordinator?.animate(alongsideTransition: { context in
-                self.tableView.deselectRow(at: selected, animated: context.isAnimated)
+                self.attachmentsTable.deselectRow(at: selected, animated: context.isAnimated)
             })
         }
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        AppDelegate.shared.window?.windowLevel = UIWindowLevelAlert - .leastNonzeroMagnitude
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        AppDelegate.shared.window?.windowLevel = UIWindowLevelNormal
     }
     
     lazy var tap = UITapGestureRecognizer(target: self, action: #selector(contentTapped(_:)))
@@ -51,16 +58,13 @@ class ViewPostController: UIViewController{
     
     lazy var leftPan = UIScreenEdgePanGestureRecognizer(target: self, action: #selector(leftEdgePan(_:)))
     
-    lazy var rightPan = UIScreenEdgePanGestureRecognizer(target: self, action: #selector(rightEdgePan(_:)))
-    
     private func setupUI(){
-        if #available(iOS 11.0, *) {
-            postContentTextView.textDragInteraction?.isEnabled = false
-        }
+        postContentTextView.textDragInteraction?.isEnabled = false
         scrollView.delegate = self
-        tableView.tableFooterView = UIView()
+        scrollView.contentInset.top = leftButton.frame.maxY + 8 - view.convert(postContainerView.frame.origin, from: postContainerView).y
+        attachmentsTable.tableFooterView = UIView()
         
-        tableView.rowHeight = 50
+        attachmentsTable.rowHeight = 50
         tableViewHeightConstraint.constant = 0
         labelHeightConstraint.constant = 0
         postContainerView.layer.cornerRadius = 10
@@ -81,13 +85,7 @@ class ViewPostController: UIViewController{
         leftPan.edges = .left
         view.addGestureRecognizer(leftPan)
         
-        rightPan.edges = .right
-        view.addGestureRecognizer(rightPan)
-        
         downPan.require(toFail: leftPan)
-        downPan.require(toFail: rightPan)
-        
-        rightPan.require(toFail: leftPan)
     }
     
     private func loadMessage(){
@@ -113,7 +111,7 @@ class ViewPostController: UIViewController{
     
     func updateUI(){
         postContentTextView.attributedText = post.compoundMessage()
-        tableView.reloadData()
+        attachmentsTable.reloadData()
         tableViewHeightConstraint.constant = CGFloat(post.attachments!.count * 50) + 5
         if post.canRespond{
             rightButton.animateVisible()
@@ -155,15 +153,15 @@ class ViewPostController: UIViewController{
         
         replyContainerView = UIVisualEffectView(effect: UIBlurEffect(style: .extraLight))
         
-        replyContainerView.isHidden = true
+        replyContainerView.alpha = 0
         replyContainerView.translatesAutoresizingMaskIntoConstraints = false
         replyContainerView.clipsToBounds = true
         replyContainerView.layer.cornerRadius = 10
         view.addSubview(replyContainerView)
         
-        replyContainerView.topAnchor.constraint(equalTo: rightButton.bottomAnchor, constant: 16).isActive = true
-        replyContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 17).isActive = true
-        replyContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -17).isActive = true
+        replyContainerView.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: scrollView.adjustedContentInset.top + 8).isActive = true
+        replyContainerView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 8).isActive = true
+        replyContainerView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -8).isActive = true
         replyContainerView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 50).isActive = true
         
         // setup options segment
@@ -195,7 +193,7 @@ class ViewPostController: UIViewController{
         
         responseTextView.font = UIFont.systemFont(ofSize: 20)
         
-        view.setNeedsLayout()
+        view.layoutIfNeeded()
         
         // load previous reply, if any
         if let opt = post.responseOption, let con = post.responseContent{
@@ -209,8 +207,9 @@ class ViewPostController: UIViewController{
         scrollView.animateVisible()
         isReplying = false
         leftButton.animateHidden()
-        if scrollView.contentOffset.y <= 0{
-            rightButton.animateVisible()
+        if scrollView.contentOffset.y + scrollView.adjustedContentInset.top > 0{
+            rightButton.animateHidden()
+            lowerButton.animateVisible()
         }
         replyContainerView.animateHidden()
         view.gestureRecognizers?.forEach{
@@ -222,6 +221,7 @@ class ViewPostController: UIViewController{
         setupReplyUI()
         scrollView.animateHidden()
         isReplying = true
+        lowerButton.animateHidden()
         leftButton.animateVisible()
         rightButton.animateVisible()
         replyContainerView.animateVisible()
@@ -279,7 +279,7 @@ extension ViewPostController: UITableViewDataSource, UITableViewDelegate{
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let file = post.attachments!.allObjects[indexPath.row] as! Attachment
-        if file.type == .embed{
+        if file.type == .embedding{
             SFSafariViewController(url: file.url).present(in: self)
             return
         }
@@ -317,7 +317,6 @@ extension ViewPostController: UITableViewDataSource, UITableViewDelegate{
 }
 
 fileprivate var startingVal: CGFloat?
-fileprivate var isUpward = false
 fileprivate var isAtTop = false
 
 extension ViewPostController: UIGestureRecognizerDelegate{
@@ -330,6 +329,22 @@ extension ViewPostController: UIGestureRecognizerDelegate{
         return !postContentTextView.isFirstResponder
     }
     
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        // only update send buttons if post can respond & is displaying post content
+        guard post.canRespond && !isReplying else{
+            return
+        }
+        let istop = scrollView.contentOffset.y + scrollView.adjustedContentInset.top <= 0
+        if !istop && rightButton.alpha == 1{
+            rightButton.animateHidden()
+            lowerButton.animateVisible()
+        }
+        else if istop && rightButton.alpha == 0{
+            rightButton.animateVisible()
+            lowerButton.animateHidden()
+        }
+    }
+    
     @objc func pan(_ sender: UIPanGestureRecognizer){
         switch sender.state{
         case .began:
@@ -339,45 +354,34 @@ extension ViewPostController: UIGestureRecognizerDelegate{
             let currentY = sender.location(in: nil).y
             if interactor.hasStarted{
                 // calc local properties
-                let isup = sender.velocity(in: view).y > 0
-                let istop = scrollView.contentOffset.y <= 0
+                let isup = sender.velocity(in: nil).y > 0
+                let istop = scrollView.contentOffset.y + scrollView.adjustedContentInset.top <= 0
                 if istop{
                     if !isAtTop{
                         isAtTop = true
                         // start transition when move to top & move up
-                        if !isUpward && isup{
+                        if isup && !isBeingDismissed{
                             dismiss(animated: true)
                             startingVal = currentY
                         }
-                        isUpward = isup
-                        if post.canRespond{
-                            rightButton.animateVisible()
-                            lowerButton.animateHidden()
-                        }
                     }
                     // update progress while at top
-                    let progress = min((currentY-startingVal!)/(view.bounds.height/1.5), 1)
+                    let progress = min((currentY-startingVal!) / (UIScreen.main.bounds.height/1.5), 1)
                     interactor.update(progress)
                 }
                 else{
                     if isAtTop{
                         // cancel transition when leave top
                         isAtTop = false
-                        isUpward = false
                         interactor.shouldFinish = false
                         interactor.cancel()
-                        if post.canRespond{
-                            rightButton.animateHidden()
-                            lowerButton.animateVisible()
-                        }
                     }
                 }
             }
         default:
-            interactor.complete(extraCondition: sender.velocity(in: nil).y > 400)
-            // reset stats
+            interactor.complete(extraCondition: sender.velocity(in: nil).y > 600 &&
+                                                interactor.percentComplete >= 0.1)
             isAtTop = false
-            isUpward = false
             startingVal = nil
         }
     }
@@ -392,32 +396,12 @@ extension ViewPostController: UIGestureRecognizerDelegate{
             if let startingVal = startingVal{
                 let currentX = sender.location(in: nil).x
                 let xOffset = currentX-startingVal
-                let progress = min(xOffset/view.bounds.width*2, 1)
+                let progress = min(xOffset/view.bounds.width * 2, 1)
                 interactor.update(progress)
             }
         default:
-            interactor.complete(extraCondition: sender.velocity(in: nil).x > 300)
-            // reset stats
-            startingVal = nil
-        }
-    }
-    
-    @objc func rightEdgePan(_ sender: UIScreenEdgePanGestureRecognizer){
-        switch  sender.state {
-        case .began:
-            startingVal = sender.location(in: nil).x
-            interactor.hasStarted = true
-            dismiss(animated: true)
-        case .changed:
-            if let startingVal = startingVal{
-                let currentX = sender.location(in: nil).x
-                let xOffset = startingVal-currentX
-                let progress = min(xOffset/view.bounds.width*2, 1)
-                interactor.update(progress)
-            }
-        default:
-            interactor.complete(extraCondition: sender.velocity(in: nil).x < -300)
-            // reset stats
+            interactor.complete(extraCondition: sender.velocity(in: nil).x > 400 &&
+                                                interactor.percentComplete >= 0.05)
             startingVal = nil
         }
     }

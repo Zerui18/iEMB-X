@@ -9,21 +9,20 @@
 import CoreData
 
 @objc(Attachment)
-class Attachment: NSManagedObject{
+public class Attachment: NSManagedObject{
     
-    enum AttachmentType: Int16{
-        case file = 0, embed = 1
+    public enum AttachmentType: Int16{
+        case file = 0, embedding = 1
     }
     
-    convenience init(url: URL, name: String, type: AttachmentType, post: Post){
-        self.init(entity: NSEntityDescription.entity(forEntityName: "Attachment", in: context)!, insertInto: context)
+    convenience public init(url: URL, name: String, type: AttachmentType){
+        self.init(entity: NSEntityDescription.entity(forEntityName: "Attachment", in: CoreDataHelper.shared.mainContext)!, insertInto: CoreDataHelper.shared.mainContext)
         self.urlString = url.absoluteString
         self.name = name
         self.type = type
-        self.post = post
     }
     
-    var type: AttachmentType{
+    public var type: AttachmentType{
         get{
             return AttachmentType(rawValue: typeRaw)!
         }
@@ -32,37 +31,37 @@ class Attachment: NSManagedObject{
         }
     }
     
-    var url: URL{
-        return self.urlString!.toURL!
+    public var url: URL{
+        return URL(string: self.urlString!)!
     }
     
-    var cacheURL: URL{
-        return Constants.cachedFilesURL.appendingPathComponent("\(post!.board)-\(post!.id)-"+self.name!)
+    public var cacheURL: URL{
+        return cachedFilesURL.appendingPathComponent("\(post!.board)-\(post!.id)-"+self.name!)
     }
     
-    var isDownloaded: Bool{
+    public var isDownloaded: Bool{
         return FileManager.default.fileExists(atPath: cacheURL.path)
     }
     
-    var downloader: Downloader?
+    private var downloader: Downloader?
     
-    func download(progress: @escaping (Double)->Void, completion: @escaping (Error?)-> Void){
+    public func download(progress: @escaping (Double)->Void, completion: @escaping (Error?)-> Void){
         if isDownloaded{
             completion(nil)
         }
         else{
-            EMBReader.reLogin(then: { (_, err) in
+            EMBClient.shared.reLogin{ (_, err) in
                 if err != nil{
                     completion(err)
                 }
                 else{
                     self.downloader = Downloader.download(file: self, progress: progress, completion: completion)
                 }
-            })
+            }
         }
     }
     
-    static func ==(_ lhs: Attachment, _ rhs: Attachment)-> Bool{
+    public static func ==(_ lhs: Attachment, _ rhs: Attachment)-> Bool{
         return lhs.url == rhs.url
     }
 }

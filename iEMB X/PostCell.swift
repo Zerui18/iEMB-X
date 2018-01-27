@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import EMBClient
 
 fileprivate let systemFontNormal = UIFont.systemFont(ofSize: 20, weight: UIFont.Weight.medium)
 fileprivate let systemFontHeavy = UIFont.systemFont(ofSize: 20, weight: UIFont.Weight.heavy)
