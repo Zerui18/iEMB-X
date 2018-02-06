@@ -128,7 +128,12 @@ class BoardTableController: UITableViewController{
     }
     
     func reloadCell(forPost post: Post){
-        if post.board == Int64(currentBoard), let postIndex = EMBClient.shared.allPosts[currentBoard]?.index(of: post){
+        if isFiltering{
+            if let postIndex = filteredPosts.index(of: post){
+                tableView.reloadRows(at: [IndexPath(row: postIndex, section: 0)], with: .automatic)
+            }
+        }
+        else if let postIndex = EMBClient.shared.allPosts[currentBoard]?.index(of: post){
             tableView.reloadRows(at: [IndexPath(row: postIndex, section: 0)], with: .automatic)
         }
     }
