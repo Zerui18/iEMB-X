@@ -206,14 +206,6 @@
 			path = "Core Data";
 			sourceTree = "<group>";
 		};
-		220DF8511F80DC7C00AF6BF9 /* EMB */ = {
-			isa = PBXGroup;
-			children = (
-				226346DE1F8620C500402855 /* Date+TimeAgo.swift */,
-			);
-			path = EMB;
-			sourceTree = "<group>";
-		};
 		226C287F1F694A53007C9DBD = {
 			isa = PBXGroup;
 			children = (
@@ -263,8 +255,8 @@
 			isa = PBXGroup;
 			children = (
 				22AFD2EF1F837F9800D8C4E8 /* Transition */,
-				220DF8511F80DC7C00AF6BF9 /* EMB */,
 				226C28A71F695819007C9DBD /* Functions.swift */,
+				226346DE1F8620C500402855 /* Date+TimeAgo.swift */,
 				226C28A11F69562A007C9DBD /* Constants.swift */,
 				226C28A51F6956EC007C9DBD /* Extensions.swift */,
 			);

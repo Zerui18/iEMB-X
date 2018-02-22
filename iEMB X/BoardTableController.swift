@@ -20,7 +20,7 @@ class BoardTableController: UITableViewController{
     
     var isFiltering = false
     let interactor = Interactor()
-        
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         title = Constants.idToBoardName[currentBoard]
@@ -95,6 +95,7 @@ class BoardTableController: UITableViewController{
                 if posts != nil{
                     userDefaults.set(Date().timeIntervalSince1970, forKey: "lastRefreshed_\(self.currentBoard)")
                     if posts!.count > 0{
+                        self.selectedIndexPath = nil
                         DispatchQueue.main.async{
                             let ints = [Int](0...posts!.count-1)
                             self.tableView.insertRows(at: ints.map{

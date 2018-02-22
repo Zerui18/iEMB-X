@@ -662,7 +662,7 @@ class CariocaMenuIndicatorView : UIView{
         topConstraint = NSLayoutConstraint(item: self, attribute: .top, relatedBy: .equal, toItem: hostView, attribute: .top, multiplier: 1, constant: 0)
         
         //hide the indicator, will appear from the outside of the screen
-        edgeConstraint = NSLayoutConstraint(item: self, attribute: attrSideEdge, relatedBy: .equal, toItem: hostView, attribute: attrSideEdge, multiplier: 1, constant: getEdgeConstantValue(((size.width + 10) * -1)))
+        edgeConstraint = leadingAnchor.constraint(equalTo: hostView.safeAreaLayoutGuide.leadingAnchor, constant: (size.width + 10) * -1)
         
         hostView.addConstraints([
             edgeConstraint!,
