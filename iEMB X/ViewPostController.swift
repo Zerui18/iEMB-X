@@ -57,8 +57,6 @@ class ViewPostController: UIViewController {
     
     lazy var downPan = UIPanGestureRecognizer(target: self, action: #selector(pan(_:)))
     
-    lazy var leftPan = UIScreenEdgePanGestureRecognizer(target: self, action: #selector(leftEdgePan(_:)))
-    
     private func setupUI() {
         postContentTextView.textDragInteraction?.isEnabled = false
         scrollView.delegate = self
@@ -82,11 +80,6 @@ class ViewPostController: UIViewController {
         
         downPan.delegate = self
         view.addGestureRecognizer(downPan)
-        
-        leftPan.edges = .left
-        view.addGestureRecognizer(leftPan)
-        
-        downPan.require(toFail: leftPan)
     }
     
     private func loadMessage() {
@@ -386,32 +379,15 @@ extension ViewPostController: UIGestureRecognizerDelegate {
                 }
             }
         default:
-            interactor.complete(extraCondition: sender.velocity(in: nil).y > 600 &&
+            let finished = interactor.complete(extraCondition: sender.velocity(in: nil).y > 600 &&
                                                 interactor.percentComplete >= 0.1)
-            UIView.animate(withDuration: 0.2) {
-                self.view.frame.origin = .zero
+            if !finished {
+                // restore if dismissal cancelled
+                UIView.animate(withDuration: 0.2) {
+                    self.view.frame.origin = .zero
+                }
             }
             isAtTop = false
-            startingVal = nil
-        }
-    }
-    
-    @objc func leftEdgePan(_ sender: UIScreenEdgePanGestureRecognizer) {
-        switch  sender.state {
-        case .began:
-            startingVal = sender.location(in: nil).x
-            interactor.hasStarted = true
-            dismiss(animated: true)
-        case .changed:
-            if let startingVal = startingVal {
-                let currentX = sender.location(in: nil).x
-                let xOffset = currentX-startingVal
-                let progress = min(xOffset/view.bounds.width * 2, 1)
-                interactor.update(progress)
-            }
-        default:
-            interactor.complete(extraCondition: sender.velocity(in: nil).x > 400 &&
-                                                interactor.percentComplete >= 0.05)
             startingVal = nil
         }
     }
