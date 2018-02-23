@@ -22,10 +22,10 @@ class PostCell: UITableViewCell {
     @IBOutlet weak var titleLabel: UILabel!
     
 
-    func updateWith(post: Post){
+    func updateWith(post: Post) {
         authorLabel.text = post.author
         dateLabel.text = post.date
-        switch post.importance{
+        switch post.importance {
         case .important: importanceBanner.backgroundColor = .important
         case .urgent: importanceBanner.backgroundColor = .urgent
         case .information: importanceBanner.backgroundColor = .information
@@ -40,11 +40,11 @@ class PostCell: UITableViewCell {
         visualEffectContainer.layer.cornerRadius = 7
     }
     
-    func showSelection(){
+    func showSelection() {
         self.visualEffectContainer.contentView.backgroundColor = self.importanceBanner.backgroundColor!.withAlphaComponent(0.5)
     }
     
-    func showDeselection(){
+    func showDeselection() {
         self.visualEffectContainer.contentView.backgroundColor = nil
     }
     

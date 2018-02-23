@@ -9,18 +9,18 @@
 import UIKit
 import QuickLook
 
-class FileArchiveTableViewController: UITableViewController{
+class FileArchiveTableViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Cached Files"
         tableView.tableFooterView = UIView()
         navigationItem.largeTitleDisplayMode = .automatic
-        do{
+        do {
             files = try FileManager.default.contentsOfDirectory(at: Constants.cachedFilesURL, includingPropertiesForKeys: nil, options: [])
         }
-        catch{
-            simpleAlert(title: "Error Loading Files", message: error.localizedDescription){_ in
+        catch {
+            simpleAlert(title: "Error Loading Files", message: error.localizedDescription) {_ in
                 self.dismiss(animated: true)
             }.present(in: self)
         }
@@ -52,12 +52,12 @@ class FileArchiveTableViewController: UITableViewController{
     }
     
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        do{
+        do {
             try FileManager.default.removeItem(at: files[indexPath.row])
             files.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .automatic)
         }
-        catch{
+        catch {
             simpleAlert(title: "Error Deleting File", message: error.localizedDescription).present(in: self)
         }
     }

@@ -14,12 +14,12 @@ class FileCell: UITableViewCell {
     @IBOutlet weak var iconView: UIImageView!
     @IBOutlet weak var titleLabel: UILabel!
     
-    func update(with attachment: Attachment){
+    func update(with attachment: Attachment) {
         titleLabel.text = attachment.name
-        if attachment.type == .file{
+        if attachment.type == .file {
             iconView.image = Constants.fileIcon(for: attachment.name!)
         }
-        else{
+        else {
             iconView.image = #imageLiteral(resourceName: "link")
         }
     }

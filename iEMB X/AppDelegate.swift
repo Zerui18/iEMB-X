@@ -35,14 +35,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { (_, _) in
         }
         
-        if !EMBUser.shared.hasSavedCredentials(){
+        if !EMBUser.shared.hasSavedCredentials() {
             Constants.mainStoryboard.instantiateViewController(withIdentifier: "loginVC").present(in: window!.rootViewController!)
         }
         NotificationCenter.default.addObserver(self, selector: #selector(presentLoginScreen), name: .embLoginCredentialsInvalid, object: nil)
         return true
     }
     
-    private func setupBaseUI(){
+    private func setupBaseUI() {
         let boardVC = menuViewController.boardVCs[0].viewControllers[0] as! BoardTableController
         menuViewController.presentedBoardVC = boardVC
         baseViewController.addChildViewController(menuViewController.boardVCs[0])
@@ -55,27 +55,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
         
-    private func setupFileDirectory(){
-        if !FileManager.default.fileExists(atPath: Constants.cachedFilesURL.path){
-            do{
+    private func setupFileDirectory() {
+        if !FileManager.default.fileExists(atPath: Constants.cachedFilesURL.path) {
+            do {
                 try FileManager.default.createDirectory(at: Constants.cachedFilesURL, withIntermediateDirectories: false, attributes: nil)
             }
-            catch{
-                simpleAlert(title: "Directory Initialization Failed", message: error.localizedDescription){_ in
+            catch {
+                simpleAlert(title: "Directory Initialization Failed", message: error.localizedDescription) {_ in
                     exit(0)
                 }.present(in: baseViewController)
             }
         }
         DispatchQueue.global(qos: .background).async {
-            if let urls = try? FileManager.default.contentsOfDirectory(at: URL(fileURLWithPath: NSTemporaryDirectory()), includingPropertiesForKeys: nil, options: .skipsSubdirectoryDescendants){
-                urls.forEach{
+            if let urls = try? FileManager.default.contentsOfDirectory(at: URL(fileURLWithPath: NSTemporaryDirectory()), includingPropertiesForKeys: nil, options: .skipsSubdirectoryDescendants) {
+                urls.forEach {
                     try? FileManager.default.removeItem(at: $0)
                 }
             }
         }
     }
     
-    @objc private func presentLoginScreen(){
+    @objc private func presentLoginScreen() {
         DispatchQueue.main.async {
             menuViewController.presentedBoardVC.navigationController?.popToRootViewController(animated: false)
             Constants.mainStoryboard.instantiateViewController(withIdentifier: "loginVC").present(in: self.window!.rootViewController!)
@@ -83,20 +83,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
-        if EMBUser.shared.hasSavedCredentials(){
+        if EMBUser.shared.hasSavedCredentials() {
             UIApplication.shared.setMinimumBackgroundFetchInterval(backgroungFetchInterval)
             try? CoreDataHelper.shared.saveContext()
         }
-        else{
+        else {
             UIApplication.shared.setMinimumBackgroundFetchInterval(UIApplicationBackgroundFetchIntervalNever)
         }
     }
 
     func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        if EMBUser.shared.hasSavedCredentials(){
+        if EMBUser.shared.hasSavedCredentials() {
             EMBClient.shared.updatePosts(forBoard: 1048, completion: { (posts, error) in
-                if posts != nil{
-                    if posts!.isEmpty{
+                if posts != nil {
+                    if posts!.isEmpty {
                         completionHandler(.noData)
                         return
                     }
@@ -105,8 +105,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                         (menuViewController.boardVCs[0].viewControllers[0] as! BoardTableController).tableView?.reloadData()
                     }
                     var c1 = 0, c2 = 0, c3 = 0
-                    for post in posts!{
-                        switch post.importance{
+                    for post in posts! {
+                        switch post.importance {
                         case .urgent: c1 += 1
                         case .important: c2 += 1
                         case .information: c3 += 1
@@ -115,12 +115,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     scheduleNotification(withTitle: "You Have \(posts!.count) New Posts", body: "Categories:  🛑\(c1)   ⚠️\(c2)   ✅\(c3)")
                     completionHandler(.newData)
                 }
-                else{
+                else {
                     completionHandler(.failed)
                 }
             })
         }
-        else{
+        else {
             UIApplication.shared.setMinimumBackgroundFetchInterval(UIApplicationBackgroundFetchIntervalNever)
             completionHandler(.noData)
         }

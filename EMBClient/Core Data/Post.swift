@@ -9,14 +9,14 @@
 import CoreData
 import UIKit
 
-public enum Importance: String{
+public enum Importance: String {
     case urgent = "C", important = "B", information = "A"
 }
 
 @objc(Post)
-public class Post: NSManagedObject{
+public class Post: NSManagedObject {
     
-    convenience init(title: String, author: String, date: String, id: Int, board: Int, importance: Importance, isRead: Bool){
+    convenience init(title: String, author: String, date: String, id: Int, board: Int, importance: Importance, isRead: Bool) {
         self.init(entity: NSEntityDescription.entity(forEntityName: "Post", in: CoreDataHelper.shared.mainContext)!, insertInto: CoreDataHelper.shared.mainContext)
         self.title = title
         self.author = author
@@ -42,38 +42,38 @@ public class Post: NSManagedObject{
     
     private var completionBlock: ((Error?)->Void)?
     
-    public func loadContent(completion: @escaping (Error?)->Void){
+    public func loadContent(completion: @escaping (Error?)->Void) {
         self.completionBlock = completion
-        if isLoadingMessage{
+        if isLoadingMessage {
             return
         }
         isLoadingMessage = true
-        if let data = self.contentData as Data?{
-            do{
+        if let data = self.contentData as Data? {
+            do {
                 self.content = try NSMutableAttributedString(data: data, options: [.documentType: NSAttributedString.DocumentType.rtfd], documentAttributes: nil)
             }
-            catch{
+            catch {
                 isLoadingMessage = false
                 completion(error)
             }
             isLoadingMessage = false
             completion(nil)
         }
-        else{
+        else {
             let postURL = APIEndpoints.postURL(forId: Int(id), boardId: Int(board))
             
-            func process(html: String){
+            func process(html: String) {
                 self.attachments = []
                 self.isLoadingMessage = false
-                if let index = html.range(of: "id=\"hyplink-css-style\">")?.upperBound{
+                if let index = html.range(of: "id=\"hyplink-css-style\">")?.upperBound {
                     
                     var extract = String(html[index...])
                     let endIndex = extract.range(of: "<script src=\"/Scripts")!.lowerBound
                     extract = String(extract[..<endIndex])
                     
                     // extract iframes
-                    iframeRegex.matches(in: extract, options: [], range: NSMakeRange(0, extract.count)).forEach{
-                        if $0.numberOfRanges == 2{
+                    iframeRegex.matches(in: extract, options: [], range: NSMakeRange(0, extract.count)).forEach {
+                        if $0.numberOfRanges == 2 {
                             let url = URL(string: (extract as NSString).substring(with: $0.range(at: 1)), relativeTo: postURL)!
                             self.addToAttachments(Attachment(url: url, name: url.host ?? "link", type: .embedding))
                         }
@@ -82,11 +82,11 @@ public class Post: NSManagedObject{
                     //remove iframes
                     extract = iframeRemovalRegex.stringByReplacingMatches(in: extract, options: [], range: NSMakeRange(0, extract.count), withTemplate: "")
                     
-                    do{
+                    do {
                         // initialize attributed string
                         self.content = try NSMutableAttributedString(data: extract.data(using: .utf8)!, options: [.documentType: NSAttributedString.DocumentType.html, .characterEncoding: String.Encoding.utf8.rawValue], documentAttributes: nil)
                         // fix font (size + 3) & (font = system)
-                        self.content!.enumerateAttribute(.font, in: NSRange(location: 0, length: self.content!.length)){ (attribute, range, _) in
+                        self.content!.enumerateAttribute(.font, in: NSRange(location: 0, length: self.content!.length)) { (attribute, range, _) in
                             let font = attribute as! UIFont
                             let newFont = UIFont.systemFont(ofSize: font.pointSize+3)
                             self.content!.addAttribute(.font, value: newFont, range: range)
@@ -96,14 +96,14 @@ public class Post: NSManagedObject{
                         
                         self.contentData = try self.content!.data(from: NSRange(location: 0, length: self.content!.length), documentAttributes: [.documentType: NSAttributedString.DocumentType.rtfd]) as NSData
                     }
-                    catch{
+                    catch {
                         print("error decoding extracted html ", error)
                         self.completionBlock?(error)
                         return
                     }
                     let fileMatches = fileRegex.matches(in: html, options: [], range: NSRange.init(location: 0, length: html.count))
                     let copy = html as NSString
-                    for match in fileMatches where match.numberOfRanges > 4{
+                    for match in fileMatches where match.numberOfRanges > 4 {
                         let name = copy.substring(with: match.range(at: 1))
                         let url = URL(string: "https://iemb.hci.edu.sg/Board/ShowFile?t=2&ctype=\(copy.substring(with: match.range(at: 4)))&id=\(copy.substring(with: match.range(at: 2)))&file=\(name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)&boardId=\(copy.substring(with: match.range(at: 3)))")!
                         self.addToAttachments(Attachment(url: url, name: name, type: .file))
@@ -119,10 +119,10 @@ public class Post: NSManagedObject{
             
             // load post html and pass it into the process(html:) function
             EMBClient.shared.loadPage(request: URLRequest(url: postURL)) { (html, error) in
-                if error != nil{
+                if error != nil {
                     self.completionBlock?(error)
                 }
-                else{
+                else {
                     process(html: html!)
                     self.completionBlock?(nil)
                     try? CoreDataHelper.shared.saveContext()
@@ -132,28 +132,28 @@ public class Post: NSManagedObject{
         }
     }
     
-    public func postResponse(option: String, content: String, completion: @escaping(Error?)-> Void){
+    public func postResponse(option: String, content: String, completion: @escaping(Error?)-> Void) {
         var request = URLRequest(url: APIEndpoints.responseURL)
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         request.httpMethod = "post"
         request.httpBody = "boardid=\(board)&topic=\(id)&replyto=0&UserRating=\(option)&replyContent=\(content)&PostMessage=Post  Reply&Cancel=Cancel".data(using: .utf8)
         EMBClient.shared.loadPage(request: request) { (_, error) in
-            if error == nil{
+            if error == nil {
                 self.responseOption = option
                 self.responseContent = content
-                do{
+                do {
                     try CoreDataHelper.shared.saveContext()
                     completion(nil)
                 }
-                catch{
+                catch {
                     completion(error)
                 }
             }
         }
     }
     
-    public func compoundMessage()-> NSMutableAttributedString?{
-        if let c = content{
+    public func compoundMessage()-> NSMutableAttributedString? {
+        if let c = content {
             let text = NSMutableAttributedString(string: title!+"\n", attributes: [.font: titleFont])
             text.append(NSAttributedString(string: "\n", attributes: [.font: UIFont.systemFont(ofSize: 5)]))
             text.append(NSAttributedString(string: author!+"  On  "+date!+"\n\n\n", attributes: [.font: miscFont, .foregroundColor: UIColor.darkGray]))
@@ -165,8 +165,8 @@ public class Post: NSManagedObject{
     
 }
 
-extension Post{
-    static func fetchAll()-> [Post]{
+extension Post {
+    static func fetchAll()-> [Post] {
         return try! CoreDataHelper.shared.fetch(request: Post.fetchRequest())
     }
 }

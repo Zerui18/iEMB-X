@@ -13,7 +13,7 @@ class FileArchiveCell: UITableViewCell {
     @IBOutlet weak var iconView: UIImageView!
     @IBOutlet weak var titleLabel: UILabel!
     
-    func update(with file: URL){
+    func update(with file: URL) {
         iconView.image = Constants.fileIcon(for: file.lastPathComponent)
         titleLabel.text = file.lastPathComponent
     }

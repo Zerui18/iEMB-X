@@ -8,15 +8,15 @@
 
 import Foundation
 
-struct APIEndpoints{
+struct APIEndpoints {
     static let loginURL = URL(string: "https://iemb.hci.edu.sg/home/login")!
     static let boardBaseURL = URL(string: "https://iemb.hci.edu.sg/Board/Detail")!
     
-    static func boardURL(forId id: Int)-> URL{
+    static func boardURL(forId id: Int)-> URL {
         return boardBaseURL.appendingPathComponent(String(id))
     }
     
-    static func postURL(forId id: Int, boardId: Int)-> URL{
+    static func postURL(forId id: Int, boardId: Int)-> URL {
         return URL(string: "https://iemb.hci.edu.sg/Board/content/\(id)?board=\(boardId)")!
     }
     

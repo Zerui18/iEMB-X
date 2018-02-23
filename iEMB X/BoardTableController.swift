@@ -9,17 +9,24 @@
 import UIKit
 import EMBClient
 
-fileprivate var allPosts: [Int: [Post]]{
-    return EMBClient.shared.allPosts
-}
 
-class BoardTableController: UITableViewController{
+class BoardTableController: UITableViewController {
+    
+    @IBOutlet weak var filterButton: UIBarButtonItem!
     
     var currentBoard: Int = 1048
+    var allPosts: [Post] {
+        return isFilteringUnread ? unreadPosts:EMBClient.shared.allPosts[currentBoard]!
+    }
     var filteredPosts: [Post] = []
+    var unreadPosts: [Post] = []
     
-    var isFiltering = false
+    var isFilteringThroughSearch = false
+    var isFilteringUnread = false
+    
     let interactor = Interactor()
+    
+    var selectedIndexPath: IndexPath?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,36 +34,38 @@ class BoardTableController: UITableViewController{
         setupUI()
     }
     
-    var selectedIndexPath: IndexPath?
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if let coordinator = transitionCoordinator{
-            let index = selectedIndexPath
-            coordinator.animate(alongsideTransition: {_ in
-                self.showUIComponents()
-                if index != nil{
-                    (self.tableView.cellForRow(at: index!) as! PostCell).showDeselection()
-                }
-            }, completion: {context in
-                if context.isCancelled{
-                    UIView.animate(withDuration: 0.3){
-                        self.hideUIComponents()
-                        if index != nil{
-                            (self.tableView.cellForRow(at: index!) as! PostCell).showSelection()
-                        }
+        filterButton.tintColor = isFilteringUnread ? #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1):#colorLiteral(red: 0.6553392163, green: 0.6553392163, blue: 0.6553392163, alpha: 1)
+        
+        guard let coordinator = transitionCoordinator else {
+            return
+        }
+        
+        let index = selectedIndexPath
+        coordinator.animate(alongsideTransition: {_ in
+            self.showUIComponents()
+            if index != nil {
+                (self.tableView.cellForRow(at: index!) as! PostCell).showDeselection()
+            }
+        }, completion: {context in
+            if context.isCancelled {
+                UIView.animate(withDuration: 0.3) {
+                    self.hideUIComponents()
+                    if index != nil {
+                        (self.tableView.cellForRow(at: index!) as! PostCell).showSelection()
                     }
                 }
-                else{
-                    self.selectedIndexPath = nil
-                }
-            })
-        }
+            }
+            else {
+                self.selectedIndexPath = nil
+            }
+        })
     }
-
+    
     let searchController = UISearchController(searchResultsController: nil)
     
-    private func setupUI(){
+    private func setupUI() {
         tableView.rowHeight = 100
         
         searchController.searchResultsUpdater = self
@@ -64,13 +73,13 @@ class BoardTableController: UITableViewController{
         searchController.searchBar.delegate = self
         searchController.searchBar.scopeButtonTitles = ["Title","Author","Marked"]
         
-        if #available(iOS 11, *){
+        if #available(iOS 11, *) {
             navigationItem.searchController = searchController
             navigationController?.navigationBar.prefersLargeTitles = true
             navigationItem.largeTitleDisplayMode = .always
             navigationItem.hidesSearchBarWhenScrolling = false
         }
-        else{
+        else {
             tableView.tableHeaderView = searchController.searchBar
         }
         
@@ -81,79 +90,124 @@ class BoardTableController: UITableViewController{
         updateLastReadDisplay()
         
         tableView.separatorStyle = .none
+        
+        filterButton.target = self
+        filterButton.action = #selector(toggleUnreadFilter)
         NotificationCenter.default.addObserver(self, selector: #selector(postDidUpdate(_:)), name: .postContentDidLoad, object: nil)
     }
     
-    @objc func openFiles(){
+    @objc func openFiles() {
         navigationController?.pushViewController(storyboard!.instantiateViewController(withIdentifier: "filesVC"), animated: true)
     }
     
-    @objc func reloadBoard(){
+    @objc func reloadBoard() {
         refreshControl?.beginRefreshing()
         navigationItem.rightBarButtonItem?.isEnabled = false
         EMBClient.shared.updatePosts(forBoard: currentBoard) { (posts, error) in
-                if posts != nil{
-                    userDefaults.set(Date().timeIntervalSince1970, forKey: "lastRefreshed_\(self.currentBoard)")
-                    if posts!.count > 0{
-                        self.selectedIndexPath = nil
-                        DispatchQueue.main.async{
-                            let ints = [Int](0...posts!.count-1)
-                            self.tableView.insertRows(at: ints.map{
-                                IndexPath(row: $0, section: 0)
-                            }, with: .automatic)
-                        }
-                    }
-                    DispatchQueue.main.async {
-                        self.updateLastReadDisplay()
-                    }
-                }
-                else{
-                    notificationFeedback(ofType: .error)
-                    if (error! as NSError).domain != "com.Zerui.EMBClient.AuthError"{
-                        DispatchQueue.main.async {
-                            simpleAlert(title: "Error", message: "failed to load posts for board \(self.currentBoard)").present(in: self)
-                        }
-                    }
-                }
+            
+            defer{
                 DispatchQueue.main.async {
                     self.refreshControl?.endRefreshing()
                     self.navigationItem.rightBarButtonItem?.isEnabled = true
                 }
+            }
+            
+            guard let newPosts = posts else {
+                notificationFeedback(ofType: .error)
+                if (error! as NSError).domain != "com.Zerui.EMBClient.AuthError" {
+                    DispatchQueue.main.async {
+                        simpleAlert(title: "Error", message: "failed to load posts for board \(self.currentBoard)").present(in: self)
+                    }
+                }
+                return
+            }
+            
+            userDefaults.set(Date().timeIntervalSince1970, forKey: "lastRefreshed_\(self.currentBoard)")
+            if newPosts.count > 0 {
+                self.selectedIndexPath = nil
+                
+                let count: Int
+                
+                if self.isFilteringUnread{
+                    let unreadPosts = newPosts.filter{!$0.isRead}
+                    self.unreadPosts.insert(contentsOf: unreadPosts, at: 0)
+                    
+                    count = unreadPosts.count
+                }
+                else{
+                    count = newPosts.count
+                }
+                let ints = [Int](0...count-1)
+                
+                DispatchQueue.main.async {
+                    
+                    self.tableView.insertRows(at: ints.map {
+                        IndexPath(row: $0, section: 0)
+                    }, with: .automatic)
+                }
+            }
+            DispatchQueue.main.async {
+                self.updateLastReadDisplay()
+            }
         }
     }
     
-    @objc private func postDidUpdate(_ notification: Notification){
-        if let post = notification.object as? Post, post.board == Int64(currentBoard){
+    @objc private func postDidUpdate(_ notification: Notification) {
+        if let post = notification.object as? Post, post.board == Int64(currentBoard) {
             reloadCell(forPost: post)
         }
     }
     
-    func reloadCell(forPost post: Post){
-        if isFiltering{
-            if let postIndex = filteredPosts.index(of: post){
+    @objc func toggleUnreadFilter() {
+        isFilteringUnread = !isFilteringUnread
+        
+        UIView.animate(withDuration: 0.2) {
+            self.filterButton.tintColor = self.isFilteringUnread ? #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1):#colorLiteral(red: 0.6553392163, green: 0.6553392163, blue: 0.6553392163, alpha: 1)
+        }
+        
+        if isFilteringUnread {
+            unreadPosts = EMBClient.shared.allPosts[currentBoard]!.filter{!$0.isRead}
+        }
+        else {
+            unreadPosts.removeAll()
+        }
+        
+        tableView.reloadSections([0], with: .right)
+    }
+    
+    func reloadCell(forPost post: Post) {
+        if isFilteringThroughSearch {
+            if let postIndex = filteredPosts.index(of: post) {
                 tableView.reloadRows(at: [IndexPath(row: postIndex, section: 0)], with: .automatic)
             }
         }
-        else if let postIndex = EMBClient.shared.allPosts[currentBoard]?.index(of: post){
-            tableView.reloadRows(at: [IndexPath(row: postIndex, section: 0)], with: .automatic)
+        else if let postIndex = allPosts.index(of: post) {
+            let indexPaths = [IndexPath(row: postIndex, section: 0)]
+            
+            if isFilteringUnread{
+                tableView.deleteRows(at: indexPaths, with: .automatic)
+            }
+            else{
+                tableView.reloadRows(at: indexPaths, with: .automatic)
+            }
         }
     }
     
-    func lastRefreshed()-> TimeInterval{
+    func lastRefreshed()-> TimeInterval {
         return userDefaults.double(forKey: "lastRefreshed_\(self.currentBoard)")
     }
-
+    
 }
 
-extension BoardTableController{
+extension BoardTableController {
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return isFiltering ? filteredPosts.count:allPosts[currentBoard]!.count
+        return isFilteringThroughSearch ? filteredPosts.count:allPosts.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "postCell") as! PostCell
-        cell.updateWith(post: (isFiltering ? filteredPosts:allPosts[currentBoard]!)[indexPath.row])
+        cell.updateWith(post: (isFilteringThroughSearch ? filteredPosts:allPosts)[indexPath.row])
         return cell
     }
     
@@ -161,7 +215,7 @@ extension BoardTableController{
         selectedIndexPath = indexPath
         (tableView.visibleCell(at: indexPath) as? PostCell)?.showSelection()
         let vc = storyboard!.instantiateViewController(withIdentifier: "viewVC") as! ViewPostController
-        vc.post = (isFiltering ? filteredPosts:allPosts[currentBoard]!)[indexPath.row]
+        vc.post = (isFilteringThroughSearch ? filteredPosts:allPosts)[indexPath.row]
         vc.transitioningDelegate = self
         vc.present(in: self)
         UIView.animate(withDuration: Constants.presentTransitionDuration) {
@@ -170,9 +224,9 @@ extension BoardTableController{
     }
     
     override func tableView(_ tableView: UITableView, willBeginEditingRowAt indexPath: IndexPath) {
-        if let pullView = menuViewController.presentedBoardVC.tableView.subviews.filter({
+        if let pullView = menuViewController.presentedBoardVC.tableView.subviews.filter( {
             String(describing: type(of: $0)) == "UISwipeActionPullView"
-        }).last{
+        }).last {
             
             pullView.clipsToBounds = true
             pullView.layer.cornerRadius = 5
@@ -186,13 +240,13 @@ extension BoardTableController{
         }
     }
     
-    func hideUIComponents(){
+    func hideUIComponents() {
         searchController.searchBar.resignFirstResponder()
         cariocaMenu.sidePanLeft.isEnabled = false
         cariocaMenu.setIndicatorAlpha(0)
     }
     
-    func showUIComponents(){
+    func showUIComponents() {
         cariocaMenu.sidePanLeft.isEnabled = true
         cariocaMenu.setIndicatorAlpha(1)
     }
@@ -203,12 +257,12 @@ extension BoardTableController{
     }
     
     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        let post = allPosts[currentBoard]![indexPath.row]
+        let post = allPosts[indexPath.row]
         let isMarked = post.isMarked
         let toggleMarkAction = UITableViewRowAction(style: .default, title: isMarked ? "Unmark":"Mark", handler: { (_, _) in
             tableView.setEditing(false, animated: false)
             post.isMarked = !isMarked
-            if let cell = tableView.visibleCell(at: indexPath) as? PostCell{
+            if let cell = tableView.visibleCell(at: indexPath) as? PostCell {
                 cell.updateWith(post: post)
             }
         })
@@ -219,77 +273,77 @@ extension BoardTableController{
         updateLastReadDisplay()
     }
     
-    func updateLastReadDisplay(){
+    func updateLastReadDisplay() {
         let timeInterval = lastRefreshed()
-        if timeInterval > 0{
+        if timeInterval > 0 {
             refreshControl!.attributedTitle = NSAttributedString(string: "Last Updated: "+Date(timeIntervalSince1970: timeInterval).timeAgoSinceNow(), attributes: [.font: subfont, .foregroundColor: UIColor.gray])
         }
-        else{
+        else {
             refreshControl!.attributedTitle = NSAttributedString(string: "Last Updated: Never", attributes: [.font: subfont, .foregroundColor: UIColor.gray])
         }
     }
     
 }
 
-extension BoardTableController: UISearchResultsUpdating, UISearchBarDelegate{
+extension BoardTableController: UISearchResultsUpdating, UISearchBarDelegate {
     
     func updateSearchResults(for searchController: UISearchController) {
         if let text = searchController.searchBar.text?.lowercased(), !text.isEmpty {
-            switch searchController.searchBar.selectedScopeButtonIndex{
+            switch searchController.searchBar.selectedScopeButtonIndex {
             case 0:
-                self.filteredPosts = allPosts[self.currentBoard]!.filter({ (post) in
+                self.filteredPosts = allPosts.filter { (post) in
                     return post.titleLower.contains(text)
-                })
+                }
             case 1:
                 let name = text.uppercased()
-                self.filteredPosts = allPosts[self.currentBoard]!.filter({ (post) in
+                self.filteredPosts = allPosts.filter { (post) in
                     return post.author!.contains(name)
-                })
+                }
             default:
-                self.filteredPosts = allPosts[self.currentBoard]!.filter({ (post) in
+                self.filteredPosts = allPosts.filter { (post) in
                     return post.isMarked && post.titleLower.contains(text)
-                })
+                }
             }
         }
         else {
-            if searchController.searchBar.selectedScopeButtonIndex == 2{
-                self.filteredPosts = allPosts[self.currentBoard]!.filter{
+            if searchController.searchBar.selectedScopeButtonIndex == 2 {
+                self.filteredPosts = allPosts.filter {
                     $0.isMarked
                 }
             }
-            else{
-                self.filteredPosts = allPosts[self.currentBoard]!
+            else {
+                self.filteredPosts = allPosts
             }
         }
         self.tableView.reloadData()
     }
     
     func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
-        self.isFiltering = true
+        self.isFilteringThroughSearch = true
         selectionFeedback()
         updateSearchResults(for: searchController)
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        self.isFiltering = false
+        self.isFilteringThroughSearch = false
         self.tableView.reloadData()
     }
     
     func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
-        self.isFiltering = true
+        self.isFilteringThroughSearch = true
         return true
     }
-        
+    
 }
 
-extension BoardTableController: UIViewControllerTransitioningDelegate{
+extension BoardTableController: UIViewControllerTransitioningDelegate {
     
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return PresentAnimator()
     }
     
     func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        if let postVC = dismissed as? ViewPostController, postVC.isReplying{
+        if let postVC = dismissed as? ViewPostController, postVC.isReplying {
             postVC.responseTextView.resignFirstResponder()
         }
         return DismissAnimator()

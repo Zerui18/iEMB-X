@@ -20,12 +20,12 @@ class Interactor: UIPercentDrivenInteractiveTransition {
         shouldFinish = percentComplete > completionFraction
     }
     
-    func complete(extraCondition condition: Bool = false){
-        if hasStarted{
-            if shouldFinish || condition{
+    func complete(extraCondition condition: Bool = false) {
+        if hasStarted {
+            if shouldFinish || condition {
                 finish()
             }
-            else{
+            else {
                 cancel()
             }
             hasStarted = false

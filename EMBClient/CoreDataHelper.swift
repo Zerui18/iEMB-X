@@ -8,23 +8,23 @@
 
 import CoreData
 
-public class CoreDataHelper{
+public class CoreDataHelper {
     
     public static let shared = CoreDataHelper()
     
     private let persistentContainer: NSPersistentContainer
-    public var mainContext: NSManagedObjectContext{
+    public var mainContext: NSManagedObjectContext {
         return persistentContainer.viewContext
     }
     
     // sync init
-    fileprivate init(){
+    fileprivate init() {
         persistentContainer = NSPersistentContainer(name: "PostRecords")
         
         let group = DispatchGroup()
         group.enter()
-        persistentContainer.loadPersistentStores{_, error in
-            if error != nil{
+        persistentContainer.loadPersistentStores {_, error in
+            if error != nil {
                 fatalError("Could not initialize CoreData stack: \(error!)")
             }
             group.leave()
@@ -33,7 +33,7 @@ public class CoreDataHelper{
         
     }
     
-    func fetch<T>(request: NSFetchRequest<T>)throws-> [T]{
+    func fetch<T>(request: NSFetchRequest<T>)throws-> [T] {
         return try mainContext.fetch(request)
     }
     
@@ -42,17 +42,17 @@ public class CoreDataHelper{
     }
     
     public func saveContext() throws {
-        if mainContext.hasChanges{
+        if mainContext.hasChanges {
             var error: Error?
             mainContext.performAndWait {
-                do{
+                do {
                     try mainContext.save()
                 }
-                catch let cdError{
+                catch let cdError {
                     error = cdError
                 }
             }
-            if error != nil{
+            if error != nil {
                 throw error!
             }
         }

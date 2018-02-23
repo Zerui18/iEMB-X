@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 
-struct Constants{
+struct Constants {
     
     static let mainStoryboard = UIStoryboard(name: "Main", bundle: nil)
     
@@ -27,7 +27,7 @@ struct Constants{
         "xlsx"  :   #imageLiteral(resourceName: "xls")
     ]
     
-    static func fileIcon(for fileName: String)-> UIImage{
+    static func fileIcon(for fileName: String)-> UIImage {
         let ext = (fileName.components(separatedBy: ".").last ?? "").lowercased()
         return initializedFileIcons[ext] ?? #imageLiteral(resourceName: "file")
     }

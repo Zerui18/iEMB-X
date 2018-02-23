@@ -11,8 +11,9 @@ import EMBClient
 import SafariServices
 import Custom_UI
 
-class ViewPostController: UIViewController{
+class ViewPostController: UIViewController {
     
+    @IBOutlet weak var backgroundView: UIImageView!
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var postContainerView: UIVisualEffectView!
     @IBOutlet weak var postContentTextView: UITextView!
@@ -35,7 +36,7 @@ class ViewPostController: UIViewController{
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if let selected = attachmentsTable.indexPathForSelectedRow{
+        if let selected = attachmentsTable.indexPathForSelectedRow {
             transitionCoordinator?.animate(alongsideTransition: { context in
                 self.attachmentsTable.deselectRow(at: selected, animated: context.isAnimated)
             })
@@ -58,7 +59,7 @@ class ViewPostController: UIViewController{
     
     lazy var leftPan = UIScreenEdgePanGestureRecognizer(target: self, action: #selector(leftEdgePan(_:)))
     
-    private func setupUI(){
+    private func setupUI() {
         postContentTextView.textDragInteraction?.isEnabled = false
         scrollView.delegate = self
         scrollView.contentInset.top = leftButton.frame.maxY + 8 - view.convert(postContainerView.frame.origin, from: postContainerView).y
@@ -88,20 +89,20 @@ class ViewPostController: UIViewController{
         downPan.require(toFail: leftPan)
     }
     
-    private func loadMessage(){
-        if post.content != nil{
+    private func loadMessage() {
+        if post.content != nil {
             updateUI()
         }
-        else{
-            post.loadContent{[weak self] error in
-                if self == nil{
+        else {
+            post.loadContent {[weak self] error in
+                if self == nil {
                     return
                 }
                 DispatchQueue.main.async {
-                    if error != nil{
+                    if error != nil {
                         self!.postContentTextView.attributedText = NSAttributedString(string: "Failed to load Post. "+error!.localizedDescription, attributes: [.font: UIFont.systemFont(ofSize: 28, weight: .bold)])
                     }
-                    else{
+                    else {
                         self!.updateUI()
                     }
                 }
@@ -109,28 +110,28 @@ class ViewPostController: UIViewController{
         }
     }
     
-    func updateUI(){
+    func updateUI() {
         postContentTextView.attributedText = post.compoundMessage()
         attachmentsTable.reloadData()
         tableViewHeightConstraint.constant = CGFloat(post.attachments!.count * 50) + 5
-        if post.canRespond{
+        if post.canRespond {
             rightButton.animateVisible()
         }
         labelHeightConstraint.constant = post.attachments!.count > 0 ? 30:0
     }
     
     
-    @objc func leftButtonClicked(){
+    @objc func leftButtonClicked() {
         setReplyUIHidden()
     }
     
-    @objc func contentTapped(_ sender: UITapGestureRecognizer){
+    @objc func contentTapped(_ sender: UITapGestureRecognizer) {
         postContentTextView.resignFirstResponder()
-        if post.content != nil{
+        if post.content != nil {
             let index = postContentTextView.layoutManager.characterIndex(for: sender.location(in: postContentTextView), in: postContentTextView.textContainer, fractionOfDistanceBetweenInsertionPoints: nil)
             if index < postContentTextView.attributedText.length,
-                let attachment = (postContentTextView.attributedText.attribute(.attachment, at: index, effectiveRange: nil) ?? postContentTextView.attributedText.attribute(.attachment, at: index-1, effectiveRange: nil)) as? NSTextAttachment{
-                if let image = attachment.image(forBounds: attachment.bounds, textContainer: postContentTextView.textContainer, characterIndex: index){
+                let attachment = (postContentTextView.attributedText.attribute(.attachment, at: index, effectiveRange: nil) ?? postContentTextView.attributedText.attribute(.attachment, at: index-1, effectiveRange: nil)) as? NSTextAttachment {
+                if let image = attachment.image(forBounds: attachment.bounds, textContainer: postContentTextView.textContainer, characterIndex: index) {
                     let tempImage = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(attachment.fileWrapper?.filename ?? "Image.png")
                     try! UIImagePNGRepresentation(image)!.write(to: tempImage)
                     let ctr = FilePreviewController()
@@ -146,8 +147,8 @@ class ViewPostController: UIViewController{
     var optionsSegment: UISegmentedControl!
     var responseTextView: RSKPlaceholderTextView!
     
-    private func setupReplyUI(){
-        if replyContainerView != nil{return}
+    private func setupReplyUI() {
+        if replyContainerView != nil {return}
         
         // setup reply segments
         
@@ -196,28 +197,28 @@ class ViewPostController: UIViewController{
         view.layoutIfNeeded()
         
         // load previous reply, if any
-        if let opt = post.responseOption, let con = post.responseContent{
+        if let opt = post.responseOption, let con = post.responseContent {
             optionsSegment.selectedSegmentIndex = ["A","B","C","D","E"].index(of: opt)!
             responseTextView.text = con
         }
     }
     
-    private func setReplyUIHidden(){
+    private func setReplyUIHidden() {
         responseTextView.resignFirstResponder()
         scrollView.animateVisible()
         isReplying = false
         leftButton.animateHidden()
-        if scrollView.contentOffset.y + scrollView.adjustedContentInset.top > 0{
+        if scrollView.contentOffset.y + scrollView.adjustedContentInset.top > 0 {
             rightButton.animateHidden()
             lowerButton.animateVisible()
         }
         replyContainerView.animateHidden()
-        view.gestureRecognizers?.forEach{
+        view.gestureRecognizers?.forEach {
             $0.isEnabled = true
         }
     }
     
-    private func setReplyUIVisible(){
+    private func setReplyUIVisible() {
         setupReplyUI()
         scrollView.animateHidden()
         isReplying = true
@@ -225,27 +226,27 @@ class ViewPostController: UIViewController{
         leftButton.animateVisible()
         rightButton.animateVisible()
         replyContainerView.animateVisible()
-        view.gestureRecognizers?.forEach{
+        view.gestureRecognizers?.forEach {
             $0.isEnabled = false
         }
     }
     
     var isReplying = false
     
-    @objc func rightButtonClicked(){
-        if isReplying{
+    @objc func rightButtonClicked() {
+        if isReplying {
             let alr = UIAlertController(title: "Processing", message: "please wait for the reply to be sent", preferredStyle: .alert)
             responseTextView.resignFirstResponder()
             alr.present(in: self)
             let hasOption = optionsSegment.selectedSegmentIndex != UISegmentedControlNoSegment
             let option = hasOption ? optionsSegment.titleForSegment(at: optionsSegment.selectedSegmentIndex)!:""
-            post.postResponse(option: option, content: responseTextView.text){ error in
+            post.postResponse(option: option, content: responseTextView.text) { error in
                 DispatchQueue.main.async {
-                    if error != nil{
+                    if error != nil {
                         alr.title = "Failed to send"
                         alr.message = error!.localizedDescription
                     }
-                    else{
+                    else {
                         alr.title = "Reply Sent"
                         alr.message = ""
                         self.setReplyUIHidden()
@@ -254,7 +255,7 @@ class ViewPostController: UIViewController{
                 }
             }
         }
-        else{
+        else {
             setReplyUIVisible()
         }
     }
@@ -265,7 +266,7 @@ class ViewPostController: UIViewController{
     
 }
 
-extension ViewPostController: UITableViewDataSource, UITableViewDelegate{
+extension ViewPostController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return post.attachments!.count
@@ -279,16 +280,16 @@ extension ViewPostController: UITableViewDataSource, UITableViewDelegate{
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let file = post.attachments!.allObjects[indexPath.row] as! Attachment
-        if file.type == .embedding{
+        if file.type == .embedding {
             SFSafariViewController(url: file.url).present(in: self)
             return
         }
-        if file.isDownloaded{
+        if file.isDownloaded {
             let ctr = FilePreviewController()
             ctr.file = (post.attachments!.allObjects[indexPath.row] as! Attachment).cacheURL
             ctr.present(in: self)
         }
-        else{
+        else {
             let alert = UIAlertController(title: "Downloading", message: "initializing download...", preferredStyle: .alert)
             alert.present(in: self)
             file.download(progress: { progress in
@@ -297,13 +298,13 @@ extension ViewPostController: UITableViewDataSource, UITableViewDelegate{
                 }
             }) { error in
                 DispatchQueue.main.async {
-                    if error != nil{
+                    if error != nil {
                         alert.title = "Failed"
                         alert.message = error!.localizedDescription
                         alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
                     }
-                    else{
-                        alert.dismiss(animated: true){
+                    else {
+                        alert.dismiss(animated: true) {
                             let ctr = FilePreviewController()
                             ctr.file = (self.post.attachments!.allObjects[indexPath.row] as! Attachment).cacheURL
                             ctr.present(in: self)
@@ -319,9 +320,9 @@ extension ViewPostController: UITableViewDataSource, UITableViewDelegate{
 fileprivate var startingVal: CGFloat?
 fileprivate var isAtTop = false
 
-extension ViewPostController: UIGestureRecognizerDelegate{
+extension ViewPostController: UIGestureRecognizerDelegate {
     
-    var interactor: Interactor{
+    var interactor: Interactor {
         return (transitioningDelegate as! BoardTableController).interactor
     }
     
@@ -331,36 +332,38 @@ extension ViewPostController: UIGestureRecognizerDelegate{
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         // only update send buttons if post can respond & is displaying post content
-        guard post.canRespond && !isReplying else{
+        guard post.canRespond && !isReplying else {
             return
         }
         let istop = scrollView.contentOffset.y + scrollView.adjustedContentInset.top <= 0
-        if !istop && rightButton.alpha == 1{
+        if !istop && rightButton.alpha == 1 {
             rightButton.animateHidden()
             lowerButton.animateVisible()
         }
-        else if istop && rightButton.alpha == 0{
+        else if istop && rightButton.alpha == 0 {
             rightButton.animateVisible()
             lowerButton.animateHidden()
         }
     }
     
-    @objc func pan(_ sender: UIPanGestureRecognizer){
-        switch sender.state{
+    @objc func pan(_ sender: UIPanGestureRecognizer) {
+        switch sender.state {
         case .began:
             startingVal = sender.location(in: nil).x
             interactor.hasStarted = true
         case .changed:
             let currentY = sender.location(in: nil).y
-            if interactor.hasStarted{
+            
+            if interactor.hasStarted {
+                
                 // calc local properties
                 let isup = sender.velocity(in: nil).y > 0
                 let istop = scrollView.contentOffset.y + scrollView.adjustedContentInset.top <= 0
-                if istop{
-                    if !isAtTop{
+                if istop {
+                    if !isAtTop {
                         isAtTop = true
                         // start transition when move to top & move up
-                        if isup && !isBeingDismissed{
+                        if isup && !isBeingDismissed {
                             dismiss(animated: true)
                             startingVal = currentY
                         }
@@ -368,32 +371,39 @@ extension ViewPostController: UIGestureRecognizerDelegate{
                     // update progress while at top
                     let progress = min((currentY-startingVal!) / (UIScreen.main.bounds.height/1.5), 1)
                     interactor.update(progress)
+                    
+                    view.frame.origin = sender.translation(in: baseViewController.view)
                 }
-                else{
-                    if isAtTop{
+                else {
+                    if isAtTop {
                         // cancel transition when leave top
                         isAtTop = false
                         interactor.shouldFinish = false
                         interactor.cancel()
+                        
+                        view.frame.origin = .zero
                     }
                 }
             }
         default:
             interactor.complete(extraCondition: sender.velocity(in: nil).y > 600 &&
                                                 interactor.percentComplete >= 0.1)
+            UIView.animate(withDuration: 0.2) {
+                self.view.frame.origin = .zero
+            }
             isAtTop = false
             startingVal = nil
         }
     }
     
-    @objc func leftEdgePan(_ sender: UIScreenEdgePanGestureRecognizer){
+    @objc func leftEdgePan(_ sender: UIScreenEdgePanGestureRecognizer) {
         switch  sender.state {
         case .began:
             startingVal = sender.location(in: nil).x
             interactor.hasStarted = true
             dismiss(animated: true)
         case .changed:
-            if let startingVal = startingVal{
+            if let startingVal = startingVal {
                 let currentX = sender.location(in: nil).x
                 let xOffset = currentX-startingVal
                 let progress = min(xOffset/view.bounds.width * 2, 1)

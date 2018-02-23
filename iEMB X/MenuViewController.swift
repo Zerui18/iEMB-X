@@ -9,12 +9,12 @@
 import UIKit
 import Custom_UI
 
-class MenuViewController: UITableViewController{
+class MenuViewController: UITableViewController {
     
     var cellIdentifier = "cellRight"
     
     let boardIds = [1048, 1039, 1049, 1050, 1053]
-    var boardVCs: [UINavigationController] = [1048, 1039, 1049, 1050, 1053].map{
+    var boardVCs: [UINavigationController] = [1048, 1039, 1049, 1050, 1053].map {
         let ctr = Constants.mainStoryboard.instantiateViewController(withIdentifier: "boardVC") as! BoardTableController
         ctr.currentBoard = $0
         return UINavigationController(rootViewController: ctr)
@@ -32,7 +32,7 @@ class MenuViewController: UITableViewController{
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier) as! BoardCell
         cell.tag = indexPath.row
-        if indexPath.row == 5{
+        if indexPath.row == 5 {
             cell.titleLabel.text = "Settings"
             cell.iconView.image = #imageLiteral(resourceName: "settings")
             cell.applyNormalStyle()
@@ -41,10 +41,10 @@ class MenuViewController: UITableViewController{
         let boardId = boardIds[indexPath.row]
         cell.titleLabel.text = Constants.idToBoardName[boardId]!
         cell.iconView.image = boardIcons[indexPath.row]
-        if indexPath == cariocaMenu.selectedIndexPath{
+        if indexPath == cariocaMenu.selectedIndexPath {
             cell.applySelectedStyle()
         }
-        else{
+        else {
             cell.applyNormalStyle()
         }
         return cell
@@ -64,7 +64,7 @@ class MenuViewController: UITableViewController{
 
 }
 
-extension MenuViewController: CariocaMenuDataSource{
+extension MenuViewController: CariocaMenuDataSource {
     
     func preselectRowAtIndexPath(_ indexPath: IndexPath) {
         selectionFeedback()
@@ -81,15 +81,15 @@ extension MenuViewController: CariocaMenuDataSource{
     
     func unselectRowAtIndexPath(_ indexPath: IndexPath) {
         let cell = tableView.cellForRow(at: indexPath) as? BoardCell
-        if indexPath == cariocaMenu.selectedIndexPath{
+        if indexPath == cariocaMenu.selectedIndexPath {
             cell?.applySelectedStyle()
         }
-        else{
+        else {
             cell?.applyNormalStyle()
         }
     }
     
-    func getMenuView()->UIView{
+    func getMenuView()->UIView {
         return self.view
     }
     
@@ -116,14 +116,14 @@ extension MenuViewController: CariocaMenuDataSource{
 
 }
 
-extension MenuViewController: UIAdaptivePresentationControllerDelegate, CariocaMenuDelegate{
+extension MenuViewController: UIAdaptivePresentationControllerDelegate, CariocaMenuDelegate {
     
     func adaptivePresentationStyle(for controller: UIPresentationController, traitCollection: UITraitCollection) -> UIModalPresentationStyle {
         return .none
     }
     
     func cariocaMenuDidSelect(_ menu: CariocaMenu, indexPath: IndexPath) {
-        if indexPath.row == 5{
+        if indexPath.row == 5 {
             let index = menuViewController.boardVCs.index(of: menuViewController.presentedBoardVC.navigationController!)!
             menu.updateIndicatorsImage(boardIcons[index])
             let settingsVC = storyboard!.instantiateViewController(withIdentifier: "settingsVC") as! SettingsViewController

@@ -8,7 +8,7 @@
 
 import Foundation
 
-public extension Notification.Name{
+public extension Notification.Name {
     
     public static let postContentDidLoad = Notification.Name("PostDidLoadNotification")
     

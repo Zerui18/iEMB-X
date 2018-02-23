@@ -10,7 +10,7 @@ import Foundation
 import CoreData
 
 
-public class EMBClient{
+public class EMBClient {
     
     public static let shared = EMBClient(dataStoreHelper: CoreDataHelper.shared)
     
@@ -18,58 +18,58 @@ public class EMBClient{
     
     public var allPosts: [Int:[Post]]
     
-    fileprivate func newestPostIndex(forBoard board: Int)-> Int{
+    fileprivate func newestPostIndex(forBoard board: Int)-> Int {
         return Int(allPosts[board]?.first?.id ?? -1)
     }
     
-    public init(dataStoreHelper: CoreDataHelper){
+    public init(dataStoreHelper: CoreDataHelper) {
         self.dataStoreHelper = dataStoreHelper
         allPosts = Dictionary(uniqueKeysWithValues: zip([1039, 1048, 1049, 1050, 1053], [[Post]](repeating: [], count: 5)))
-        for post in Post.fetchAll(){
+        for post in Post.fetchAll() {
             allPosts[Int(post.board)]!.append(post)
         }
-        allPosts = allPosts.mapValues{
+        allPosts = allPosts.mapValues {
             $0.sorted(by: { $0.id>$1.id })
         }
     }
     
 }
 
-public extension EMBClient{
+public extension EMBClient {
     
-    public func login(username: String, password: String, then completion: @escaping (Bool, Error?)->Void){
+    public func login(username: String, password: String, then completion: @escaping (Bool, Error?)->Void) {
         var loginRequest = URLRequest(url: APIEndpoints.loginURL)
         loginRequest.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         loginRequest.httpMethod = "post"
         loginRequest.httpBody = "username=\(username)&password=\(password)&submitbut=Submit".data(using: .utf8)
         URLSession.shared.dataTask(with: loginRequest) { (_, _, error) in
-            if error != nil{
+            if error != nil {
                 completion(false, error)
             }
-            else{
-                if EMBUser.shared.isAuthenticated(){
+            else {
+                if EMBUser.shared.isAuthenticated() {
                     EMBUser.shared.credentials = (userId: username, password: password)
                     completion(true, nil)
                 }
-                else{
+                else {
                     completion(false, NSError(domain: "com.Zerui.EMBClient.AuthError", code: 403, userInfo: [NSLocalizedDescriptionKey : "Did not receive valid data from server, this is probably due to authentication failure."]))
                 }
             }
         }.resume()
     }
     
-    public func reLogin(then completion: @escaping (Bool, Error?)->Void){
+    public func reLogin(then completion: @escaping (Bool, Error?)->Void) {
         let user = EMBUser.shared.credentials!
         login(username: user.userId, password: user.password, then: completion)
     }
     
 }
 
-public extension EMBClient{
+public extension EMBClient {
     
-    private func extractTables(from html: String)-> [String]{
+    private func extractTables(from html: String)-> [String] {
         var strs = [String]()
-        for tabPattern in [unreadTableStart, readTableStart]{
+        for tabPattern in [unreadTableStart, readTableStart] {
             let startIndex = html.range(of: tabPattern)!.upperBound
             var tab = String(html[startIndex...])
             let endIndex = tab.range(of: tableEnd)!.lowerBound
@@ -79,10 +79,10 @@ public extension EMBClient{
         return strs
     }
     
-    private func _extractPosts(from table: String, markRead: Bool, board: Int)-> [Post]{
+    private func _extractPosts(from table: String, markRead: Bool, board: Int)-> [Post] {
         let rows = table.components(separatedBy: "<tr>")[1...]
         var posts = [Post]()
-        for row in rows{
+        for row in rows {
             if let dateMatch = row ~ dateRegex,
                 dateMatch.numberOfRanges > 1,
                 let contentMatch = row ~ contentRegex,
@@ -90,11 +90,11 @@ public extension EMBClient{
                 let authorMatch = row ~ authorRegex,
                 authorMatch.numberOfRanges > 1,
                 let importanceMatch = row ~ importanceRegex,
-                importanceMatch.numberOfRanges > 1{
+                importanceMatch.numberOfRanges > 1 {
                 let copy = row as NSString
                 let id = Int(copy.substring(with: contentMatch.range(at: 1)))!
                 let board = Int(copy.substring(with: contentMatch.range(at: 2)))!
-                if self.newestPostIndex(forBoard: board) < id{
+                if self.newestPostIndex(forBoard: board) < id {
                     posts.append(Post(
                         title: copy.substring(with: contentMatch.range(at: 3)).removingHTMLEncoding,
                         author: copy.substring(with: authorMatch.range(at: 1)),
@@ -111,7 +111,7 @@ public extension EMBClient{
         return posts
     }
     
-    public func extractPosts(from tables: [String], board: Int)-> [Post]{
+    public func extractPosts(from tables: [String], board: Int)-> [Post] {
         var id = 0
         return tables.reduce(into: [Post]()) { (posts, table) in
             posts.append(contentsOf: _extractPosts(from: table, markRead: id == 1, board: board))
@@ -119,19 +119,19 @@ public extension EMBClient{
         }
     }
     
-    public func updatePosts(forBoard board: Int, completion: @escaping([Post]?, Error?)->Void){
+    public func updatePosts(forBoard board: Int, completion: @escaping([Post]?, Error?)->Void) {
         loadPage(request: URLRequest(url: APIEndpoints.boardURL(forId: board))) { (html, error) in
-            if error != nil{
+            if error != nil {
                 completion(nil, error)
             }
-            else{
+            else {
                 let boards = self.extractTables(from: html!)
-                let posts = self.extractPosts(from: boards, board: board)
-                self.allPosts[board]!.insert(contentsOf: posts.sorted(by: { $0.id>$1.id }), at: 0)
-                do{
+                let posts = self.extractPosts(from: boards, board: board).sorted(by: { $0.id>$1.id })
+                self.allPosts[board]!.insert(contentsOf: posts, at: 0)
+                do {
                     try self.dataStoreHelper.saveContext()
                 }
-                catch{
+                catch {
                     print("error saving context")
                 }
                 completion(posts, nil)
@@ -142,12 +142,12 @@ public extension EMBClient{
     /**
      Deletes all locally cached attachments & contents of the posts. Used for clearing out disk space.
      */
-    public func trimCache() throws{
+    public func trimCache() throws {
         try FileManager.default.removeItem(at: cachedFilesURL)
         try FileManager.default.createDirectory(at: cachedFilesURL, withIntermediateDirectories: false, attributes: nil)
         try CoreDataHelper.shared.delete(fetchRequest: Attachment.fetchRequest())
-        allPosts.forEach{
-            $0.value.forEach{
+        allPosts.forEach {
+            $0.value.forEach {
                 $0.content = nil
                 $0.contentData = nil
             }
@@ -158,7 +158,7 @@ public extension EMBClient{
     /**
      Deletes all cookies, cached posts & attachments and clears all posts from memory. Used for wiping user-data when logging out / re-logging in.
      */
-    public func resetCache() throws{
+    public func resetCache() throws {
         allPosts = Dictionary(uniqueKeysWithValues: zip([1039, 1048, 1049, 1050, 1053], [[Post]](repeating: [], count: 5)))
         HTTPCookieStorage.shared.removeCookies(since: Date(timeIntervalSince1970: 0))
         try FileManager.default.removeItem(at: cachedFilesURL)
@@ -172,36 +172,36 @@ public extension EMBClient{
     /**
      Loads data with the provided request on URLSession.shared. Will validate received data to check for auth-error. Retries the request after re-authentication
      */
-    public func loadPage(request: URLRequest, completion: @escaping (String?, Error?)->Void){
+    public func loadPage(request: URLRequest, completion: @escaping (String?, Error?)->Void) {
         URLSession.shared.dataTask(with: request) { (data, res, err) in
-            if err != nil{
+            if err != nil {
                 completion(nil, err)
             }
-            else{
-                if !isResponseValid(res!){
-                    self.reLogin{ (success, error) in
-                        if error == nil{
-                            URLSession.shared.dataTask(with: request){ (data, res, err) in
-                                if data != nil{
-                                    if isResponseValid(res!){
+            else {
+                if !isResponseValid(res!) {
+                    self.reLogin { (success, error) in
+                        if error == nil {
+                            URLSession.shared.dataTask(with: request) { (data, res, err) in
+                                if data != nil {
+                                    if isResponseValid(res!) {
                                         completion(String(data: data!, encoding: .utf8), nil)
                                     }
-                                    else{
+                                    else {
                                         completion(nil, NSError(domain: "com.Zerui.EMBClient.AuthError", code: 403, userInfo: [NSLocalizedDescriptionKey : "Did not receive valid data from server, this is probably due to authentication failure."]))
                                         NotificationCenter.default.post(name: .embLoginCredentialsInvalid, object: nil)
                                     }
                                 }
-                                else{
+                                else {
                                     completion(nil, err)
                                 }
                             }.resume()
                         }
-                        else{
+                        else {
                             completion(nil, error)
                         }
                     }
                 }
-                else{
+                else {
                     completion(String(data: data!, encoding: .utf8), nil)
                 }
             }
@@ -210,6 +210,6 @@ public extension EMBClient{
     
 }
 
-fileprivate func isResponseValid(_ response: URLResponse)-> Bool{
+fileprivate func isResponseValid(_ response: URLResponse)-> Bool {
     return response.expectedContentLength > 2044
 }

@@ -10,27 +10,27 @@ import UIKit
 import QuickLook
 import UserNotifications
 
-func simpleAlert(title: String, message: String, block: ((UIAlertAction)->Void)? = nil)-> UIAlertController{
+func simpleAlert(title: String, message: String, block: ((UIAlertAction)->Void)? = nil)-> UIAlertController {
     let al = UIAlertController(title: title, message: message, preferredStyle: .alert)
     al.addAction(UIAlertAction(title: "OK", style: .cancel, handler: block))
     return al
 }
 
-func notificationFeedback(ofType type: UINotificationFeedbackType = .success){
+func notificationFeedback(ofType type: UINotificationFeedbackType = .success) {
     DispatchQueue.main.async {
         notificationFeedbackGenerator.notificationOccurred(type)
         notificationFeedbackGenerator.prepare()
     }
 }
 
-func selectionFeedback(){
+func selectionFeedback() {
     DispatchQueue.main.async {
         selectionFeedbackGenerator.selectionChanged()
         selectionFeedbackGenerator.prepare()
     }
 }
 
-func scheduleNotification(withTitle title: String, body: String){
+func scheduleNotification(withTitle title: String, body: String) {
     let content: UNMutableNotificationContent = UNMutableNotificationContent()
     content.title = title
     content.body = body

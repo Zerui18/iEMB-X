@@ -10,37 +10,38 @@ import UIKit
 import CoreData
 import EMBClient
 
-var backgroungFetchInterval: TimeInterval{
-    get{
+var backgroungFetchInterval: TimeInterval {
+    get {
         return max(userDefaults.double(forKey: "bg_fetch"), 30*60)
     }
-    set{
+    set {
         userDefaults.set(newValue, forKey: "bg_fetch")
     }
 }
 
 class SettingsViewController: UIViewController {
     
-    override var prefersStatusBarHidden: Bool{
+    override var prefersStatusBarHidden: Bool {
         return false
     }
     
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return .portrait
+    }
+    
     @IBOutlet var buttons: [UIButton]!
-    var durs: [TimeInterval] = [30*60, 60*60, 120*60, UIApplicationBackgroundFetchIntervalNever]
     @IBOutlet weak var clearButton: UIButton!
     @IBOutlet weak var logoutButton: UIButton!
     @IBOutlet weak var linkedLabel: UITextView!
     
-    override var supportedInterfaceOrientations: UIInterfaceOrientationMask{
-        return .portrait
-    }
+    var durs: [TimeInterval] = [30*60, 60*60, 120*60, UIApplicationBackgroundFetchIntervalNever]
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
     }
     
-    private func setupUI(){
+    private func setupUI() {
         let style = NSMutableParagraphStyle()
         style.alignment = .center
         
@@ -51,7 +52,7 @@ class SettingsViewController: UIViewController {
         str.addAttribute(.link, value: NSURL(string: UIApplicationOpenSettingsURLString)!, range: NSRange(location: str.length-8, length: 8))
         linkedLabel.attributedText = str
         linkedLabel.delegate = self
-        if #available(iOS 11, *){
+        if #available(iOS 11, *) {
             linkedLabel.textDragInteraction?.isEnabled = false
         }
         
@@ -67,8 +68,8 @@ class SettingsViewController: UIViewController {
         logoutButton.layer.cornerRadius = 7
         logoutButton.addTarget(self, action: #selector(logoutClicked), for: .touchUpInside)
         
-        
-        buttons.forEach{
+        buttons.sort(by: {$0.tag < $1.tag})
+        buttons.forEach {
             $0.clipsToBounds = true
             $0.layer.borderColor = #colorLiteral(red: 0.1058823529, green: 0.6784313725, blue: 0.9725490196, alpha: 1).cgColor
             $0.layer.cornerRadius = 15
@@ -78,56 +79,56 @@ class SettingsViewController: UIViewController {
         showSelected(button: buttons[index])
     }
     
-    @objc func clearClicked(){
+    @objc func clearClicked() {
         let alr = UIAlertController(title: "Clear Cache?", message: "this only clears the contents of the posts", preferredStyle: .actionSheet)
         alr.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-        alr.addAction(UIAlertAction(title: "Clear", style: .default){_ in
-            do{
+        alr.addAction(UIAlertAction(title: "Clear", style: .default) {_ in
+            do {
                 _ = try CoreDataHelper.shared.mainContext.execute(NSBatchDeleteRequest(fetchRequest: Attachment.fetchRequest()))
-                EMBClient.shared.allPosts.forEach{
-                    $0.value.forEach{
+                EMBClient.shared.allPosts.forEach {
+                    $0.value.forEach {
                         $0.content = nil
                         $0.contentData = nil
                     }
                 }
                 try CoreDataHelper.shared.saveContext()
             }
-            catch{
+            catch {
                 print(error)
             }
         })
         alr.present(in: self)
     }
     
-    @objc func logoutClicked(){
+    @objc func logoutClicked() {
         let alr = UIAlertController(title: "Logout?", message: "all your cached posts and files will be cleared", preferredStyle: .actionSheet)
         alr.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         alr.addAction(UIAlertAction(title: "Logout", style: .destructive, handler: { _ in
-            do{
+            do {
                 EMBUser.shared.logout()
                 try EMBClient.shared.resetCache()
-                for boardID in menuViewController.boardIds{
+                for boardID in menuViewController.boardIds {
                     userDefaults.removeObject(forKey: "lastRefreshed_\(boardID)")
                 }
-                menuViewController.boardVCs.forEach{
+                menuViewController.boardVCs.forEach {
                     let ctr = ($0.viewControllers[0] as! BoardTableController)
                     ctr.searchController.isActive = false
-                    ctr.isFiltering = false
+                    ctr.isFilteringThroughSearch = false
                     ctr.tableView.reloadData()
                 }
                 menuViewController.tableView(menuViewController.tableView, didSelectRowAt: IndexPath(row: 0, section: 0))
-                self.dismiss(animated: true){
+                self.dismiss(animated: true) {
                     self.storyboard!.instantiateViewController(withIdentifier: "loginVC").present(in: baseViewController)
                 }
             }
-            catch{
+            catch {
                 simpleAlert(title: "Error Reseting Cache", message: error.localizedDescription).present(in: self)
             }
         }))
         alr.present(in: self)
     }
     
-    func showSelected(button: UIButton){
+    func showSelected(button: UIButton) {
         let ani = CABasicAnimation(keyPath: #keyPath(CALayer.borderWidth))
         ani.fromValue = 0
         ani.toValue = 2
@@ -137,7 +138,7 @@ class SettingsViewController: UIViewController {
         button.setTitleColor(#colorLiteral(red: 0.1058823529, green: 0.6784313725, blue: 0.9725490196, alpha: 1), for: .normal)
     }
     
-    func showDeslected(button: UIButton){
+    func showDeslected(button: UIButton) {
         let ani = CABasicAnimation(keyPath: #keyPath(CALayer.borderWidth))
         ani.fromValue = 2
         ani.toValue = 0
@@ -162,8 +163,8 @@ class SettingsViewController: UIViewController {
     }
 }
 
-extension SettingsViewController: UITextViewDelegate{
-    func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool{
+extension SettingsViewController: UITextViewDelegate {
+    func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
         print("called: ", URL)
         return true
     }

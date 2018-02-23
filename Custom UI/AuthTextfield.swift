@@ -22,7 +22,7 @@ class AuthTextfield: UITextField {
     
     var isActive = false
     
-    private func strokeLine(){
+    private func strokeLine() {
         linePath.lineWidth = isActive ? lineWidth*1.5:lineWidth
         (isActive ? lineColor:lineColor.withAlphaComponent(0.7)).setStroke()
         linePath.lineCapStyle = .round

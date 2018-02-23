@@ -193,7 +193,7 @@ open class CariocaMenu : NSObject, UIGestureRecognizerDelegate {
     */
     open func addInView(_ view:UIView) {
         
-        if(hostView == view){
+        if(hostView == view) {
             CariocaMenu.Log("Cannot be added to the same view twice")
             return
         }
@@ -332,7 +332,7 @@ open class CariocaMenu : NSObject, UIGestureRecognizerDelegate {
             updateIndicatorsForIndexPath(preSelectedIndexPath)
         }
         
-        if(gesture.state == .ended){
+        if(gesture.state == .ended) {
             menuOriginalY = location.y
             //Unselect the previously selected cell, but first, update the selectedIndexPath
             let indexPathForDeselection = selectedIndexPath
@@ -352,7 +352,7 @@ open class CariocaMenu : NSObject, UIGestureRecognizerDelegate {
             - indexPath: The selected index path
             - fromContentController: Bool value precising the source of selection
     */
-    open func didSelectRowAtIndexPath(_ indexPath:IndexPath, fromContentController:Bool){
+    open func didSelectRowAtIndexPath(_ indexPath:IndexPath, fromContentController:Bool) {
         if preSelectedIndexPath != nil {
             dataSource.unselectRowAtIndexPath!(preSelectedIndexPath)
             preSelectedIndexPath = nil
@@ -360,15 +360,15 @@ open class CariocaMenu : NSObject, UIGestureRecognizerDelegate {
         //Unselect the previously selected cell, but first, update the selectedIndexPath
         let indexPathForDeselection = selectedIndexPath
         selectedIndexPath = indexPath
-        if(!fromContentController){
+        if(!fromContentController) {
             dataSource.selectRowAtIndexPath(indexPath)
-        }else{
+        }else {
             dataSource.unselectRowAtIndexPath!(indexPathForDeselection)
             dataSource.setSelectedIndexPath!(indexPath)
         }
         delegate?.cariocaMenuDidSelect?(self, indexPath: indexPath)
         updateIndicatorsForIndexPath(indexPath)
-        if(fromContentController){
+        if(fromContentController) {
             hideMenu()
         }
     }
@@ -381,7 +381,7 @@ open class CariocaMenu : NSObject, UIGestureRecognizerDelegate {
     ///Makes sure the containerView is on top of the hostView
     open func moveToTop() {
         hostView?.bringSubview(toFront: containerView)
-        if gestureHelperViewLeft != nil{
+        if gestureHelperViewLeft != nil {
             hostView?.bringSubview(toFront: gestureHelperViewLeft)
         }
         hostView?.bringSubview(toFront: leftIndicatorView)
@@ -399,7 +399,7 @@ open class CariocaMenu : NSObject, UIGestureRecognizerDelegate {
     
 //MARK: - Menu visibility
     
-    open func setIndicatorAlpha(_ val: CGFloat){
+    open func setIndicatorAlpha(_ val: CGFloat) {
         leftIndicatorView.alpha = val
     }
 
@@ -437,7 +437,7 @@ open class CariocaMenu : NSObject, UIGestureRecognizerDelegate {
     */
     open func addGestureHelperViews(width:CGFloat) {
         
-        if(gestureHelperViewLeft != nil){
+        if(gestureHelperViewLeft != nil) {
             gestureHelperViewLeft.removeFromSuperview()
         }
         gestureHelperViewLeft = prepareGestureHelperView(.leading, width:width)
@@ -452,7 +452,7 @@ open class CariocaMenu : NSObject, UIGestureRecognizerDelegate {
             - width: The width of the helper view.
         - returns: `UIView` The helper view constrained to the hostView edge
     */
-    fileprivate func prepareGestureHelperView(_ edgeAttribute:NSLayoutAttribute, width:CGFloat)->UIView{
+    fileprivate func prepareGestureHelperView(_ edgeAttribute:NSLayoutAttribute, width:CGFloat)->UIView {
         
         let view = UIView()
         view.backgroundColor = UIColor.clear
@@ -475,7 +475,7 @@ open class CariocaMenu : NSObject, UIGestureRecognizerDelegate {
     /**
         Adds an indicator on left edge of screen
     */
-    fileprivate func addIndicator(){
+    fileprivate func addIndicator() {
                 
         let customShapeColor = dataSource.getShapeColor?()
         
@@ -489,10 +489,10 @@ open class CariocaMenu : NSObject, UIGestureRecognizerDelegate {
     }
     
     ///Manages the tap on an indicator view
-    @objc func tappedOnIndicatorView(_ tap:UIGestureRecognizer){
+    @objc func tappedOnIndicatorView(_ tap:UIGestureRecognizer) {
         let indicator = tap.view as! CariocaMenuIndicatorView
         delegate?.cariocaMenuWillOpen?(self)
-        if(menuOriginalY == 0){
+        if(menuOriginalY == 0) {
             adaptMenuYForIndicatorY(indicator, afterDragging:false)
         }
         showMenu()
@@ -507,7 +507,7 @@ open class CariocaMenu : NSObject, UIGestureRecognizerDelegate {
             - indicator: The indicator to adapt
             - afterDragging: Bool indicating if the new vertical value must be saved for the boomerangs
     */
-    fileprivate func adaptMenuYForIndicatorY(_ indicator:CariocaMenuIndicatorView, afterDragging:Bool){
+    fileprivate func adaptMenuYForIndicatorY(_ indicator:CariocaMenuIndicatorView, afterDragging:Bool) {
         //preset the menu Y
         //the indicator Y - the selected index Y - the space to center the indicator ((dataSource.heightByMenuItem() - indicatorHeight)/2)
         let indicatorSpace = (dataSource.heightByMenuItem()-indicator.size.height)/2
@@ -537,13 +537,13 @@ open class CariocaMenu : NSObject, UIGestureRecognizerDelegate {
             - position: Top, Center or Bottom
             - offset: A random offset value. Should be negative when position is equal to `.Bottom`
     */
-    open func showIndicator(position:CariocaMenuIndicatorViewPosition, offset:CGFloat){
+    open func showIndicator(position:CariocaMenuIndicatorViewPosition, offset:CGFloat) {
         indicatorOffset = leftIndicatorView.showAt(position, offset: offset)
         updateIndicatorsImage(dataSource.iconForRowAtIndexPath(selectedIndexPath))
     }
     
     ///Shows the indicator on top of the selected menu indexPath
-    fileprivate func showIndicatorOnTopOfMenu(){
+    fileprivate func showIndicatorOnTopOfMenu() {
         leftIndicatorView.moveYOverMenu(indicatorOffset, containerWidth:containerView.frame.size.width)
     }
     
@@ -552,7 +552,7 @@ open class CariocaMenu : NSObject, UIGestureRecognizerDelegate {
         - parameters:
             - image: The UIImage to display in the indicator
     */
-    open func updateIndicatorsImage(_ image:UIImage){
+    open func updateIndicatorsImage(_ image:UIImage) {
         leftIndicatorView.updateImage(image)
     }
     
@@ -561,7 +561,7 @@ open class CariocaMenu : NSObject, UIGestureRecognizerDelegate {
         - parameters:
             - indexPath: The concerned indexPath
     */
-    fileprivate func updateIndicatorsForIndexPath(_ indexPath:IndexPath){
+    fileprivate func updateIndicatorsForIndexPath(_ indexPath:IndexPath) {
         let indicator = leftIndicatorView
         //menuTop + index position + center Y for indicator
         indicatorOffset = CGFloat((menuTopEdgeConstraint!.constant)) +
@@ -576,7 +576,7 @@ open class CariocaMenu : NSObject, UIGestureRecognizerDelegate {
         Generates an Equal constraint
         - returns: `NSlayoutConstraint` an equal constraint for the specified parameters
     */
-    fileprivate func getEqualConstraint(_ item: AnyObject, toItem: AnyObject, attribute: NSLayoutAttribute) -> NSLayoutConstraint{
+    fileprivate func getEqualConstraint(_ item: AnyObject, toItem: AnyObject, attribute: NSLayoutAttribute) -> NSLayoutConstraint {
         return NSLayoutConstraint(item: item, attribute: attribute, relatedBy: .equal, toItem: toItem, attribute: attribute, multiplier: 1, constant: 0)
     }
 
@@ -590,7 +590,7 @@ open class CariocaMenu : NSObject, UIGestureRecognizerDelegate {
 
 //MARK: - IndicatorView Class
 ///The indicators contained into the menu (one on the left, one on the right)
-class CariocaMenuIndicatorView : UIView{
+class CariocaMenuIndicatorView : UIView {
     
     /**
         Initializes an indicator for the menu
@@ -700,7 +700,7 @@ class CariocaMenuIndicatorView : UIView{
         - returns: `CGFloat` The top constraint constant value
         - todo: Save the final value in %, to avoid problems with multiple orientations
     */
-    func showAt(_ position:CariocaMenuIndicatorViewPosition, offset:CGFloat) ->CGFloat{
+    func showAt(_ position:CariocaMenuIndicatorViewPosition, offset:CGFloat) ->CGFloat {
         
         var yValue:CGFloat = 0
         
@@ -727,7 +727,7 @@ class CariocaMenuIndicatorView : UIView{
         - parameters:
             - y: The new value for the top constraint
     */
-    func updateY(_ y:CGFloat){
+    func updateY(_ y:CGFloat) {
         topConstraint?.constant = y
     }
     
@@ -737,14 +737,14 @@ class CariocaMenuIndicatorView : UIView{
             - boomerang: The boomerang of the menu
             - completion: A completionBlock called when the animation is finished.
     */
-    func restoreOnOriginalEdge(completion: @escaping (() -> Void)){
+    func restoreOnOriginalEdge(completion: @escaping (() -> Void)) {
         superview!.layoutIfNeeded()
         
         //different positions if boomerang or not
         let position1 = getEdgeConstantValue(-20.0)
         let position2 = getEdgeConstantValue(nil)
         
-        animateX(position1, speed1:0.2, position2: position2, speed2:0.2, completion:{
+        animateX(position1, speed1:0.2, position2: position2, speed2:0.2, completion: {
         })
     }
 
@@ -754,20 +754,20 @@ class CariocaMenuIndicatorView : UIView{
             - y: The new vertical position
             - containerWidth: The width of the hostView used to animate the indicator X position
     */
-    func moveYOverMenu(_ y:CGFloat,containerWidth:CGFloat){
+    func moveYOverMenu(_ y:CGFloat,containerWidth:CGFloat) {
 //        CariocaMenu.Log("moveYOverMenu \(y)")
         topConstraint?.constant = y
         superview!.layoutIfNeeded()
         superview!.bringSubview(toFront: self)
         isHidden = false
         
-        animateX(getEdgeConstantValue(containerWidth - self.size.width + 10), speed1 :0.2, position2: getEdgeConstantValue(containerWidth - (self.size.width + 1)), speed2 :0.2, completion:{
+        animateX(getEdgeConstantValue(containerWidth - self.size.width + 10), speed1 :0.2, position2: getEdgeConstantValue(containerWidth - (self.size.width + 1)), speed2 :0.2, completion: {
             
         })
     }
     
     ///Hides the indicator
-    func hide(){
+    func hide() {
 //        CariocaMenu.Log("hide \(self)")
         UIView.animate(withDuration: 0.2, animations: { () -> Void in
             }, completion: { (finished) -> Void in
@@ -776,18 +776,18 @@ class CariocaMenuIndicatorView : UIView{
     }
     
     ///Shows the indicator
-    func show(){
+    func show() {
 //        CariocaMenu.Log("show \(self)")
         isHidden = false
-        animateX(getEdgeConstantValue(0.0), speed1 :0.2, position2: getEdgeConstantValue(nil), speed2:0.4, completion:{
+        animateX(getEdgeConstantValue(0.0), speed1 :0.2, position2: getEdgeConstantValue(nil), speed2:0.4, completion: {
             
         })
     }
     
     ///Moves the indicator on the edge of the screen, when the user longPressed on it.
-    func moveInScreenForDragging(){
+    func moveInScreenForDragging() {
 //        CariocaMenu.Log("moveInScreenForDragging\(self)")
-        animateX(getEdgeConstantValue(-5.0), speed1 :0.2, position2: getEdgeConstantValue(0.0), speed2:0.4, completion:{
+        animateX(getEdgeConstantValue(-5.0), speed1 :0.2, position2: getEdgeConstantValue(0.0), speed2:0.4, completion: {
             
         })
     }
@@ -797,7 +797,7 @@ class CariocaMenuIndicatorView : UIView{
         - parameters:
             - image: An UIImage to display in the indicator
     */
-    func updateImage(_ image:UIImage){
+    func updateImage(_ image:UIImage) {
         imageView.image = image
     }
     
@@ -812,7 +812,7 @@ class CariocaMenuIndicatorView : UIView{
             - spped2: The duration of the second animation
             - completion: the completionBlock called when the two animations are finished
     */
-    fileprivate func animateX(_ position1:CGFloat, speed1:Double, position2:CGFloat, speed2:Double, completion: @escaping (() -> Void)){
+    fileprivate func animateX(_ position1:CGFloat, speed1:Double, position2:CGFloat, speed2:Double, completion: @escaping (() -> Void)) {
         
         edgeConstraint?.constant = position1
         UIView.animate(withDuration: speed1,delay:0, options: [.curveEaseIn], animations: { () -> Void in
@@ -836,7 +836,7 @@ class CariocaMenuIndicatorView : UIView{
             - value: The value to transform
         - returns: `CGFloat` The value to set to the constant of the edgeConstraint
     */
-    fileprivate func getEdgeConstantValue(_ value:CGFloat!)->CGFloat{
+    fileprivate func getEdgeConstantValue(_ value:CGFloat!)->CGFloat {
         return (value != nil) ? value : -5.0
     }
 }

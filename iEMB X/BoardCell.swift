@@ -19,19 +19,19 @@ class BoardCell: UITableViewCell {
     @IBOutlet weak var iconView: UIImageView!
     @IBOutlet weak var titleLabel: UILabel!
     
-    func applySelectedStyle(_ isPreselect: Bool = false){
-        if isPreselect{
+    func applySelectedStyle(_ isPreselect: Bool = false) {
+        if isPreselect {
             iconView.tintColor = highlightedColor
             titleLabel.textColor = highlightedColor
         }
-        else{
+        else {
             titleLabel.font = heavyFont
             iconView.tintColor = selectedColor
             titleLabel.textColor = selectedColor
         }
     }
     
-    func applyNormalStyle(){
+    func applyNormalStyle() {
         iconView.tintColor = #colorLiteral(red: 0.6300531826, green: 0.6300531826, blue: 0.6300531826, alpha: 1)
         titleLabel.textColor = #colorLiteral(red: 0.6300531826, green: 0.6300531826, blue: 0.6300531826, alpha: 1)
         titleLabel.font = normalFont

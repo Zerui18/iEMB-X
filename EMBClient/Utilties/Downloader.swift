@@ -9,12 +9,12 @@
 import Foundation
 
 
-class Downloader: NSObject, URLSessionDownloadDelegate{
+class Downloader: NSObject, URLSessionDownloadDelegate {
     
     typealias ProgressBlock = (Double)->Void
     typealias CompletionBlock = (Error?)->Void
     
-    static func download(file: Attachment, progress: @escaping ProgressBlock, completion: @escaping CompletionBlock)-> Downloader{
+    static func download(file: Attachment, progress: @escaping ProgressBlock, completion: @escaping CompletionBlock)-> Downloader {
         return Downloader(sourceURL: file.url, to: file.cacheURL, onProgress: progress, onComplete: completion)
     }
     
@@ -26,10 +26,10 @@ class Downloader: NSObject, URLSessionDownloadDelegate{
         progressBlock = block
         completionBlock = handler
         EMBClient.shared.reLogin(then: { (_, err) in
-            if err != nil{
+            if err != nil {
                 self.completionBlock?(err)
             }
-            else{
+            else {
                 self.task.resume()
             }
         })

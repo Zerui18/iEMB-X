@@ -9,9 +9,9 @@
 import UIKit
 import QuickLook
 
-class FilePreviewController: QLPreviewController, QLPreviewControllerDataSource{
+class FilePreviewController: QLPreviewController, QLPreviewControllerDataSource {
     
-    override var prefersStatusBarHidden: Bool{
+    override var prefersStatusBarHidden: Bool {
         return true
     }
         
@@ -20,7 +20,7 @@ class FilePreviewController: QLPreviewController, QLPreviewControllerDataSource{
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        if #available(iOS 11, *){
+        if #available(iOS 11, *) {
             navigationItem.largeTitleDisplayMode = .never
         }
         dataSource = self
@@ -34,8 +34,8 @@ class FilePreviewController: QLPreviewController, QLPreviewControllerDataSource{
         return file as NSURL
     }
     
-    deinit{
-        if deletesFileOnDismiss{
+    deinit {
+        if deletesFileOnDismiss {
             try? FileManager.default.removeItem(at: file)
         }
     }

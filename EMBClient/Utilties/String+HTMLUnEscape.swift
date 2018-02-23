@@ -15,10 +15,10 @@ let htmlEscaped = ["&amp;"     :   "&",
                    "&#39;"     :   "'",
                    "&#160;"    :   " "]
 
-extension String{
-    var removingHTMLEncoding: String{
+extension String {
+    var removingHTMLEncoding: String {
         var result = self
-        for (enc, ori) in htmlEscaped{
+        for (enc, ori) in htmlEscaped {
             result = result.replacingOccurrences(of: enc, with: ori)
         }
         return result
