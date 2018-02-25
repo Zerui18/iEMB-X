@@ -15,7 +15,7 @@ class BoardTableController: UITableViewController {
     @IBOutlet weak var filterButton: UIBarButtonItem!
     
     var currentBoard: Int = 1048
-    var allPosts: [Post] {
+    var allPostsToDisplay: [Post] {
         return isFilteringUnread ? unreadPosts:EMBClient.shared.allPosts[currentBoard]!
     }
     var filteredPosts: [Post] = []
@@ -181,10 +181,11 @@ class BoardTableController: UITableViewController {
                 tableView.reloadRows(at: [IndexPath(row: postIndex, section: 0)], with: .automatic)
             }
         }
-        else if let postIndex = allPosts.index(of: post) {
+        else if let postIndex = allPostsToDisplay.index(of: post) {
             let indexPaths = [IndexPath(row: postIndex, section: 0)]
             
             if isFilteringUnread{
+                unreadPosts.remove(at: postIndex)
                 tableView.deleteRows(at: indexPaths, with: .automatic)
             }
             else{
@@ -202,12 +203,12 @@ class BoardTableController: UITableViewController {
 extension BoardTableController {
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return isFilteringThroughSearch ? filteredPosts.count:allPosts.count
+        return isFilteringThroughSearch ? filteredPosts.count:allPostsToDisplay.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "postCell") as! PostCell
-        cell.updateWith(post: (isFilteringThroughSearch ? filteredPosts:allPosts)[indexPath.row])
+        cell.updateWith(post: (isFilteringThroughSearch ? filteredPosts:allPostsToDisplay)[indexPath.row])
         return cell
     }
     
@@ -215,7 +216,7 @@ extension BoardTableController {
         selectedIndexPath = indexPath
         (tableView.visibleCell(at: indexPath) as? PostCell)?.showSelection()
         let vc = storyboard!.instantiateViewController(withIdentifier: "viewVC") as! ViewPostController
-        vc.post = (isFilteringThroughSearch ? filteredPosts:allPosts)[indexPath.row]
+        vc.post = (isFilteringThroughSearch ? filteredPosts:allPostsToDisplay)[indexPath.row]
         vc.transitioningDelegate = self
         vc.present(in: self)
         UIView.animate(withDuration: Constants.presentTransitionDuration) {
@@ -257,7 +258,7 @@ extension BoardTableController {
     }
     
     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        let post = allPosts[indexPath.row]
+        let post = allPostsToDisplay[indexPath.row]
         let isMarked = post.isMarked
         let toggleMarkAction = UITableViewRowAction(style: .default, title: isMarked ? "Unmark":"Mark", handler: { (_, _) in
             tableView.setEditing(false, animated: false)
@@ -291,28 +292,28 @@ extension BoardTableController: UISearchResultsUpdating, UISearchBarDelegate {
         if let text = searchController.searchBar.text?.lowercased(), !text.isEmpty {
             switch searchController.searchBar.selectedScopeButtonIndex {
             case 0:
-                self.filteredPosts = allPosts.filter { (post) in
+                self.filteredPosts = allPostsToDisplay.filter { (post) in
                     return post.titleLower.contains(text)
                 }
             case 1:
                 let name = text.uppercased()
-                self.filteredPosts = allPosts.filter { (post) in
+                self.filteredPosts = allPostsToDisplay.filter { (post) in
                     return post.author!.contains(name)
                 }
             default:
-                self.filteredPosts = allPosts.filter { (post) in
+                self.filteredPosts = allPostsToDisplay.filter { (post) in
                     return post.isMarked && post.titleLower.contains(text)
                 }
             }
         }
         else {
             if searchController.searchBar.selectedScopeButtonIndex == 2 {
-                self.filteredPosts = allPosts.filter {
+                self.filteredPosts = allPostsToDisplay.filter {
                     $0.isMarked
                 }
             }
             else {
-                self.filteredPosts = allPosts
+                self.filteredPosts = allPostsToDisplay
             }
         }
         self.tableView.reloadData()

@@ -257,6 +257,10 @@ class ViewPostController: UIViewController {
         selectionFeedback()
     }
     
+    fileprivate var startingVal: CGFloat?
+    fileprivate var startingPoint: CGPoint?
+    fileprivate var isAtTop = false
+    
 }
 
 extension ViewPostController: UITableViewDataSource, UITableViewDelegate {
@@ -308,10 +312,8 @@ extension ViewPostController: UITableViewDataSource, UITableViewDelegate {
         }
     }
     
+    
 }
-
-fileprivate var startingVal: CGFloat?
-fileprivate var isAtTop = false
 
 extension ViewPostController: UIGestureRecognizerDelegate {
     
@@ -342,7 +344,7 @@ extension ViewPostController: UIGestureRecognizerDelegate {
     @objc func pan(_ sender: UIPanGestureRecognizer) {
         switch sender.state {
         case .began:
-            startingVal = sender.location(in: nil).x
+            startingVal = sender.location(in: nil).y
             interactor.hasStarted = true
         case .changed:
             let currentY = sender.location(in: nil).y
@@ -359,13 +361,14 @@ extension ViewPostController: UIGestureRecognizerDelegate {
                         if isup && !isBeingDismissed {
                             dismiss(animated: true)
                             startingVal = currentY
+                            startingPoint = sender.translation(in: view)
                         }
                     }
                     // update progress while at top
                     let progress = min((currentY-startingVal!) / (UIScreen.main.bounds.height/1.5), 1)
                     interactor.update(progress)
                     
-                    view.frame.origin = sender.translation(in: baseViewController.view)
+                    view.frame.origin = sender.translation(in: view).applying(CGAffineTransform(translationX: -startingPoint!.x, y: -startingPoint!.y))
                 }
                 else {
                     if isAtTop {
