@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14101" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina5_9" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14086"/>
         <capability name="Alignment constraints to the first baseline" minToolsVersion="6.0"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -190,7 +190,7 @@
                                                                         </constraints>
                                                                     </imageView>
                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Some File.pdf" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.85000002384185791" translatesAutoresizingMaskIntoConstraints="NO" id="oT4-9s-itn">
-                                                                        <rect key="frame" x="52" y="8" width="638" height="34"/>
+                                                                        <rect key="frame" x="52" y="8" width="289" height="34"/>
                                                                         <constraints>
                                                                             <constraint firstAttribute="height" constant="34" id="oVW-JZ-iga"/>
                                                                         </constraints>
@@ -700,9 +700,9 @@
                                 <exclude reference="KaR-fK-bit"/>
                                 <exclude reference="Uuu-Xg-8YY"/>
                                 <exclude reference="XkB-T2-WwU"/>
+                                <exclude reference="mSU-se-aoq"/>
                                 <exclude reference="876-1s-7zM"/>
                                 <exclude reference="TS9-WA-8Vr"/>
-                                <exclude reference="mSU-se-aoq"/>
                                 <exclude reference="Duv-lm-Yji"/>
                             </mask>
                         </variation>

@@ -364,6 +364,8 @@ extension ViewPostController: UIGestureRecognizerDelegate {
                             startingPoint = sender.translation(in: view)
                         }
                     }
+                    guard isBeingDismissed else {return}
+                    
                     // update progress while at top
                     let progress = min((currentY-startingVal!) / (UIScreen.main.bounds.height/1.5), 1)
                     interactor.update(progress)
@@ -377,7 +379,9 @@ extension ViewPostController: UIGestureRecognizerDelegate {
                         interactor.shouldFinish = false
                         interactor.cancel()
                         
-                        view.frame.origin = .zero
+                        UIView.animate(withDuration: 0.2) {
+                            self.view.frame.origin = .zero
+                        }
                     }
                 }
             }
