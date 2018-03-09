@@ -84,33 +84,51 @@ class ViewPostController: UIViewController {
     
     private func loadMessage() {
         if post.content != nil {
-            updateUI()
+            updateUI(animated: false)
         }
         else {
             post.loadContent {[weak self] error in
-                if self == nil {
+                guard let `self` = self else {
                     return
                 }
                 DispatchQueue.main.async {
                     if error != nil {
-                        self!.postContentTextView.attributedText = NSAttributedString(string: "Failed to load Post. "+error!.localizedDescription, attributes: [.font: UIFont.systemFont(ofSize: 28, weight: .bold)])
+                        self.postContentTextView.attributedText = NSAttributedString(string: error!.localizedDescription, attributes: [.font: UIFont.systemFont(ofSize: 28, weight: .bold)])
                     }
                     else {
-                        self!.updateUI()
+                        self.updateUI(animated: true)
                     }
                 }
             }
         }
     }
     
-    func updateUI() {
-        postContentTextView.attributedText = post.compoundMessage()
-        attachmentsTable.reloadData()
-        tableViewHeightConstraint.constant = CGFloat(post.attachments!.count * 50) + 5
-        if post.canRespond {
-            rightButton.animateVisible()
+    func updateUI(animated flag: Bool) {
+        self.attachmentsTable.reloadSections([0], with: flag ? .left:.none)
+        
+        func applyAnimatables() {
+            self.tableViewHeightConstraint.constant = CGFloat(self.post.attachments!.count * 50) + 5
+            self.labelHeightConstraint.constant = self.post.attachments!.count > 0 ? 30:0
+            self.rightButton.alpha = post.canRespond ? 1:0
+            
+            if flag {
+                self.postContentTextView.alpha = 0
+            }
         }
-        labelHeightConstraint.constant = post.attachments!.count > 0 ? 30:0
+        
+        if flag {
+            UIView.animate(withDuration: 0.2, animations: applyAnimatables) {_ in
+                self.postContentTextView.attributedText = self.post.compoundMessage()
+                
+                UIView.animate(withDuration: 0.1) {
+                    self.postContentTextView.alpha = 1
+                }
+            }
+        }
+        else {
+            self.postContentTextView.attributedText = self.post.compoundMessage()
+            applyAnimatables()
+        }
     }
     
     
