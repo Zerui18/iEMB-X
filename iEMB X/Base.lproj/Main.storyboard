@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14101" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14105" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina5_9" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14086"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
         <capability name="Alignment constraints to the first baseline" minToolsVersion="6.0"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -584,7 +584,7 @@
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="hci_dark" translatesAutoresizingMaskIntoConstraints="NO" id="WQ7-lJ-JeR">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                             </imageView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon_light" translatesAutoresizingMaskIntoConstraints="NO" id="xak-Ib-A1O">
+                            <imageView userInteractionEnabled="NO" alpha="0.93000000000000005" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon_light" translatesAutoresizingMaskIntoConstraints="NO" id="xak-Ib-A1O">
                                 <rect key="frame" x="127.66666666666669" y="107" width="120" height="120"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="120" id="PTA-gI-BuC"/>
@@ -822,7 +822,7 @@
         <image name="filter" width="48" height="48"/>
         <image name="hci_dark" width="809" height="1454"/>
         <image name="hci_light" width="809" height="1454"/>
-        <image name="icon_light" width="256" height="256"/>
+        <image name="icon_light" width="240" height="240"/>
         <image name="pdf" width="89" height="91"/>
         <image name="send" width="100" height="100"/>
         <image name="star" width="72" height="72"/>
