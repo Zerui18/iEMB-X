@@ -42,6 +42,9 @@ public extension EMBClient {
         loginRequest.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         loginRequest.httpMethod = "post"
         loginRequest.httpBody = "username=\(username)&password=\(password)&submitbut=Submit".data(using: .utf8)
+        
+        EMBUser.shared.removeAuthCookie()
+        
         URLSession.shared.dataTask(with: loginRequest) { (_, _, error) in
             if error != nil {
                 completion(false, error)
@@ -65,7 +68,7 @@ public extension EMBClient {
     
 }
 
-public extension EMBClient {
+extension EMBClient {
     
     private func extractTables(from html: String)-> [String] {
         var strs = [String]()
@@ -121,21 +124,21 @@ public extension EMBClient {
     
     public func updatePosts(forBoard board: Int, completion: @escaping([Post]?, Error?)->Void) {
         loadPage(request: URLRequest(url: APIEndpoints.boardURL(forId: board))) { (html, error) in
-            if error != nil {
+            guard error == nil else {
                 completion(nil, error)
+                return
             }
-            else {
-                let boards = self.extractTables(from: html!)
-                let posts = self.extractPosts(from: boards, board: board).sorted(by: { $0.id>$1.id })
-                self.allPosts[board]!.insert(contentsOf: posts, at: 0)
-                do {
-                    try self.dataStoreHelper.saveContext()
-                }
-                catch {
-                    print("error saving context")
-                }
-                completion(posts, nil)
+            
+            let boards = self.extractTables(from: html!)
+            let posts = self.extractPosts(from: boards, board: board).sorted(by: { $0.id>$1.id })
+            self.allPosts[board]!.insert(contentsOf: posts, at: 0)
+            do {
+                try self.dataStoreHelper.saveContext()
             }
+            catch {
+                print("error saving context")
+            }
+            completion(posts, nil)
         }
     }
     
@@ -172,39 +175,45 @@ public extension EMBClient {
     /**
      Loads data with the provided request on URLSession.shared. Will validate received data to check for auth-error. Retries the request after re-authentication
      */
-    public func loadPage(request: URLRequest, completion: @escaping (String?, Error?)->Void) {
+    func loadPage(request: URLRequest, completion: @escaping (String?, Error?)->Void) {
         URLSession.shared.dataTask(with: request) { (data, res, err) in
-            if err != nil {
+            guard err == nil else {
                 completion(nil, err)
+                return
             }
-            else {
-                if !isResponseValid(res!) {
-                    self.reLogin { (success, error) in
-                        if error == nil {
-                            URLSession.shared.dataTask(with: request) { (data, res, err) in
-                                if data != nil {
-                                    if isResponseValid(res!) {
-                                        completion(String(data: data!, encoding: .utf8), nil)
-                                    }
-                                    else {
-                                        completion(nil, NSError(domain: "com.Zerui.EMBClient.AuthError", code: 403, userInfo: [NSLocalizedDescriptionKey : "Did not receive valid data from server, this is probably due to authentication failure."]))
-                                        NotificationCenter.default.post(name: .embLoginCredentialsInvalid, object: nil)
-                                    }
-                                }
-                                else {
-                                    completion(nil, err)
-                                }
-                            }.resume()
-                        }
-                        else {
-                            completion(nil, error)
-                        }
+            
+            guard isResponseValid(res!) else {
+                
+                // has repsponse but invalid
+                // might be dut to outdated auth cookie
+                self.reLogin { (success, error) in
+                    guard error == nil else {
+                        completion(nil, error)
+                        return
                     }
+                    
+                    // retry fetching page
+                    URLSession.shared.dataTask(with: request) { (data, res, err) in
+                        guard let data = data else {
+                            completion(nil, error!)
+                            return
+                        }
+                        
+                        guard isResponseValid(res!) else {
+                            completion(nil, NSError(domain: "com.Zerui.EMBClient.AuthError", code: 403, userInfo: [NSLocalizedDescriptionKey : "Did not receive valid data from server, this is probably due to authentication failure."]))
+                            NotificationCenter.default.post(name: .embLoginCredentialsInvalid, object: nil)
+                            return
+                        }
+                        
+                        completion(String(data: data, encoding: .utf8), nil)
+                    }.resume()
                 }
-                else {
-                    completion(String(data: data!, encoding: .utf8), nil)
-                }
+                
+                return
             }
+            
+            completion(String(data: data!, encoding: .utf8), nil)
+            
         }.resume()
     }
     

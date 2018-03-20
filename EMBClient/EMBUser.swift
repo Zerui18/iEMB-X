@@ -44,10 +44,14 @@ public class EMBUser {
         return false
     }
     
-    public func logout() {
-        credentials = nil
+    func removeAuthCookie() {
         if let cookies = HTTPCookieStorage.shared.cookies(for: APIEndpoints.loginURL), let cookie = cookies.first(where: {$0.name=="ASP.NET_SessionId"}) {
             HTTPCookieStorage.shared.deleteCookie(cookie)
         }
+    }
+    
+    public func logout() {
+        credentials = nil
+        removeAuthCookie()
     }
 }
