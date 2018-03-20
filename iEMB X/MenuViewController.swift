@@ -130,6 +130,7 @@ extension MenuViewController: UIAdaptivePresentationControllerDelegate, CariocaM
             settingsVC.present(in: baseViewController)
             return
         }
+        
         let vc = boardVCs[indexPath.row]
         
         presentedBoardVC.navigationController!.view.removeFromSuperview()

@@ -138,20 +138,27 @@ class ViewPostController: UIViewController {
     
     @objc func contentTapped(_ sender: UITapGestureRecognizer) {
         postContentTextView.resignFirstResponder()
-        if post.content != nil {
-            let index = postContentTextView.layoutManager.characterIndex(for: sender.location(in: postContentTextView), in: postContentTextView.textContainer, fractionOfDistanceBetweenInsertionPoints: nil)
-            if index < postContentTextView.attributedText.length,
-                let attachment = (postContentTextView.attributedText.attribute(.attachment, at: index, effectiveRange: nil) ?? postContentTextView.attributedText.attribute(.attachment, at: index-1, effectiveRange: nil)) as? NSTextAttachment {
-                if let image = attachment.image(forBounds: attachment.bounds, textContainer: postContentTextView.textContainer, characterIndex: index) {
-                    let tempImage = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(attachment.fileWrapper?.filename ?? "Image.png")
-                    try! UIImagePNGRepresentation(image)!.write(to: tempImage)
-                    let ctr = FilePreviewController()
-                    ctr.file = tempImage
-                    ctr.deletesFileOnDismiss = true
-                    ctr.present(in: self)
-                }
-            }
+        
+        guard post.content != nil else {
+            return
         }
+        
+        
+        let index = postContentTextView.layoutManager.characterIndex(for: sender.location(in: postContentTextView), in: postContentTextView.textContainer, fractionOfDistanceBetweenInsertionPoints: nil)
+        
+        guard index < postContentTextView.attributedText.length,
+            let attachment = (postContentTextView.attributedText.attribute(.attachment, at: index, effectiveRange: nil) ?? postContentTextView.attributedText.attribute(.attachment, at: index-1, effectiveRange: nil)) as? NSTextAttachment,
+            let image = attachment.image(forBounds: attachment.bounds, textContainer: postContentTextView.textContainer, characterIndex: index) else {
+                return
+        }
+        
+        let tempImage = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(attachment.fileWrapper?.filename ?? "Image.png")
+        try! UIImagePNGRepresentation(image)!.write(to: tempImage)
+        
+        let ctr = FilePreviewController()
+        ctr.file = tempImage
+        ctr.deletesFileOnDismiss = true
+        ctr.present(in: self)
     }
     
     var replyContainerView: UIVisualEffectView!
@@ -208,9 +215,9 @@ class ViewPostController: UIViewController {
         view.layoutIfNeeded()
         
         // load previous reply, if any
-        if let opt = post.responseOption, let con = post.responseContent {
-            optionsSegment.selectedSegmentIndex = ["A","B","C","D","E"].index(of: opt)!
-            responseTextView.text = con
+        if let option = post.responseOption, let content = post.responseContent {
+            optionsSegment.selectedSegmentIndex = ["A","B","C","D","E"].index(of: option)!
+            responseTextView.text = content
         }
     }
     
@@ -251,19 +258,23 @@ class ViewPostController: UIViewController {
             alr.present(in: self)
             let hasOption = optionsSegment.selectedSegmentIndex != UISegmentedControlNoSegment
             let option = hasOption ? optionsSegment.titleForSegment(at: optionsSegment.selectedSegmentIndex)!:""
+            
             post.postResponse(option: option, content: responseTextView.text) { error in
+                
                 DispatchQueue.main.async {
-                    if error != nil {
+                    alr.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+                    
+                    guard error == nil else {
                         alr.title = "Failed to send"
                         alr.message = error!.localizedDescription
+                        return
                     }
-                    else {
-                        alr.title = "Reply Sent"
-                        alr.message = ""
-                        self.setReplyUIHidden()
-                    }
-                    alr.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+                    
+                    alr.title = "Reply Sent"
+                    alr.message = ""
+                    self.setReplyUIHidden()
                 }
+                
             }
         }
         else {

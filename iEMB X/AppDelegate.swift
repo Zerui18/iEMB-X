@@ -30,14 +30,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         AppDelegate.shared = self
         setupBaseUI()
-        window?.makeKeyAndVisible()
+        
         setupFileDirectory()
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { (_, _) in
-        }
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) {_,_ in}
         
         if !EMBUser.shared.hasSavedCredentials() {
             Constants.mainStoryboard.instantiateViewController(withIdentifier: "loginVC").present(in: window!.rootViewController!)
         }
+        
         NotificationCenter.default.addObserver(self, selector: #selector(presentLoginScreen), name: .embLoginCredentialsInvalid, object: nil)
         return true
     }
@@ -52,10 +52,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.rootViewController = baseViewController
         
         cariocaMenu.showIndicator(position: CariocaMenuIndicatorViewPosition.center, offset: 0)
+        window!.makeKeyAndVisible()
     }
     
         
     private func setupFileDirectory() {
+        // create cached files directory if no already present
         if !FileManager.default.fileExists(atPath: Constants.cachedFilesURL.path) {
             do {
                 try FileManager.default.createDirectory(at: Constants.cachedFilesURL, withIntermediateDirectories: false, attributes: nil)
@@ -66,11 +68,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 }.present(in: baseViewController)
             }
         }
-        DispatchQueue.global(qos: .background).async {
-            if let urls = try? FileManager.default.contentsOfDirectory(at: URL(fileURLWithPath: NSTemporaryDirectory()), includingPropertiesForKeys: nil, options: .skipsSubdirectoryDescendants) {
-                urls.forEach {
-                    try? FileManager.default.removeItem(at: $0)
-                }
+        
+        // clears temporary directory (where URLSession Downloads & other stuff are cached)
+        DispatchQueue.global().async {
+            guard let urls = try? FileManager.default.contentsOfDirectory(at: URL(fileURLWithPath: NSTemporaryDirectory()), includingPropertiesForKeys: nil, options: .skipsSubdirectoryDescendants) else {
+                return
+            }
+            
+            urls.forEach {
+                try? FileManager.default.removeItem(at: $0)
             }
         }
     }
@@ -93,37 +99,55 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        if EMBUser.shared.hasSavedCredentials() {
-            EMBClient.shared.updatePosts(forBoard: 1048, completion: { (posts, error) in
-                if posts != nil {
-                    if posts!.isEmpty {
-                        completionHandler(.noData)
-                        return
-                    }
-                    userDefaults.set(Date().timeIntervalSince1970, forKey: "lastRefreshed_1048")
-                    DispatchQueue.main.async {
-                        (menuViewController.boardVCs[0].viewControllers[0] as! BoardTableController).tableView?.reloadData()
-                    }
-                    var c1 = 0, c2 = 0, c3 = 0
-                    for post in posts! {
-                        switch post.importance {
-                        case .urgent: c1 += 1
-                        case .important: c2 += 1
-                        case .information: c3 += 1
-                        }
-                    }
-                    scheduleNotification(withTitle: "You Have \(posts!.count) New Posts", body: "Categories:  🛑\(c1)   ⚠️\(c2)   ✅\(c3)")
-                    completionHandler(.newData)
-                }
-                else {
-                    completionHandler(.failed)
-                }
-            })
-        }
-        else {
+        
+        guard EMBUser.shared.hasSavedCredentials() else {
             UIApplication.shared.setMinimumBackgroundFetchInterval(UIApplicationBackgroundFetchIntervalNever)
             completionHandler(.noData)
+            return
         }
+    
+        beginPostUpdate(completionHandler: completionHandler)
+    }
+    
+    private func beginPostUpdate(completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        EMBClient.shared.updatePosts(forBoard: 1048) { (posts, error) in
+            
+            guard error != nil else {
+                completionHandler(.failed)
+                return
+            }
+            
+            userDefaults.set(Date().timeIntervalSince1970, forKey: "lastRefreshed_1048")
+            
+            guard !posts!.isEmpty else {
+                completionHandler(.noData)
+                return
+            }
+            
+            
+            DispatchQueue.main.sync {
+                (menuViewController.boardVCs[0].viewControllers[0] as! BoardTableController).tableView?.reloadData()
+            }
+            
+            var c1 = 0, c2 = 0, c3 = 0
+            for post in posts! {
+                switch post.importance {
+                case .urgent: c1 += 1
+                case .important: c2 += 1
+                case .information: c3 += 1
+                }
+            }
+            
+            self.scheduleNotification(withTitle: "You Have \(posts!.count) New Posts", body: "Categories:  🛑\(c1)   ⚠️\(c2)   ✅\(c3)")
+        }
+    }
+    
+    private func scheduleNotification(withTitle title: String, body: String) {
+        let content: UNMutableNotificationContent = UNMutableNotificationContent()
+        content.title = title
+        content.body = body
+        content.sound = UNNotificationSound.default()
+        UNUserNotificationCenter.current().add(UNNotificationRequest(identifier: "\(arc4random())_noti", content: content, trigger: nil))
     }
 
 }

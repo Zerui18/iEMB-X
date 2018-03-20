@@ -52,9 +52,7 @@ class SettingsViewController: UIViewController {
         str.addAttribute(.link, value: NSURL(string: UIApplicationOpenSettingsURLString)!, range: NSRange(location: str.length-8, length: 8))
         linkedLabel.attributedText = str
         linkedLabel.delegate = self
-        if #available(iOS 11, *) {
-            linkedLabel.textDragInteraction?.isEnabled = false
-        }
+        linkedLabel.textDragInteraction?.isEnabled = false
         
         clearButton.clipsToBounds = true
         clearButton.layer.borderColor = clearButton.currentTitleColor.cgColor
@@ -165,7 +163,6 @@ class SettingsViewController: UIViewController {
 
 extension SettingsViewController: UITextViewDelegate {
     func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
-        print("called: ", URL)
         return true
     }
 

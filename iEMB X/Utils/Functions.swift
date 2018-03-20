@@ -7,8 +7,6 @@
 //
 
 import UIKit
-import QuickLook
-import UserNotifications
 
 func simpleAlert(title: String, message: String, block: ((UIAlertAction)->Void)? = nil)-> UIAlertController {
     let al = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -30,10 +28,3 @@ func selectionFeedback() {
     }
 }
 
-func scheduleNotification(withTitle title: String, body: String) {
-    let content: UNMutableNotificationContent = UNMutableNotificationContent()
-    content.title = title
-    content.body = body
-    content.sound = UNNotificationSound.default()
-    UNUserNotificationCenter.current().add(UNNotificationRequest(identifier: "\(arc4random())_noti", content: content, trigger: nil))
-}

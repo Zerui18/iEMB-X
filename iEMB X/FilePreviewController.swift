@@ -20,9 +20,7 @@ class FilePreviewController: QLPreviewController, QLPreviewControllerDataSource 
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        if #available(iOS 11, *) {
-            navigationItem.largeTitleDisplayMode = .never
-        }
+        navigationItem.largeTitleDisplayMode = .never
         dataSource = self
     }
 

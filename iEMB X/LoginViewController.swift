@@ -33,8 +33,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         loginButton.layer.cornerRadius = 10
         
         
-        if let oldU = userDefaults.string(forKey: "u") {
-            usernameField.text = oldU
+        if let oldUsername = userDefaults.string(forKey: "u") {
+            usernameField.text = oldUsername
         }
         
         usernameField.delegate = self
@@ -59,34 +59,37 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     }
     
     @objc func login() {
-        if let u = usernameField.text, let p = passwordField.text, !u.isEmpty, !p.isEmpty {
-            view.isUserInteractionEnabled = false
-            activityIndicator.startAnimating()
-            UIView.animate(withDuration: 0.3) {
-                self.usernameField.alpha = 0.0
-                self.passwordField.alpha = 0.0
-                self.loginButton.alpha = 0.0
-            }
-            
-            EMBClient.shared.login(username: u, password: p) {success, error in
-                DispatchQueue.main.async {
-                    if success {
-                        try! EMBClient.shared.resetCache()
-                        backgroungFetchInterval = 30 * 60
-                        self.dismiss(animated: true) {
-                            menuViewController.presentedBoardVC.reloadBoard()
-                        }
+        guard let username = usernameField.text, let password = passwordField.text,
+                !(username.isEmpty || password.isEmpty) else {
+            return
+        }
+        
+        view.isUserInteractionEnabled = false
+        activityIndicator.startAnimating()
+        UIView.animate(withDuration: 0.3) {
+            self.usernameField.alpha = 0.0
+            self.passwordField.alpha = 0.0
+            self.loginButton.alpha = 0.0
+        }
+        
+        EMBClient.shared.login(username: username, password: password) {success, error in
+            DispatchQueue.main.async {
+                guard success else {
+                    notificationFeedback(ofType: .error)
+                    self.activityIndicator.stopAnimating()
+                    UIView.animate(withDuration: 0.3) {
+                        self.loginButton.alpha = 1.0
+                        self.usernameField.alpha = 1.0
+                        self.passwordField.alpha = 1.0
                     }
-                    else {
-                        notificationFeedback(ofType: .error)
-                        self.activityIndicator.stopAnimating()
-                        UIView.animate(withDuration: 0.3) {
-                            self.loginButton.alpha = 1.0
-                            self.usernameField.alpha = 1.0
-                            self.passwordField.alpha = 1.0
-                        }
-                        self.view.isUserInteractionEnabled = true
-                    }
+                    self.view.isUserInteractionEnabled = true
+                    return
+                }
+                
+                try! EMBClient.shared.resetCache()
+                backgroungFetchInterval = 30 * 60
+                self.dismiss(animated: true) {
+                    menuViewController.presentedBoardVC.reloadBoard()
                 }
             }
         }
