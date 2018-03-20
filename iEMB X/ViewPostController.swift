@@ -295,10 +295,11 @@ extension ViewPostController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let file = post.attachments!.allObjects[indexPath.row] as! Attachment
-        if file.type == .embedding {
+        guard file.type != .embedding else {
             SFSafariViewController(url: file.url).present(in: self)
             return
         }
+        
         if file.isDownloaded {
             let ctr = FilePreviewController()
             ctr.file = (post.attachments!.allObjects[indexPath.row] as! Attachment).cacheURL
@@ -313,17 +314,18 @@ extension ViewPostController: UITableViewDataSource, UITableViewDelegate {
                 }
             }) { error in
                 DispatchQueue.main.async {
-                    if error != nil {
+                    
+                    guard error == nil else {
                         alert.title = "Failed"
                         alert.message = error!.localizedDescription
                         alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+                        return
                     }
-                    else {
-                        alert.dismiss(animated: true) {
-                            let ctr = FilePreviewController()
-                            ctr.file = (self.post.attachments!.allObjects[indexPath.row] as! Attachment).cacheURL
-                            ctr.present(in: self)
-                        }
+                    
+                    alert.dismiss(animated: true) {
+                        let ctr = FilePreviewController()
+                        ctr.file = (self.post.attachments!.allObjects[indexPath.row] as! Attachment).cacheURL
+                        ctr.present(in: self)
                     }
                 }
             }
@@ -348,6 +350,7 @@ extension ViewPostController: UIGestureRecognizerDelegate {
         guard post.canRespond && !isReplying else {
             return
         }
+        
         let istop = scrollView.contentOffset.y + scrollView.adjustedContentInset.top <= 0
         if !istop && rightButton.alpha == 1 {
             rightButton.animateHidden()

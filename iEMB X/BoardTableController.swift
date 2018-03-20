@@ -162,7 +162,7 @@ class BoardTableController: UITableViewController {
         isFilteringUnread = !isFilteringUnread
         
         UIView.animate(withDuration: 0.2) {
-            self.filterButton.tintColor = self.isFilteringUnread ? #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1):#colorLiteral(red: 0.6553392163, green: 0.6553392163, blue: 0.6553392163, alpha: 1)
+            self.filterButton.tintColor = self.isFilteringUnread ? #colorLiteral(red: 0, green: 0.5898008943, blue: 1, alpha: 1):#colorLiteral(red: 0.6553392163, green: 0.6553392163, blue: 0.6553392163, alpha: 1)
         }
         
         if isFilteringUnread {
