@@ -309,7 +309,7 @@ extension ViewPostController: UITableViewDataSource, UITableViewDelegate {
             alert.present(in: self)
             file.download(progress: { progress in
                 DispatchQueue.main.async {
-                    alert.message = "\(round(progress*100))%"
+                    alert.message = String(format: "%.1f", progress * 100)
                 }
             }) { error in
                 DispatchQueue.main.async {
