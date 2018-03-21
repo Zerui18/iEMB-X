@@ -21,7 +21,7 @@
 		0194B1DB201C1B3200FD3244 /* CariocaMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22FDF2B01F7D27910054A05B /* CariocaMenu.swift */; };
 		01C522DF201B4C51001938DE /* RegexConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C522DE201B4C51001938DE /* RegexConstants.swift */; };
 		01C522E3201B4CA6001938DE /* String+HTMLUnEscape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C522E2201B4CA6001938DE /* String+HTMLUnEscape.swift */; };
-		01C522E5201B4CC0001938DE /* Notification-Name.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C522E4201B4CC0001938DE /* Notification-Name.swift */; };
+		01C522E5201B4CC0001938DE /* Notification_Name+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C522E4201B4CC0001938DE /* Notification_Name+Extension.swift */; };
 		01C522EE201B6EB8001938DE /* Attachment+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C522EA201B6EB8001938DE /* Attachment+CoreDataProperties.swift */; };
 		01C522F0201B6EB8001938DE /* Post+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C522EC201B6EB8001938DE /* Post+CoreDataProperties.swift */; };
 		01C522F3201B709D001938DE /* PostRecords.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = 0175C80A2008F4660030909E /* PostRecords.xcdatamodel */; };
@@ -99,7 +99,7 @@
 		0175C8182008FE960030909E /* APIEndpoints.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIEndpoints.swift; sourceTree = "<group>"; };
 		01C522DE201B4C51001938DE /* RegexConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegexConstants.swift; sourceTree = "<group>"; };
 		01C522E2201B4CA6001938DE /* String+HTMLUnEscape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+HTMLUnEscape.swift"; sourceTree = "<group>"; };
-		01C522E4201B4CC0001938DE /* Notification-Name.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification-Name.swift"; sourceTree = "<group>"; };
+		01C522E4201B4CC0001938DE /* Notification_Name+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification_Name+Extension.swift"; sourceTree = "<group>"; };
 		01C522EA201B6EB8001938DE /* Attachment+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Attachment+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		01C522EC201B6EB8001938DE /* Post+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Post+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		220981421F6CF12D003769C2 /* FileArchiveCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileArchiveCell.swift; sourceTree = "<group>"; };
@@ -185,7 +185,7 @@
 		01C522E8201B6E52001938DE /* Utilties */ = {
 			isa = PBXGroup;
 			children = (
-				01C522E4201B4CC0001938DE /* Notification-Name.swift */,
+				01C522E4201B4CC0001938DE /* Notification_Name+Extension.swift */,
 				01C522E2201B4CA6001938DE /* String+HTMLUnEscape.swift */,
 				01C522DE201B4C51001938DE /* RegexConstants.swift */,
 				0175C80C2008F50A0030909E /* Utils.swift */,
@@ -464,7 +464,7 @@
 			files = (
 				0175C80F2008F6C70030909E /* Attachment.swift in Sources */,
 				01C522DF201B4C51001938DE /* RegexConstants.swift in Sources */,
-				01C522E5201B4CC0001938DE /* Notification-Name.swift in Sources */,
+				01C522E5201B4CC0001938DE /* Notification_Name+Extension.swift in Sources */,
 				01C522E3201B4CA6001938DE /* String+HTMLUnEscape.swift in Sources */,
 				0175C8132008F94D0030909E /* Downloader.swift in Sources */,
 				0175C8152008FAEA0030909E /* CoreDataHelper.swift in Sources */,

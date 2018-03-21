@@ -57,3 +57,15 @@ extension UIView {
     }
 }
 
+extension UIAlertController {
+    
+    /**
+     Initlialize an UIAlertController instance with title, message and an action of title "OK" and type "cancel". Additionally specify a block to be executed on dismissal.
+     */
+    convenience init(title: String, message: String, onDismiss handler: (() -> Void)? = nil) {
+        self.init(title: title, message: message, preferredStyle: .alert)
+        
+        addAction(UIAlertAction(title: "OK", style: .cancel){_ in handler?()})
+    }
+    
+}

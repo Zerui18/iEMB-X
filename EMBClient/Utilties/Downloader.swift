@@ -25,14 +25,14 @@ class Downloader: NSObject, URLSessionDownloadDelegate {
         destination = destinationURL
         progressBlock = block
         completionBlock = handler
-        EMBClient.shared.reLogin(then: { (_, err) in
+        EMBClient.shared.reLogin { (_, err) in
             if err != nil {
                 self.completionBlock?(err)
             }
             else {
                 self.task.resume()
             }
-        })
+        }
     }
     
     var session: URLSession!

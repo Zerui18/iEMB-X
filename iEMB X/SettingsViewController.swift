@@ -120,7 +120,7 @@ class SettingsViewController: UIViewController {
                 }
             }
             catch {
-                simpleAlert(title: "Error Reseting Cache", message: error.localizedDescription).present(in: self)
+                UIAlertController(title: "Error Reseting Cache", message: error.localizedDescription).present(in: self)
             }
         }))
         alr.present(in: self)

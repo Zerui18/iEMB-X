@@ -20,7 +20,7 @@
                             <imageView userInteractionEnabled="NO" alpha="0.55000000000000004" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="hci_dark" translatesAutoresizingMaskIntoConstraints="NO" id="NtD-RO-8ap">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="778"/>
                             </imageView>
-                            <imageView userInteractionEnabled="NO" alpha="0.93000000000000005" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon_light" translatesAutoresizingMaskIntoConstraints="NO" id="qUy-XZ-B7b">
+                            <imageView userInteractionEnabled="NO" alpha="0.94999999999999996" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon_light" translatesAutoresizingMaskIntoConstraints="NO" id="qUy-XZ-B7b">
                                 <rect key="frame" x="112.66666666666669" y="162" width="150" height="150"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="150" id="11Y-OR-oDk"/>

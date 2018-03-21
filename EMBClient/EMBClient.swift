@@ -201,7 +201,7 @@ extension EMBClient {
                         
                         guard isResponseValid(res!) else {
                             completion(nil, NSError(domain: "com.Zerui.EMBClient.AuthError", code: 403, userInfo: [NSLocalizedDescriptionKey : "Did not receive valid data from server, this is probably due to authentication failure."]))
-                            NotificationCenter.default.post(name: .embLoginCredentialsInvalid, object: nil)
+                            NotificationCenter.default.post(name: .embLoginCredentiaInvalidated, object: nil)
                             return
                         }
                         

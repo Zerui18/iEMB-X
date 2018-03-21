@@ -38,7 +38,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             Constants.mainStoryboard.instantiateViewController(withIdentifier: "loginVC").present(in: window!.rootViewController!)
         }
         
-        NotificationCenter.default.addObserver(self, selector: #selector(presentLoginScreen), name: .embLoginCredentialsInvalid, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(presentLoginScreen), name: .embLoginCredentiaInvalidated, object: nil)
         return true
     }
     
@@ -63,7 +63,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 try FileManager.default.createDirectory(at: Constants.cachedFilesURL, withIntermediateDirectories: false, attributes: nil)
             }
             catch {
-                simpleAlert(title: "Directory Initialization Failed", message: error.localizedDescription) {_ in
+                UIAlertController(title: "Directory Initialization Error", message: error.localizedDescription) {
                     exit(0)
                 }.present(in: baseViewController)
             }

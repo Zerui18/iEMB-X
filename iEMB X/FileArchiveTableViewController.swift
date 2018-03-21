@@ -16,14 +16,7 @@ class FileArchiveTableViewController: UITableViewController {
         title = "Cached Files"
         tableView.tableFooterView = UIView()
         navigationItem.largeTitleDisplayMode = .automatic
-        do {
-            files = try FileManager.default.contentsOfDirectory(at: Constants.cachedFilesURL, includingPropertiesForKeys: nil, options: [])
-        }
-        catch {
-            simpleAlert(title: "Error Loading Files", message: error.localizedDescription) {_ in
-                self.dismiss(animated: true)
-            }.present(in: self)
-        }
+        files = try! FileManager.default.contentsOfDirectory(at: Constants.cachedFilesURL, includingPropertiesForKeys: nil, options: [])
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -58,7 +51,7 @@ class FileArchiveTableViewController: UITableViewController {
             tableView.deleteRows(at: [indexPath], with: .automatic)
         }
         catch {
-            simpleAlert(title: "Error Deleting File", message: error.localizedDescription).present(in: self)
+            UIAlertController(title: "Error Deleting File", message: error.localizedDescription).present(in: self)
         }
     }
     

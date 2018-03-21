@@ -1,5 +1,5 @@
 //
-//  Notification-Name.swift
+//  Notification_Name+Extension.swift
 //  EMBClient
 //
 //  Created by Chen Zerui on 26/1/18.
@@ -12,6 +12,6 @@ public extension Notification.Name {
     
     public static let postContentDidLoad = Notification.Name("PostDidLoadNotification")
     
-    public static let embLoginCredentialsInvalid = Notification.Name("EMBLoginCredentialsInvalidNotification")
+    public static let embLoginCredentiaInvalidated = Notification.Name("EMBLoginCredentialsInvalidatedNotification")
     
 }

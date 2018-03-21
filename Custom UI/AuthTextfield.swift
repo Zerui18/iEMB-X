@@ -9,14 +9,21 @@
 import UIKit
 
 @IBDesignable
-class AuthTextfield: UITextField {
+public class AuthTextfield: UITextField {
     
-    @IBInspectable var lineLengthRatio: CGFloat = 0.8
-    @IBInspectable var lineYOffset: CGFloat = 3
-    @IBInspectable var lineColor: UIColor = .white
-    @IBInspectable var lineWidth: CGFloat = 1
+    @IBInspectable public var lineLengthRatio: CGFloat = 0.8
+    @IBInspectable public var lineYOffset: CGFloat = 3
+    @IBInspectable public var lineColor: UIColor = .white
+    @IBInspectable public var lineWidth: CGFloat = 1
     
-    @IBInspectable var placeHolderColor: UIColor = .white
+    @IBInspectable public var placeHolderColor: UIColor = .white
+    
+    public override var borderStyle: UITextBorderStyle {
+        get {
+            return .none
+        }
+        set{}
+    }
     
     let linePath = UIBezierPath()
     
@@ -33,29 +40,19 @@ class AuthTextfield: UITextField {
         linePath.stroke()
     }
 
-    override func draw(_ rect: CGRect) {
+    public override func draw(_ rect: CGRect) {
         super.draw(rect)
         strokeLine()
         attributedPlaceholder = NSAttributedString(string: placeholder ?? "", attributes: [.foregroundColor: (isActive ? lineColor:lineColor.withAlphaComponent(0.7))])
     }
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        borderStyle = .none
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        borderStyle = .none
-    }
-    
-    override func resignFirstResponder() -> Bool {
+    public override func resignFirstResponder() -> Bool {
         isActive = false
         setNeedsDisplay()
         return super.resignFirstResponder()
     }
     
-    override func becomeFirstResponder() -> Bool {
+    public override func becomeFirstResponder() -> Bool {
         isActive = true
         setNeedsDisplay()
         return super.becomeFirstResponder()

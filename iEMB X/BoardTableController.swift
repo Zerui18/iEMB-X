@@ -116,13 +116,13 @@ class BoardTableController: UITableViewController {
                 notificationFeedback(ofType: .error)
                 if (error! as NSError).domain != "com.Zerui.EMBClient.AuthError" {
                     DispatchQueue.main.async {
-                        simpleAlert(title: "Error", message: "failed to load posts for board \(self.currentBoard)").present(in: self)
+                        UIAlertController(title: "Error", message: "failed to load posts for board \(self.currentBoard)").present(in: self)
                     }
                 }
                 return
             }
             
-            userDefaults.set(Date().timeIntervalSince1970, forKey: "lastRefreshed_\(self.currentBoard)")
+            self.lastRefreshed = Date().timeIntervalSince1970
             if newPosts.count > 0 {
                 self.selectedIndexPath = nil
                 
@@ -194,8 +194,13 @@ class BoardTableController: UITableViewController {
         }
     }
     
-    func lastRefreshed()-> TimeInterval {
-        return userDefaults.double(forKey: "lastRefreshed_\(self.currentBoard)")
+    var lastRefreshed: TimeInterval {
+        get {
+            return userDefaults.double(forKey: "lastRefreshed_\(self.currentBoard)")
+        }
+        set {
+            userDefaults.setValue(newValue, forKey: "lastRefreshed_\(self.currentBoard)")
+        }
     }
     
 }
@@ -275,7 +280,7 @@ extension BoardTableController {
     }
     
     func updateLastReadDisplay() {
-        let timeInterval = lastRefreshed()
+        let timeInterval = lastRefreshed
         if timeInterval > 0 {
             refreshControl!.attributedTitle = NSAttributedString(string: "Last Updated: "+Date(timeIntervalSince1970: timeInterval).timeAgoSinceNow(), attributes: [.font: subfont, .foregroundColor: UIColor.gray])
         }
