@@ -13,6 +13,8 @@ import Custom_UI
 
 class ViewPostController: UIViewController {
     
+    //MARK: - Properties
+    
     @IBOutlet weak var backgroundView: UIImageView!
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var postContainerView: UIVisualEffectView!
@@ -25,7 +27,12 @@ class ViewPostController: UIViewController {
     @IBOutlet weak var rightButton: UIButton!
     @IBOutlet weak var lowerButton: UIButton!
     
+    lazy var tap = UITapGestureRecognizer(target: self, action: #selector(contentTapped(_:)))
+    lazy var downPan = UIPanGestureRecognizer(target: self, action: #selector(pan(_:)))
+    
     var post: Post!
+    
+    //MARK: - ViewController Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,9 +60,7 @@ class ViewPostController: UIViewController {
         AppDelegate.shared.window?.windowLevel = UIWindowLevelNormal
     }
     
-    lazy var tap = UITapGestureRecognizer(target: self, action: #selector(contentTapped(_:)))
-    
-    lazy var downPan = UIPanGestureRecognizer(target: self, action: #selector(pan(_:)))
+    //MARK: - Methods
     
     private func setupUI() {
         postContentTextView.textDragInteraction?.isEnabled = false
@@ -286,12 +291,14 @@ class ViewPostController: UIViewController {
         selectionFeedback()
     }
     
+    //MARK: - Misc Properties
     fileprivate var startingVal: CGFloat?
     fileprivate var startingPoint: CGPoint?
     fileprivate var isAtTop = false
     
 }
 
+//MARK: - UITableView DataSource & Delegate Methods
 extension ViewPostController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -346,6 +353,7 @@ extension ViewPostController: UITableViewDataSource, UITableViewDelegate {
     
 }
 
+//MARK: - UIGestureRecognizerDelegate & interactive dismissal
 extension ViewPostController: UIGestureRecognizerDelegate {
     
     var interactor: Interactor {

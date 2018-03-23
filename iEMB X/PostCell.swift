@@ -23,6 +23,7 @@ class PostCell: UITableViewCell {
     
 
     func updateWith(post: Post) {
+        showDeselection()
         authorLabel.text = post.author
         dateLabel.text = post.date
         switch post.importance {

@@ -46,18 +46,19 @@ public class Attachment: NSManagedObject {
     private var downloader: Downloader?
     
     public func download(progress: @escaping (Double)->Void, completion: @escaping (Error?)-> Void) {
-        if isDownloaded {
+        guard !isDownloaded else {
             completion(nil)
+            return
         }
-        else {
-            EMBClient.shared.reLogin { (_, err) in
-                if err != nil {
-                    completion(err)
-                }
-                else {
-                    self.downloader = Downloader.download(file: self, progress: progress, completion: completion)
-                }
+        
+        EMBClient.shared.reLogin { (_, err) in
+            
+            guard err == nil else {
+                completion(err)
+                return
             }
+            
+            self.downloader = Downloader.download(file: self, progress: progress, completion: completion)
         }
     }
     

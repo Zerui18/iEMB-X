@@ -69,3 +69,9 @@ extension UIAlertController {
     }
     
 }
+
+infix operator =>
+
+func =>(_ obj: Any, _ typeClass: AnyClass) -> Bool {
+    return type(of: obj) == typeClass
+}

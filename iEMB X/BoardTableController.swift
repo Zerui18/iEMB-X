@@ -9,6 +9,7 @@
 import UIKit
 import EMBClient
 
+fileprivate let swipeActionPullViewType: AnyClass = NSClassFromString("UISwipeActionPullView")!.self
 
 class BoardTableController: UITableViewController {
     
@@ -78,7 +79,7 @@ class BoardTableController: UITableViewController {
         navigationItem.largeTitleDisplayMode = .always
         navigationItem.hidesSearchBarWhenScrolling = false
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .organize, target: self, action: #selector(openFiles))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .organize, target: self, action: #selector(openFilesCtr))
         
         refreshControl = UIRefreshControl()
         refreshControl!.addTarget(self, action: #selector(reloadBoard), for: .valueChanged)
@@ -91,7 +92,7 @@ class BoardTableController: UITableViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(postDidUpdate(_:)), name: .postContentDidLoad, object: nil)
     }
     
-    @objc func openFiles() {
+    @objc func openFilesCtr() {
         navigationController?.pushViewController(storyboard!.instantiateViewController(withIdentifier: "filesVC"), animated: true)
     }
     
@@ -225,10 +226,9 @@ extension BoardTableController {
     }
     
     override func tableView(_ tableView: UITableView, willBeginEditingRowAt indexPath: IndexPath) {
-        if let pullView = menuViewController.presentedBoardVC.tableView.subviews.filter( {
-            String(describing: type(of: $0)) == "UISwipeActionPullView"
+        if let pullView = menuViewController.presentedBoardVC.tableView.subviews.filter({
+            $0 => swipeActionPullViewType
         }).last {
-            
             pullView.clipsToBounds = true
             pullView.layer.cornerRadius = 5
             pullView.backgroundColor = UIColor.white.withAlphaComponent(0.8)
