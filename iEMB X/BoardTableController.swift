@@ -46,14 +46,14 @@ class BoardTableController: UITableViewController {
         coordinator.animate(alongsideTransition: {_ in
             self.showUIComponents()
             if index != nil {
-                (self.tableView.cellForRow(at: index!) as! PostCell).showDeselection()
+                (self.tableView.cellForRow(at: index!) as? PostCell)?.showDeselection()
             }
         }, completion: {context in
             if context.isCancelled {
                 UIView.animate(withDuration: 0.3) {
                     self.hideUIComponents()
                     if index != nil {
-                        (self.tableView.cellForRow(at: index!) as! PostCell).showSelection()
+                        (self.tableView.cellForRow(at: index!) as? PostCell)?.showSelection()
                     }
                 }
             }
@@ -73,15 +73,10 @@ class BoardTableController: UITableViewController {
         searchController.searchBar.delegate = self
         searchController.searchBar.scopeButtonTitles = ["Title","Author","Marked"]
         
-        if #available(iOS 11, *) {
-            navigationItem.searchController = searchController
-            navigationController?.navigationBar.prefersLargeTitles = true
-            navigationItem.largeTitleDisplayMode = .always
-            navigationItem.hidesSearchBarWhenScrolling = false
-        }
-        else {
-            tableView.tableHeaderView = searchController.searchBar
-        }
+        navigationItem.searchController = searchController
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.largeTitleDisplayMode = .always
+        navigationItem.hidesSearchBarWhenScrolling = false
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .organize, target: self, action: #selector(openFiles))
         
