@@ -11,6 +11,17 @@ import UIKit
 
 class DismissAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     
+    enum AnimationType {
+        case close, shrink
+    }
+    
+    private let animation: AnimationType
+    
+    init(animation: AnimationType) {
+        self.animation = animation
+        super.init()
+    }
+    
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         return Constants.dismissTransitionDuraction
     }
@@ -43,9 +54,17 @@ class DismissAnimator: NSObject, UIViewControllerAnimatedTransitioning {
                 fromVC.view.alpha = 0
                 darkenEffect.backgroundColor = .clear
             }
-        }, completion: {finished in
+            if self.animation == .shrink {
+                UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 1) {
+                    fromVC.view.layer.transform = CATransform3DScale(fromVC.view.layer.transform, 0.1, 0.1, 1)
+                }
+            }
+        }, completion: { finished in
             darkenEffect.removeFromSuperview()
             if transitionContext.transitionWasCancelled {
+                if self.animation == .shrink {
+                    fromVC.view.layer.transform = CATransform3DScale(fromVC.view.layer.transform, 1, 1, 1)
+                }
                 toVC.view.removeFromSuperview()
             }
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)

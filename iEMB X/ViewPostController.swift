@@ -29,6 +29,16 @@ class ViewPostController: UIViewController {
     
     lazy var tap = UITapGestureRecognizer(target: self, action: #selector(contentTapped(_:)))
     lazy var downPan = UIPanGestureRecognizer(target: self, action: #selector(pan(_:)))
+    lazy var leftEdgePan: UIScreenEdgePanGestureRecognizer = {
+        let g = UIScreenEdgePanGestureRecognizer(target: self, action: #selector(edgePan(_:)))
+        g.edges = [.left]
+        return g
+    }()
+    lazy var rightEdgePan: UIScreenEdgePanGestureRecognizer = {
+        let g = UIScreenEdgePanGestureRecognizer(target: self, action: #selector(edgePan(_:)))
+        g.edges = [.right]
+        return g
+    }()
     
     var post: Post!
     
@@ -36,7 +46,6 @@ class ViewPostController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.clipsToBounds = true
         setupUI()
         loadMessage()
     }
@@ -63,6 +72,7 @@ class ViewPostController: UIViewController {
     //MARK: - Methods
     
     private func setupUI() {
+        
         postContentTextView.textDragInteraction?.isEnabled = false
         scrollView.delegate = self
         scrollView.contentInset.top = leftButton.frame.maxY + 8 - view.convert(postContainerView.frame.origin, from: postContainerView).y
@@ -85,6 +95,11 @@ class ViewPostController: UIViewController {
         
         downPan.delegate = self
         view.addGestureRecognizer(downPan)
+        
+        view.addGestureRecognizer(leftEdgePan)
+        view.addGestureRecognizer(rightEdgePan)
+        downPan.require(toFail: leftEdgePan)
+        downPan.require(toFail: rightEdgePan)
     }
     
     private func loadMessage() {
@@ -361,7 +376,7 @@ extension ViewPostController: UIGestureRecognizerDelegate {
     }
     
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        return !postContentTextView.isFirstResponder
+        return !postContentTextView.isFirstResponder && !(otherGestureRecognizer is UIScreenEdgePanGestureRecognizer)
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -407,7 +422,7 @@ extension ViewPostController: UIGestureRecognizerDelegate {
                     guard isBeingDismissed else {return}
                     
                     // update progress while at top
-                    let progress = min((currentY-startingVal!) / (UIScreen.main.bounds.height/1.5), 1)
+                    let progress = min((currentY-startingVal!) / (view.bounds.height/1.5), 1)
                     interactor.update(progress)
                     
                     view.frame.origin = sender.translation(in: view).applying(CGAffineTransform(translationX: -startingPoint!.x, y: -startingPoint!.y))
@@ -436,6 +451,28 @@ extension ViewPostController: UIGestureRecognizerDelegate {
             }
             isAtTop = false
             startingVal = nil
+        }
+    }
+    
+    @objc func edgePan(_ sender: UIScreenEdgePanGestureRecognizer) {
+        switch sender.state {
+        case .began:
+            interactor.hasStarted = true
+            dismiss(animated: true)
+        case .changed:
+            let x = sender.location(in: nil).x
+            let offset: CGFloat
+            if sender === leftEdgePan {
+                offset = x
+            }
+            else {
+                offset = view.bounds.width - x
+            }
+            interactor.update(offset/(view.bounds.width/2))
+        case .ended:
+            _ = interactor.complete(extraCondition: sender.velocity(in: nil).x > 300 && interactor.percentComplete >= 0.1)
+        default:
+            interactor.cancel()
         }
     }
 

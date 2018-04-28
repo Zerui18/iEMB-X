@@ -118,33 +118,38 @@ class BoardTableController: UITableViewController {
                 return
             }
             
-            self.lastRefreshed = Date().timeIntervalSince1970
-            if newPosts.count > 0 {
-                self.selectedIndexPath = nil
+            self.boardUpdated(for: newPosts)
+        }
+    }
+    
+    func boardUpdated(for newPosts: [Post]) {
+        self.lastRefreshed = Date().timeIntervalSince1970
+        if !newPosts.isEmpty {
+            self.selectedIndexPath = nil
+            
+            let count: Int
+            
+            if self.isFilteringUnread{
+                let unreadPosts = newPosts.filter{!$0.isRead}
+                self.unreadPosts.insert(contentsOf: unreadPosts, at: 0)
                 
-                let count: Int
-                
-                if self.isFilteringUnread{
-                    let unreadPosts = newPosts.filter{!$0.isRead}
-                    self.unreadPosts.insert(contentsOf: unreadPosts, at: 0)
-                    
-                    count = unreadPosts.count
-                }
-                else{
-                    count = newPosts.count
-                }
-                let ints = [Int](0...count-1)
-                
-                DispatchQueue.main.async {
-                    
-                    self.tableView.insertRows(at: ints.map {
-                        IndexPath(row: $0, section: 0)
-                    }, with: .automatic)
-                }
+                count = unreadPosts.count
             }
+            else{
+                count = newPosts.count
+            }
+            let ints = [Int](0...count-1)
+            
             DispatchQueue.main.async {
-                self.updateLastReadDisplay()
+                
+                self.tableView.insertRows(at: ints.map {
+                    IndexPath(row: $0, section: 0)
+                }, with: .automatic)
+                
             }
+        }
+        DispatchQueue.main.async {
+            self.updateLastReadDisplay()
         }
     }
     
@@ -344,10 +349,22 @@ extension BoardTableController: UIViewControllerTransitioningDelegate {
     }
     
     func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        if let postVC = dismissed as? ViewPostController, postVC.isReplying {
+        guard let postVC = dismissed as? ViewPostController else {
+            return nil
+        }
+        
+        if postVC.isReplying {
             postVC.responseTextView.resignFirstResponder()
         }
-        return DismissAnimator()
+        
+        switch postVC.downPan.state {
+        case .began, .changed:
+            return DismissAnimator(animation: .close)
+        case .cancelled, .ended, .failed:
+            return DismissAnimator(animation: .shrink)
+        default:
+            return nil
+        }
     }
     
     func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {

@@ -112,25 +112,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func beginPostUpdate(completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         EMBClient.shared.updatePosts(forBoard: 1048) { (posts, error) in
             
-            guard error != nil else {
+            guard let posts = posts else {
                 completionHandler(.failed)
                 return
             }
             
             userDefaults.set(Date().timeIntervalSince1970, forKey: "lastRefreshed_1048")
             
-            guard !posts!.isEmpty else {
+            guard !posts.isEmpty else {
                 completionHandler(.noData)
                 return
             }
             
             
-            DispatchQueue.main.sync {
-                (menuViewController.boardVCs[0].viewControllers[0] as! BoardTableController).tableView?.reloadData()
-            }
+            let ctr = menuViewController.boardVCs[0].viewControllers[0] as! BoardTableController
+            ctr.boardUpdated(for: posts)
             
             var c1 = 0, c2 = 0, c3 = 0
-            for post in posts! {
+            for post in posts {
                 switch post.importance {
                 case .urgent: c1 += 1
                 case .important: c2 += 1
@@ -138,7 +137,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 }
             }
             
-            self.scheduleNotification(withTitle: "You Have \(posts!.count) New Posts", body: "Categories:  🛑\(c1)   ⚠️\(c2)   ✅\(c3)")
+            self.scheduleNotification(withTitle: "You Have \(posts.count) New Posts", body: "Categories:  🛑\(c1)   ⚠️\(c2)   ✅\(c3)")
         }
     }
     
