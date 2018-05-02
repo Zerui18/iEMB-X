@@ -15,13 +15,13 @@ class Downloader: NSObject, URLSessionDownloadDelegate {
     typealias CompletionBlock = (Error?)->Void
     
     static func download(file: Attachment, progress: @escaping ProgressBlock, completion: @escaping CompletionBlock)-> Downloader {
-        return Downloader(sourceURL: file.url, to: file.cacheURL, onProgress: progress, onComplete: completion)
+        return Downloader(sourceURL: file.url, destinationURL: file.cacheURL, onProgress: progress, onComplete: completion)
     }
     
-    init(sourceURL: URL, to destinationURL: URL, onProgress block:  ProgressBlock? = nil, onComplete handler: CompletionBlock? = nil) {
+    init(sourceURL: URL, destinationURL: URL, onProgress block: ProgressBlock? = nil, onComplete handler: CompletionBlock? = nil) {
         super.init()
         session = URLSession(configuration: URLSessionConfiguration.default, delegate: self, delegateQueue: nil)
-        task = session.downloadTask(with: sourceURL)
+        task = session.downloadTask(with: URLRequest(url: sourceURL).signed())
         destination = destinationURL
         progressBlock = block
         completionBlock = handler

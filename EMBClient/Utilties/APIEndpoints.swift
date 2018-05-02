@@ -17,7 +17,7 @@ struct APIEndpoints {
     }
     
     static func postURL(forId id: Int, boardId: Int)-> URL {
-        return URL(string: "https://iemb.hci.edu.sg/Board/content/\(id)?board=\(boardId)")!
+        return URL(string: "https://iemb.hci.edu.sg/Board/content/\(id)?board=\(boardId)&isArchived=False")!
     }
     
     static let responseURL = URL(string: "https://iemb.hci.edu.sg/board/ProcessResponse")!

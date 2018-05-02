@@ -43,14 +43,14 @@ public extension EMBClient {
         loginRequest.httpMethod = "post"
         loginRequest.httpBody = "username=\(username)&password=\(password)&submitbut=Submit".data(using: .utf8)
         
-        EMBUser.shared.removeAuthCookie()
+        EMBUser.shared.logout()
         
         URLSession.shared.dataTask(with: loginRequest) { (_, _, error) in
             if error != nil {
                 completion(false, error)
             }
             else {
-                if EMBUser.shared.isAuthenticated() {
+                if EMBUser.shared.saveSessionId() {
                     EMBUser.shared.credentials = (userId: username, password: password)
                     completion(true, nil)
                 }
@@ -176,6 +176,8 @@ extension EMBClient {
      Loads data with the provided request on URLSession.shared. Will validate received data to check for auth-error. Retries the request after re-authentication
      */
     func loadPage(request: URLRequest, completion: @escaping (String?, Error?)->Void) {
+        let request = request.signed()
+        
         URLSession.shared.dataTask(with: request) { (data, res, err) in
             guard err == nil else {
                 completion(nil, err)

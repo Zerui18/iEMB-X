@@ -30,7 +30,6 @@ public class CoreDataHelper {
             group.leave()
         }
         group.wait()
-        
     }
     
     func fetch<T>(request: NSFetchRequest<T>)throws-> [T] {

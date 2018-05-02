@@ -33,25 +33,54 @@ public class EMBUser {
         }
     }
     
+    fileprivate var sessionId: String? {
+        get {
+            return userDefaults.string(forKey: "sessId")
+        }
+        set {
+            userDefaults.set(newValue, forKey: "sessId")
+        }
+    }
+    
     public func hasSavedCredentials()-> Bool {
         return credentials != nil
     }
     
     public func isAuthenticated()-> Bool {
-        if let cookies = HTTPCookieStorage.shared.cookies(for: APIEndpoints.loginURL) {
-            return cookies.contains(where: {$0.name=="ASP.NET_SessionId"})
-        }
-        return false
+        return sessionId != nil
     }
     
-    func removeAuthCookie() {
-        if let cookies = HTTPCookieStorage.shared.cookies(for: APIEndpoints.loginURL), let cookie = cookies.first(where: {$0.name=="ASP.NET_SessionId"}) {
+    public func saveSessionId()-> Bool {
+        guard let cookie = HTTPCookieStorage.shared.cookies?.first(where: {$0.name=="ASP.NET_SessionId"}) else {
+            return false
+        }
+        sessionId = cookie.value
+        return true
+    }
+    
+    func removeSessionId() {
+        if let cookies = HTTPCookieStorage.shared.cookies(for: APIEndpoints.loginURL),
+            let cookie = cookies.first(where: {$0.name=="ASP.NET_SessionId"}) {
             HTTPCookieStorage.shared.deleteCookie(cookie)
         }
+        sessionId = nil
     }
     
     public func logout() {
         credentials = nil
-        removeAuthCookie()
+        removeSessionId()
     }
+}
+
+extension URLRequest {
+    
+    func signed()-> URLRequest {
+        guard let id = EMBUser.shared.sessionId else {
+            fatalError("Session id not found!")
+        }
+        var mutable = self
+        mutable.setValue("ASP.NET_SessionId=" + id, forHTTPHeaderField: "Cookie")
+        return mutable
+    }
+    
 }
