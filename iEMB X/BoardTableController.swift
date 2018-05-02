@@ -97,6 +97,11 @@ class BoardTableController: UITableViewController {
     }
     
     @objc func reloadBoard() {
+        guard EMBUser.shared.isAuthenticated() else {
+            NotificationCenter.default.post(name: .embLoginCredentiaInvalidated, object: nil)
+            return
+        }
+        
         refreshControl?.beginRefreshing()
         navigationItem.rightBarButtonItem?.isEnabled = false
         EMBClient.shared.updatePosts(forBoard: currentBoard) { (posts, error) in

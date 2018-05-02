@@ -74,9 +74,9 @@ public class EMBUser {
 
 extension URLRequest {
     
-    func signed()-> URLRequest {
+    func signed()-> URLRequest? {
         guard let id = EMBUser.shared.sessionId else {
-            fatalError("Session id not found!")
+            return nil
         }
         var mutable = self
         mutable.setValue("ASP.NET_SessionId=" + id, forHTTPHeaderField: "Cookie")

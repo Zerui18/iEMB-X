@@ -28,6 +28,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     static var shared: AppDelegate!
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        HTTPCookieStorage.shared.removeCookies(since: Date(timeIntervalSince1970: 0))
         AppDelegate.shared = self
         setupBaseUI()
         

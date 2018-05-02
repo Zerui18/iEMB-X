@@ -176,7 +176,16 @@ extension EMBClient {
      Loads data with the provided request on URLSession.shared. Will validate received data to check for auth-error. Retries the request after re-authentication
      */
     func loadPage(request: URLRequest, completion: @escaping (String?, Error?)->Void) {
-        let request = request.signed()
+        
+        func authFailed() {
+            completion(nil, NSError(domain: "com.Zerui.EMBClient.AuthError", code: 403, userInfo: [NSLocalizedDescriptionKey : "Did not receive valid data from server, this is probably due to authentication failure."]))
+            NotificationCenter.default.post(name: .embLoginCredentiaInvalidated, object: nil)
+        }
+        
+        guard let request = request.signed() else {
+            authFailed()
+            return
+        }
         
         URLSession.shared.dataTask(with: request) { (data, res, err) in
             guard err == nil else {
@@ -202,8 +211,7 @@ extension EMBClient {
                         }
                         
                         guard isResponseValid(res!) else {
-                            completion(nil, NSError(domain: "com.Zerui.EMBClient.AuthError", code: 403, userInfo: [NSLocalizedDescriptionKey : "Did not receive valid data from server, this is probably due to authentication failure."]))
-                            NotificationCenter.default.post(name: .embLoginCredentiaInvalidated, object: nil)
+                            authFailed()
                             return
                         }
                         
@@ -222,5 +230,5 @@ extension EMBClient {
 }
 
 fileprivate func isResponseValid(_ response: URLResponse)-> Bool {
-    return response.expectedContentLength > 2044
+    return response.expectedContentLength > 2066
 }

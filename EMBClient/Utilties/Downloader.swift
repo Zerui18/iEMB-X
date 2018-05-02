@@ -21,18 +21,11 @@ class Downloader: NSObject, URLSessionDownloadDelegate {
     init(sourceURL: URL, destinationURL: URL, onProgress block: ProgressBlock? = nil, onComplete handler: CompletionBlock? = nil) {
         super.init()
         session = URLSession(configuration: URLSessionConfiguration.default, delegate: self, delegateQueue: nil)
-        task = session.downloadTask(with: URLRequest(url: sourceURL).signed())
         destination = destinationURL
         progressBlock = block
         completionBlock = handler
-        EMBClient.shared.reLogin { (_, err) in
-            if err != nil {
-                self.completionBlock?(err)
-            }
-            else {
-                self.task.resume()
-            }
-        }
+        task = session.downloadTask(with: URLRequest(url: sourceURL).signed()!)
+        task.resume()
     }
     
     var session: URLSession!
