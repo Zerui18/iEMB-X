@@ -190,7 +190,7 @@
                                                                         </constraints>
                                                                     </imageView>
                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Some File.pdf" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.85000002384185791" translatesAutoresizingMaskIntoConstraints="NO" id="oT4-9s-itn">
-                                                                        <rect key="frame" x="52" y="8" width="234" height="34"/>
+                                                                        <rect key="frame" x="52" y="8" width="289" height="34"/>
                                                                         <constraints>
                                                                             <constraint firstAttribute="height" constant="34" id="oVW-JZ-iga"/>
                                                                         </constraints>

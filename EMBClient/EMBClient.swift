@@ -182,12 +182,12 @@ extension EMBClient {
             NotificationCenter.default.post(name: .embLoginCredentiaInvalidated, object: nil)
         }
         
-        guard let request = request.signed() else {
+        guard let request1 = request.signed() else {
             authFailed()
             return
         }
         
-        URLSession.shared.dataTask(with: request) { (data, res, err) in
+        URLSession.shared.dataTask(with: request1) { (data, res, err) in
             guard err == nil else {
                 completion(nil, err)
                 return
@@ -204,7 +204,7 @@ extension EMBClient {
                     }
                     
                     // retry fetching page
-                    URLSession.shared.dataTask(with: request) { (data, res, err) in
+                    URLSession.shared.dataTask(with: request.signed()!) { (data, res, err) in
                         guard let data = data else {
                             completion(nil, error!)
                             return
