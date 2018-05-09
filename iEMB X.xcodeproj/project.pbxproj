@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		013D1AE620A2725C00939AB6 /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013D1AE520A2725C00939AB6 /* AuthView.swift */; };
 		0175C7FF2008F2E40030909E /* EMBClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 0175C7FD2008F2E40030909E /* EMBClient.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0175C8022008F2E40030909E /* EMBClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0175C7FB2008F2E40030909E /* EMBClient.framework */; };
 		0175C8032008F2E40030909E /* EMBClient.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0175C7FB2008F2E40030909E /* EMBClient.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -49,7 +50,6 @@
 		229BABB11F7B4BAC00B86534 /* Custom_UI.h in Headers */ = {isa = PBXBuildFile; fileRef = 229BABAF1F7B4BAC00B86534 /* Custom_UI.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		229BABB41F7B4BAC00B86534 /* Custom_UI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 229BABAD1F7B4BAC00B86534 /* Custom_UI.framework */; };
 		229BABB51F7B4BAC00B86534 /* Custom_UI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 229BABAD1F7B4BAC00B86534 /* Custom_UI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		229BABBA1F7B4BCF00B86534 /* AuthTextfield.swift in Sources */ = {isa = PBXBuildFile; fileRef = 229BABB91F7B4BCF00B86534 /* AuthTextfield.swift */; };
 		22AFD2F11F837FC900D8C4E8 /* DismissAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22AFD2F01F837FC900D8C4E8 /* DismissAnimator.swift */; };
 		22AFD2F31F8382A100D8C4E8 /* Interactor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22AFD2F21F8382A100D8C4E8 /* Interactor.swift */; };
 		22F5F7461F6CF2E300029277 /* FileArchiveTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22F5F7451F6CF2E300029277 /* FileArchiveTableViewController.swift */; };
@@ -89,6 +89,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		013D1AE520A2725C00939AB6 /* AuthView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
 		0175C7FB2008F2E40030909E /* EMBClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = EMBClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0175C7FD2008F2E40030909E /* EMBClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EMBClient.h; sourceTree = "<group>"; };
 		0175C7FE2008F2E40030909E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -131,7 +132,6 @@
 		229BABAD1F7B4BAC00B86534 /* Custom_UI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Custom_UI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		229BABAF1F7B4BAC00B86534 /* Custom_UI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Custom_UI.h; sourceTree = "<group>"; };
 		229BABB01F7B4BAC00B86534 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		229BABB91F7B4BCF00B86534 /* AuthTextfield.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthTextfield.swift; sourceTree = "<group>"; };
 		22AFD2F01F837FC900D8C4E8 /* DismissAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DismissAnimator.swift; sourceTree = "<group>"; };
 		22AFD2F21F8382A100D8C4E8 /* Interactor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Interactor.swift; sourceTree = "<group>"; };
 		22F5F7451F6CF2E300029277 /* FileArchiveTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileArchiveTableViewController.swift; sourceTree = "<group>"; };
@@ -266,7 +266,7 @@
 		229BABAE1F7B4BAC00B86534 /* Custom UI */ = {
 			isa = PBXGroup;
 			children = (
-				229BABB91F7B4BCF00B86534 /* AuthTextfield.swift */,
+				013D1AE520A2725C00939AB6 /* AuthView.swift */,
 				227EAD8A1F94B3D800C5DF48 /* RSKPlaceholderTextView.swift */,
 				22FDF2B01F7D27910054A05B /* CariocaMenu.swift */,
 				229BABAF1F7B4BAC00B86534 /* Custom_UI.h */,
@@ -512,7 +512,7 @@
 			files = (
 				227EAD8B1F94B3D800C5DF48 /* RSKPlaceholderTextView.swift in Sources */,
 				0194B1DB201C1B3200FD3244 /* CariocaMenu.swift in Sources */,
-				229BABBA1F7B4BCF00B86534 /* AuthTextfield.swift in Sources */,
+				013D1AE620A2725C00939AB6 /* AuthView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

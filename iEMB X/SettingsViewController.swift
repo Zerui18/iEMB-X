@@ -116,7 +116,7 @@ class SettingsViewController: UIViewController {
                 }
                 menuViewController.tableView(menuViewController.tableView, didSelectRowAt: IndexPath(row: 0, section: 0))
                 self.dismiss(animated: true) {
-                    self.storyboard!.instantiateViewController(withIdentifier: "loginVC").present(in: baseViewController)
+                    LoginViewController().present(in: baseViewController)
                 }
             }
             catch {

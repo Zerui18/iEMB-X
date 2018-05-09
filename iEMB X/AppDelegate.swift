@@ -36,7 +36,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) {_,_ in}
         
         if !EMBUser.shared.hasSavedCredentials() {
-            Constants.mainStoryboard.instantiateViewController(withIdentifier: "loginVC").present(in: window!.rootViewController!)
+            LoginViewController().present(in: window!.rootViewController!)
         }
         
         NotificationCenter.default.addObserver(self, selector: #selector(presentLoginScreen), name: .embLoginCredentiaInvalidated, object: nil)
@@ -85,7 +85,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     @objc private func presentLoginScreen() {
         DispatchQueue.main.async {
             menuViewController.presentedBoardVC.navigationController?.popToRootViewController(animated: false)
-            Constants.mainStoryboard.instantiateViewController(withIdentifier: "loginVC").present(in: self.window!.rootViewController!)
+            menuViewController.presentedBoardVC.tableView.reloadData()
+            LoginViewController().present(in: self.window!.rootViewController!)
         }
     }
 
