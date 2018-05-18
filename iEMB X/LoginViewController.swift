@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import Custom_UI
+import Components
 import EMBClient
 
 class LoginViewController: UIViewController {
@@ -117,8 +117,6 @@ class LoginViewController: UIViewController {
         view.isUserInteractionEnabled = false
         spinner.startAnimating()
         UIView.animate(withDuration: 0.3) {
-            self.usernameField.alpha = 0.0
-            self.passwordField.alpha = 0.0
             self.loginButton.alpha = 0.0
         }
         
@@ -128,8 +126,6 @@ class LoginViewController: UIViewController {
                     notificationFeedback(ofType: .error)
                     self.spinner.stopAnimating()
                     UIView.animate(withDuration: 0.3) {
-                        self.loginButton.alpha = 1.0
-                        self.usernameField.alpha = 1.0
                         self.passwordField.alpha = 1.0
                     }
                     self.view.isUserInteractionEnabled = true
@@ -139,7 +135,6 @@ class LoginViewController: UIViewController {
                 try! EMBClient.shared.resetCache()
                 backgroungFetchInterval = 30 * 60
                 self.dismiss(animated: true) {
-                    menuViewController.presentedBoardVC.tableView.reloadSections([0], with: .automatic)
                     menuViewController.presentedBoardVC.reloadBoard()
                 }
             }

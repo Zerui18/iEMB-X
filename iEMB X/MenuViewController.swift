@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import Custom_UI
+import Components
 
 class MenuViewController: UITableViewController {
     

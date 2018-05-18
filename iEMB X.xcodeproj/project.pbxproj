@@ -48,8 +48,8 @@
 		226C28A81F695819007C9DBD /* Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 226C28A71F695819007C9DBD /* Functions.swift */; };
 		227EAD8B1F94B3D800C5DF48 /* RSKPlaceholderTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 227EAD8A1F94B3D800C5DF48 /* RSKPlaceholderTextView.swift */; };
 		229BABB11F7B4BAC00B86534 /* Custom_UI.h in Headers */ = {isa = PBXBuildFile; fileRef = 229BABAF1F7B4BAC00B86534 /* Custom_UI.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		229BABB41F7B4BAC00B86534 /* Custom_UI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 229BABAD1F7B4BAC00B86534 /* Custom_UI.framework */; };
-		229BABB51F7B4BAC00B86534 /* Custom_UI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 229BABAD1F7B4BAC00B86534 /* Custom_UI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		229BABB41F7B4BAC00B86534 /* Components.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 229BABAD1F7B4BAC00B86534 /* Components.framework */; };
+		229BABB51F7B4BAC00B86534 /* Components.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 229BABAD1F7B4BAC00B86534 /* Components.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		22AFD2F11F837FC900D8C4E8 /* DismissAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22AFD2F01F837FC900D8C4E8 /* DismissAnimator.swift */; };
 		22AFD2F31F8382A100D8C4E8 /* Interactor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22AFD2F21F8382A100D8C4E8 /* Interactor.swift */; };
 		22F5F7461F6CF2E300029277 /* FileArchiveTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22F5F7451F6CF2E300029277 /* FileArchiveTableViewController.swift */; };
@@ -81,7 +81,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				0175C8032008F2E40030909E /* EMBClient.framework in Embed Frameworks */,
-				229BABB51F7B4BAC00B86534 /* Custom_UI.framework in Embed Frameworks */,
+				229BABB51F7B4BAC00B86534 /* Components.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -129,7 +129,7 @@
 		226C28A51F6956EC007C9DBD /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		226C28A71F695819007C9DBD /* Functions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Functions.swift; sourceTree = "<group>"; };
 		227EAD8A1F94B3D800C5DF48 /* RSKPlaceholderTextView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSKPlaceholderTextView.swift; sourceTree = "<group>"; };
-		229BABAD1F7B4BAC00B86534 /* Custom_UI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Custom_UI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		229BABAD1F7B4BAC00B86534 /* Components.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Components.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		229BABAF1F7B4BAC00B86534 /* Custom_UI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Custom_UI.h; sourceTree = "<group>"; };
 		229BABB01F7B4BAC00B86534 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		22AFD2F01F837FC900D8C4E8 /* DismissAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DismissAnimator.swift; sourceTree = "<group>"; };
@@ -153,7 +153,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0175C8022008F2E40030909E /* EMBClient.framework in Frameworks */,
-				229BABB41F7B4BAC00B86534 /* Custom_UI.framework in Frameworks */,
+				229BABB41F7B4BAC00B86534 /* Components.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -210,7 +210,7 @@
 			isa = PBXGroup;
 			children = (
 				226C288A1F694A53007C9DBD /* iEMB X */,
-				229BABAE1F7B4BAC00B86534 /* Custom UI */,
+				229BABAE1F7B4BAC00B86534 /* Components */,
 				0175C7FC2008F2E40030909E /* EMBClient */,
 				226C28891F694A53007C9DBD /* Products */,
 			);
@@ -220,7 +220,7 @@
 			isa = PBXGroup;
 			children = (
 				226C28881F694A53007C9DBD /* iEMB X.app */,
-				229BABAD1F7B4BAC00B86534 /* Custom_UI.framework */,
+				229BABAD1F7B4BAC00B86534 /* Components.framework */,
 				0175C7FB2008F2E40030909E /* EMBClient.framework */,
 			);
 			name = Products;
@@ -254,7 +254,6 @@
 		226C28A91F69586A007C9DBD /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				22AFD2EF1F837F9800D8C4E8 /* Transition */,
 				226C28A71F695819007C9DBD /* Functions.swift */,
 				226346DE1F8620C500402855 /* Date+TimeAgo.swift */,
 				226C28A11F69562A007C9DBD /* Constants.swift */,
@@ -263,16 +262,17 @@
 			path = Utils;
 			sourceTree = "<group>";
 		};
-		229BABAE1F7B4BAC00B86534 /* Custom UI */ = {
+		229BABAE1F7B4BAC00B86534 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				22AFD2EF1F837F9800D8C4E8 /* Transition */,
 				013D1AE520A2725C00939AB6 /* AuthView.swift */,
 				227EAD8A1F94B3D800C5DF48 /* RSKPlaceholderTextView.swift */,
 				22FDF2B01F7D27910054A05B /* CariocaMenu.swift */,
 				229BABAF1F7B4BAC00B86534 /* Custom_UI.h */,
 				229BABB01F7B4BAC00B86534 /* Info.plist */,
 			);
-			path = "Custom UI";
+			path = Components;
 			sourceTree = "<group>";
 		};
 		22AFD2EF1F837F9800D8C4E8 /* Transition */ = {
@@ -354,9 +354,9 @@
 			productReference = 226C28881F694A53007C9DBD /* iEMB X.app */;
 			productType = "com.apple.product-type.application";
 		};
-		229BABAC1F7B4BAC00B86534 /* Custom UI */ = {
+		229BABAC1F7B4BAC00B86534 /* Components */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 229BABB81F7B4BAC00B86534 /* Build configuration list for PBXNativeTarget "Custom UI" */;
+			buildConfigurationList = 229BABB81F7B4BAC00B86534 /* Build configuration list for PBXNativeTarget "Components" */;
 			buildPhases = (
 				229BABA81F7B4BAC00B86534 /* Sources */,
 				229BABA91F7B4BAC00B86534 /* Frameworks */,
@@ -367,9 +367,9 @@
 			);
 			dependencies = (
 			);
-			name = "Custom UI";
+			name = Components;
 			productName = "Custom UI";
-			productReference = 229BABAD1F7B4BAC00B86534 /* Custom_UI.framework */;
+			productReference = 229BABAD1F7B4BAC00B86534 /* Components.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
@@ -423,7 +423,7 @@
 			projectRoot = "";
 			targets = (
 				226C28871F694A53007C9DBD /* iEMB X */,
-				229BABAC1F7B4BAC00B86534 /* Custom UI */,
+				229BABAC1F7B4BAC00B86534 /* Components */,
 				0175C7FA2008F2E40030909E /* EMBClient */,
 			);
 		};
@@ -526,7 +526,7 @@
 		};
 		229BABB31F7B4BAC00B86534 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 229BABAC1F7B4BAC00B86534 /* Custom UI */;
+			target = 229BABAC1F7B4BAC00B86534 /* Components */;
 			targetProxy = 229BABB21F7B4BAC00B86534 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -765,7 +765,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = "Custom UI/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Components/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -792,7 +792,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = "Custom UI/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Components/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -836,7 +836,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		229BABB81F7B4BAC00B86534 /* Build configuration list for PBXNativeTarget "Custom UI" */ = {
+		229BABB81F7B4BAC00B86534 /* Build configuration list for PBXNativeTarget "Components" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				229BABB61F7B4BAC00B86534 /* Debug */,

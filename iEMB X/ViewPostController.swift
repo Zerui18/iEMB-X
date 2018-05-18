@@ -9,7 +9,7 @@
 import UIKit
 import EMBClient
 import SafariServices
-import Custom_UI
+import Components
 
 class ViewPostController: UIViewController {
     

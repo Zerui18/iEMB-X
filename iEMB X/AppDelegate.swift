@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import Custom_UI
+import Components
 import EMBClient
 import UserNotifications
 

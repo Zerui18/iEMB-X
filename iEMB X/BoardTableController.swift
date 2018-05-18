@@ -9,7 +9,7 @@
 import UIKit
 import EMBClient
 
-fileprivate let swipeActionPullViewType: AnyClass = NSClassFromString("UISwipeActionPullView")!.self
+fileprivate let swipeActionPullViewType: AnyClass = NSClassFromString("UISwipeActionPullView")!
 
 class BoardTableController: UITableViewController {
     
@@ -287,10 +287,10 @@ extension BoardTableController {
     func updateLastReadDisplay() {
         let timeInterval = lastRefreshed
         if timeInterval > 0 {
-            refreshControl!.attributedTitle = NSAttributedString(string: "Last Updated: "+Date(timeIntervalSince1970: timeInterval).timeAgoSinceNow(), attributes: [.font: subfont, .foregroundColor: UIColor.gray])
+            refreshControl!.attributedTitle = NSAttributedString(string: Date(timeIntervalSince1970: timeInterval).timeAgoSinceNow(), attributes: [.font: subfont, .foregroundColor: UIColor.gray])
         }
         else {
-            refreshControl!.attributedTitle = NSAttributedString(string: "Last Updated: Never", attributes: [.font: subfont, .foregroundColor: UIColor.gray])
+            refreshControl!.attributedTitle = NSAttributedString(string: "Pull to Update", attributes: [.font: subfont, .foregroundColor: UIColor.gray])
         }
     }
     
