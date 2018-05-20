@@ -210,8 +210,8 @@
 			isa = PBXGroup;
 			children = (
 				226C288A1F694A53007C9DBD /* iEMB X */,
-				229BABAE1F7B4BAC00B86534 /* Components */,
 				0175C7FC2008F2E40030909E /* EMBClient */,
+				229BABAE1F7B4BAC00B86534 /* Components */,
 				226C28891F694A53007C9DBD /* Products */,
 			);
 			sourceTree = "<group>";

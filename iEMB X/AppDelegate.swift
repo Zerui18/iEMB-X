@@ -139,7 +139,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 }
             }
             
-            self.scheduleNotification(withTitle: "You Have \(posts.count) New Posts", body: "Categories:  🛑\(c1)   ⚠️\(c2)   ✅\(c3)")
+            var content = "Categorie(s):"
+            for (icon, cnt) in zip("🛑⚠️✅", [c1, c2, c3]) where cnt > 0 {
+                content += "  \(icon)\(cnt)"
+            }
+            
+            self.scheduleNotification(withTitle: "You Have \(posts.count) New Posts", body: content)
         }
     }
     
