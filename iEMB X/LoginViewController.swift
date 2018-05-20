@@ -120,7 +120,7 @@ class LoginViewController: UIViewController {
             self.loginButton.alpha = 0.0
         }
         
-        EMBClient.shared.login(username: username, password: password) {success, error in
+        EMBClient.shared.login(username: username, password: password) { success, error in
             DispatchQueue.main.async {
                 guard success else {
                     notificationFeedback(ofType: .error)
@@ -133,6 +133,7 @@ class LoginViewController: UIViewController {
                 }
                 
                 try! EMBClient.shared.resetCache()
+                userDefaults.removeObject(forKey: "lastRefreshed_1048")
                 backgroungFetchInterval = 30 * 60
                 self.dismiss(animated: true) {
                     menuViewController.presentedBoardVC.reloadBoard()
