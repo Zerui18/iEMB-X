@@ -110,9 +110,7 @@ class SettingsViewController: UIViewController {
                 }
                 menuViewController.boardVCs.forEach {
                     let ctr = ($0.viewControllers[0] as! BoardTableController)
-                    ctr.searchController.isActive = false
-                    ctr.isFilteringThroughSearch = false
-                    ctr.tableView.reloadData()
+                    ctr.reset()
                 }
                 menuViewController.tableView(menuViewController.tableView, didSelectRowAt: IndexPath(row: 0, section: 0))
                 self.dismiss(animated: true) {

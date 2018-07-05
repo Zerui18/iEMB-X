@@ -136,7 +136,7 @@ extension MenuViewController: UIAdaptivePresentationControllerDelegate, CariocaM
         presentedBoardVC.navigationController!.view.removeFromSuperview()
         presentedBoardVC.navigationController!.removeFromParentViewController()
         
-        presentedBoardVC = vc.viewControllers[0] as! BoardTableController
+        presentedBoardVC = (vc.viewControllers[0] as! BoardTableController)
         
         baseViewController.addChildViewController(presentedBoardVC.navigationController!)
         
