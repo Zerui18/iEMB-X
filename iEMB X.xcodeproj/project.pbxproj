@@ -20,6 +20,7 @@
 		0175C8172008FD6C0030909E /* EMBUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0175C8162008FD6C0030909E /* EMBUser.swift */; };
 		0175C8192008FE960030909E /* APIEndpoints.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0175C8182008FE960030909E /* APIEndpoints.swift */; };
 		0194B1DB201C1B3200FD3244 /* CariocaMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22FDF2B01F7D27910054A05B /* CariocaMenu.swift */; };
+		01ADEDBC20F101870019DEE4 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01ADEDBB20F101870019DEE4 /* StoreKit.framework */; };
 		01C522DF201B4C51001938DE /* RegexConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C522DE201B4C51001938DE /* RegexConstants.swift */; };
 		01C522E3201B4CA6001938DE /* String+HTMLUnEscape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C522E2201B4CA6001938DE /* String+HTMLUnEscape.swift */; };
 		01C522E5201B4CC0001938DE /* Notification_Name+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01C522E4201B4CC0001938DE /* Notification_Name+Extension.swift */; };
@@ -98,6 +99,7 @@
 		0175C8142008FAEA0030909E /* CoreDataHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataHelper.swift; sourceTree = "<group>"; };
 		0175C8162008FD6C0030909E /* EMBUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EMBUser.swift; sourceTree = "<group>"; };
 		0175C8182008FE960030909E /* APIEndpoints.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIEndpoints.swift; sourceTree = "<group>"; };
+		01ADEDBB20F101870019DEE4 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		01C522DE201B4C51001938DE /* RegexConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegexConstants.swift; sourceTree = "<group>"; };
 		01C522E2201B4CA6001938DE /* String+HTMLUnEscape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+HTMLUnEscape.swift"; sourceTree = "<group>"; };
 		01C522E4201B4CC0001938DE /* Notification_Name+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification_Name+Extension.swift"; sourceTree = "<group>"; };
@@ -152,6 +154,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				01ADEDBC20F101870019DEE4 /* StoreKit.framework in Frameworks */,
 				0175C8022008F2E40030909E /* EMBClient.framework in Frameworks */,
 				229BABB41F7B4BAC00B86534 /* Components.framework in Frameworks */,
 			);
@@ -180,6 +183,14 @@
 				0175C7FE2008F2E40030909E /* Info.plist */,
 			);
 			path = EMBClient;
+			sourceTree = "<group>";
+		};
+		01ADEDBA20F101870019DEE4 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				01ADEDBB20F101870019DEE4 /* StoreKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		01C522E8201B6E52001938DE /* Utilties */ = {
@@ -213,6 +224,7 @@
 				0175C7FC2008F2E40030909E /* EMBClient */,
 				229BABAE1F7B4BAC00B86534 /* Components */,
 				226C28891F694A53007C9DBD /* Products */,
+				01ADEDBA20F101870019DEE4 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -398,7 +410,7 @@
 								enabled = 1;
 							};
 							com.apple.InAppPurchase = {
-								enabled = 0;
+								enabled = 1;
 							};
 						};
 					};

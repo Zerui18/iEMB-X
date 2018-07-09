@@ -135,6 +135,8 @@ class LoginViewController: UIViewController {
                 try! EMBClient.shared.resetCache()
                 userDefaults.removeObject(forKey: "lastRefreshed_1048")
                 backgroungFetchInterval = 30 * 60
+                menuViewController.presentedBoardVC.shouldUpdateBoardOnAppear = true
+                self.dismiss(animated: true)
             }
         }
     }

@@ -19,6 +19,8 @@ class BoardTableController: UITableViewController {
     /// Interactive Dismisser for presented ViewPostVCs.
     let interactor = Interactor()
     
+    var shouldUpdateBoardOnAppear = false
+    
     // MARK: Private Properties
     /// Barbutton that toggles unread filter.
     @IBOutlet private weak var filterButton: UIBarButtonItem!
@@ -101,7 +103,10 @@ class BoardTableController: UITableViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        reloadBoard()
+        if shouldUpdateBoardOnAppear {
+            updateBoard()
+            shouldUpdateBoardOnAppear = false
+        }
     }
     
     private func setupUI() {
@@ -120,7 +125,7 @@ class BoardTableController: UITableViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .organize, target: self, action: #selector(openFilesCtr))
         
         refreshControl = UIRefreshControl()
-        refreshControl!.addTarget(self, action: #selector(reloadBoard), for: .valueChanged)
+        refreshControl!.addTarget(self, action: #selector(updateBoard), for: .valueChanged)
         updateLastReadDisplay()
         
         tableView.separatorStyle = .none
@@ -132,10 +137,12 @@ class BoardTableController: UITableViewController {
     
     // MARK: Selector Methods
     @objc private func openFilesCtr() {
-        navigationController?.pushViewController(storyboard!.instantiateViewController(withIdentifier: "filesVC"), animated: true)
+        navigationController?.pushViewController(
+            storyboard!.instantiateViewController(withIdentifier: "filesVC"),
+            animated: true)
     }
     
-    @objc private func reloadBoard() {
+    @objc private func updateBoard() {
         guard EMBUser.shared.isAuthenticated() else {
             NotificationCenter.default.post(name: .embLoginCredentiaInvalidated, object: nil)
             return
