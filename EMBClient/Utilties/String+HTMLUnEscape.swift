@@ -8,19 +8,10 @@
 
 import Foundation
 
-let htmlEscaped = ["&amp;"     :   "&",
-                   "&gt;"      :   ">",
-                   "&lt;"      :   "<",
-                   "&quot;"    :   "\"",
-                   "&#39;"     :   "'",
-                   "&#160;"    :   " "]
 
 extension String {
     var removingHTMLEncoding: String {
-        var result = self
-        for (enc, ori) in htmlEscaped {
-            result = result.replacingOccurrences(of: enc, with: ori)
-        }
-        return result
+        let htmlDecoded = try? NSAttributedString(data: data(using: .utf8)!, options: [.documentType: NSAttributedString.DocumentType.html, .characterEncoding: String.Encoding.utf8.rawValue], documentAttributes: nil)
+        return htmlDecoded?.string ?? self
     }
 }
