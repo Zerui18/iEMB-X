@@ -84,7 +84,7 @@ import UIKit
     ///`Optional` for menu BG BlurStyle overrides
     ///- returns: 'UIBlurEffectStyle' of menu's BG.
     ///- default: UIBlurEffectStyle.extraLight
-    @objc optional func getBlurStyle() -> UIBlurEffectStyle
+    @objc optional func getBlurStyle() -> UIBlurEffect.Style
     
     ///`Optional` Unselects a menu item
     ///- parameters:
@@ -159,7 +159,7 @@ open class CariocaMenu : NSObject, UIGestureRecognizerDelegate {
     fileprivate var panGestureRecognizer = UIPanGestureRecognizer()
     
     fileprivate var defaultShapeColor: UIColor = UIColor(red:0.07, green:0.73, blue:0.86, alpha:1)
-    fileprivate var defaultMenuBlurStyle: UIBlurEffectStyle = UIBlurEffectStyle.extraLight
+    fileprivate var defaultMenuBlurStyle: UIBlurEffect.Style = UIBlurEffect.Style.extraLight
     
     ///The datasource of the menu
     var dataSource:CariocaMenuDataSource
@@ -380,11 +380,11 @@ open class CariocaMenu : NSObject, UIGestureRecognizerDelegate {
     
     ///Makes sure the containerView is on top of the hostView
     open func moveToTop() {
-        hostView?.bringSubview(toFront: containerView)
+        hostView?.bringSubviewToFront(containerView)
         if gestureHelperViewLeft != nil {
-            hostView?.bringSubview(toFront: gestureHelperViewLeft)
+            hostView?.bringSubviewToFront(gestureHelperViewLeft)
         }
-        hostView?.bringSubview(toFront: leftIndicatorView)
+        hostView?.bringSubviewToFront(leftIndicatorView)
     }
     
     ///Adds blur to the container view
@@ -442,7 +442,7 @@ open class CariocaMenu : NSObject, UIGestureRecognizerDelegate {
         }
         gestureHelperViewLeft = prepareGestureHelperView(.leading, width:width)
         
-        hostView?.bringSubview(toFront: leftIndicatorView)
+        hostView?.bringSubviewToFront(leftIndicatorView)
     }
     
     /**
@@ -452,7 +452,7 @@ open class CariocaMenu : NSObject, UIGestureRecognizerDelegate {
             - width: The width of the helper view.
         - returns: `UIView` The helper view constrained to the hostView edge
     */
-    fileprivate func prepareGestureHelperView(_ edgeAttribute:NSLayoutAttribute, width:CGFloat)->UIView {
+    fileprivate func prepareGestureHelperView(_ edgeAttribute:NSLayoutConstraint.Attribute, width:CGFloat)->UIView {
         
         let view = UIView()
         view.backgroundColor = UIColor.clear
@@ -576,7 +576,7 @@ open class CariocaMenu : NSObject, UIGestureRecognizerDelegate {
         Generates an Equal constraint
         - returns: `NSlayoutConstraint` an equal constraint for the specified parameters
     */
-    fileprivate func getEqualConstraint(_ item: AnyObject, toItem: AnyObject, attribute: NSLayoutAttribute) -> NSLayoutConstraint {
+    fileprivate func getEqualConstraint(_ item: AnyObject, toItem: AnyObject, attribute: NSLayoutConstraint.Attribute) -> NSLayoutConstraint {
         return NSLayoutConstraint(item: item, attribute: attribute, relatedBy: .equal, toItem: toItem, attribute: attribute, multiplier: 1, constant: 0)
     }
 
@@ -657,7 +657,7 @@ class CariocaMenuIndicatorView : UIView {
         isHidden = true
         hostView.addSubview(self)
         
-        var attrSideEdge:NSLayoutAttribute = .leading
+        var attrSideEdge:NSLayoutConstraint.Attribute = .leading
         
         topConstraint = NSLayoutConstraint(item: self, attribute: .top, relatedBy: .equal, toItem: hostView, attribute: .top, multiplier: 1, constant: 0)
         
@@ -674,7 +674,7 @@ class CariocaMenuIndicatorView : UIView {
         hostView.layoutIfNeeded()
         
         //add Icon imageView
-        imageView.contentMode = UIViewContentMode.scaleAspectFit
+        imageView.contentMode = UIView.ContentMode.scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(imageView)
         
@@ -716,7 +716,7 @@ class CariocaMenuIndicatorView : UIView {
     
         updateY(offset+yValue)
         superview!.layoutIfNeeded()
-        superview!.bringSubview(toFront: self)
+        superview!.bringSubviewToFront(self)
         show()
         
         return (topConstraint?.constant)!
@@ -758,7 +758,7 @@ class CariocaMenuIndicatorView : UIView {
 //        CariocaMenu.Log("moveYOverMenu \(y)")
         topConstraint?.constant = y
         superview!.layoutIfNeeded()
-        superview!.bringSubview(toFront: self)
+        superview!.bringSubviewToFront(self)
         isHidden = false
         
         animateX(getEdgeConstantValue(containerWidth - self.size.width + 10), speed1 :0.2, position2: getEdgeConstantValue(containerWidth - (self.size.width + 1)), speed2 :0.2, completion: {

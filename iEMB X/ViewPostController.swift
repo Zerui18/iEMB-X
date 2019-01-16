@@ -61,12 +61,12 @@ class ViewPostController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        AppDelegate.shared.window?.windowLevel = UIWindowLevelAlert - .leastNonzeroMagnitude
+        AppDelegate.shared.window?.windowLevel = UIWindow.Level.alert - .leastNonzeroMagnitude
     }
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        AppDelegate.shared.window?.windowLevel = UIWindowLevelNormal
+        AppDelegate.shared.window?.windowLevel = UIWindow.Level.normal
     }
     
     //MARK: - Methods
@@ -173,7 +173,7 @@ class ViewPostController: UIViewController {
         }
         
         let tempImage = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(attachment.fileWrapper?.filename ?? "Image.png")
-        try! UIImagePNGRepresentation(image)!.write(to: tempImage)
+        try! image.pngData()!.write(to: tempImage)
         
         let ctr = FilePreviewController()
         ctr.file = tempImage
@@ -276,7 +276,7 @@ class ViewPostController: UIViewController {
             let alr = UIAlertController(title: "Processing", message: "please wait for the reply to be sent", preferredStyle: .alert)
             responseTextView.resignFirstResponder()
             alr.present(in: self)
-            let hasOption = optionsSegment.selectedSegmentIndex != UISegmentedControlNoSegment
+            let hasOption = optionsSegment.selectedSegmentIndex != UISegmentedControl.noSegment
             let option = hasOption ? optionsSegment.titleForSegment(at: optionsSegment.selectedSegmentIndex)!:""
             
             post.postResponse(option: option, content: responseTextView.text) { error in
@@ -440,7 +440,7 @@ extension ViewPostController: UIGestureRecognizerDelegate {
                     }
                 }
             }
-        default:
+        case .ended:
             let finished = interactor.complete(extraCondition: sender.velocity(in: nil).y > 600 &&
                                                 interactor.percentComplete >= 0.1)
             if !finished {
@@ -451,6 +451,10 @@ extension ViewPostController: UIGestureRecognizerDelegate {
             }
             isAtTop = false
             startingVal = nil
+        default:
+            isAtTop = false
+            startingVal = nil
+            interactor.cancel()
         }
     }
     

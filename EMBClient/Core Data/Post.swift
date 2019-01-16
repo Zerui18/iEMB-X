@@ -92,7 +92,7 @@ public class Post: NSManagedObject {
                             self.content!.addAttribute(.font, value: newFont, range: range)
                         }
                         // remove all background colors
-                        self.content!.addAttribute(NSAttributedStringKey.backgroundColor, value: UIColor.clear, range: NSRange(location: 0, length: self.content!.length))
+                        self.content!.addAttribute(NSAttributedString.Key.backgroundColor, value: UIColor.clear, range: NSRange(location: 0, length: self.content!.length))
                         
                         self.contentData = try self.content!.data(from: NSRange(location: 0, length: self.content!.length), documentAttributes: [.documentType: NSAttributedString.DocumentType.rtfd]) as NSData
                     }

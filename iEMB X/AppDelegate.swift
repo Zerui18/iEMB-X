@@ -27,7 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow? = UIWindow(frame: UIScreen.main.bounds)
     static var shared: AppDelegate!
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         HTTPCookieStorage.shared.removeCookies(since: Date(timeIntervalSince1970: 0))
         AppDelegate.shared = self
         setupBaseUI()
@@ -46,7 +46,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func setupBaseUI() {
         let boardVC = menuViewController.boardVCs[0].viewControllers[0] as! BoardTableController
         menuViewController.presentedBoardVC = boardVC
-        baseViewController.addChildViewController(menuViewController.boardVCs[0])
+        baseViewController.addChild(menuViewController.boardVCs[0])
         baseViewController.view.addSubview(menuViewController.boardVCs[0].view)
         
         cariocaMenu.addInView(baseViewController.view)
@@ -96,14 +96,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             try? CoreDataHelper.shared.saveContext()
         }
         else {
-            UIApplication.shared.setMinimumBackgroundFetchInterval(UIApplicationBackgroundFetchIntervalNever)
+            UIApplication.shared.setMinimumBackgroundFetchInterval(UIApplication.backgroundFetchIntervalNever)
         }
     }
 
     func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         
         guard EMBUser.shared.hasSavedCredentials() else {
-            UIApplication.shared.setMinimumBackgroundFetchInterval(UIApplicationBackgroundFetchIntervalNever)
+            UIApplication.shared.setMinimumBackgroundFetchInterval(UIApplication.backgroundFetchIntervalNever)
             completionHandler(.noData)
             return
         }
@@ -152,7 +152,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let content: UNMutableNotificationContent = UNMutableNotificationContent()
         content.title = title
         content.body = body
-        content.sound = UNNotificationSound.default()
+        content.sound = UNNotificationSound.default
         UNUserNotificationCenter.current().add(UNNotificationRequest(identifier: "\(arc4random())_noti", content: content, trigger: nil))
     }
 

@@ -34,7 +34,7 @@ class SettingsViewController: UIViewController {
     @IBOutlet weak var logoutButton: UIButton!
     @IBOutlet weak var linkedLabel: UITextView!
     
-    var durs: [TimeInterval] = [30*60, 60*60, 120*60, UIApplicationBackgroundFetchIntervalNever]
+    var durs: [TimeInterval] = [30*60, 60*60, 120*60, UIApplication.backgroundFetchIntervalNever]
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -49,7 +49,7 @@ class SettingsViewController: UIViewController {
         · the actual interval is usually slightly longer than this
         · you will also need to enable this in Settings
         """, attributes: [.font:UIFont.systemFont(ofSize: 15, weight: .regular), .paragraphStyle: style])
-        str.addAttribute(.link, value: NSURL(string: UIApplicationOpenSettingsURLString)!, range: NSRange(location: str.length-8, length: 8))
+        str.addAttribute(.link, value: NSURL(string: UIApplication.openSettingsURLString)!, range: NSRange(location: str.length-8, length: 8))
         linkedLabel.attributedText = str
         linkedLabel.delegate = self
         linkedLabel.textDragInteraction?.isEnabled = false
@@ -128,7 +128,7 @@ class SettingsViewController: UIViewController {
         let ani = CABasicAnimation(keyPath: #keyPath(CALayer.borderWidth))
         ani.fromValue = 0
         ani.toValue = 2
-        ani.fillMode = kCAFillModeForwards
+        ani.fillMode = CAMediaTimingFillMode.forwards
         ani.isRemovedOnCompletion = false
         button.layer.add(ani, forKey: nil)
         button.setTitleColor(#colorLiteral(red: 0.1058823529, green: 0.6784313725, blue: 0.9725490196, alpha: 1), for: .normal)
@@ -138,7 +138,7 @@ class SettingsViewController: UIViewController {
         let ani = CABasicAnimation(keyPath: #keyPath(CALayer.borderWidth))
         ani.fromValue = 2
         ani.toValue = 0
-        ani.fillMode = kCAFillModeForwards
+        ani.fillMode = CAMediaTimingFillMode.forwards
         ani.isRemovedOnCompletion = false
         button.layer.add(ani, forKey: nil)
         button.setTitleColor(.lightGray, for: .normal)

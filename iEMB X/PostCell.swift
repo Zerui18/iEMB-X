@@ -32,7 +32,7 @@ class PostCell: UITableViewCell {
         case .information: importanceBanner.backgroundColor = .information
         }
         starIconWidthConstraint.constant = post.isMarked ? 23:0
-        titleLabel.attributedText = NSAttributedString(string: post.title!, attributes: [NSAttributedStringKey.font:(post.isRead ? systemFontNormal:systemFontHeavy)])
+        titleLabel.attributedText = NSAttributedString(string: post.title!, attributes: [NSAttributedString.Key.font:(post.isRead ? systemFontNormal:systemFontHeavy)])
     }
     
     override func awakeFromNib() {

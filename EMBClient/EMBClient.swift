@@ -39,23 +39,27 @@ public extension EMBClient {
     
     public func login(username: String, password: String, then completion: @escaping (Bool, Error?)->Void) {
         var loginRequest = URLRequest(url: APIEndpoints.loginURL)
-        loginRequest.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        loginRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         loginRequest.httpMethod = "post"
-        loginRequest.httpBody = "username=\(username)&password=\(password)&submitbut=Submit".data(using: .utf8)
+        loginRequest.httpBody = try! JSONSerialization.data(withJSONObject: ["userName": username, "password": password], options: [])
         
         EMBUser.shared.logout()
         
-        URLSession.shared.dataTask(with: loginRequest) { (_, _, error) in
+        URLSession.shared.dataTask(with: loginRequest) { (data, response, error) in
             if error != nil {
                 completion(false, error)
             }
             else {
-                if EMBUser.shared.saveSessionId() {
+                let dict = try! JSONSerialization.jsonObject(with: data!, options: []) as! [String: Any]
+                let success = dict["Success"] as! Bool
+                if success && EMBUser.shared.saveSessionId() {
                     EMBUser.shared.credentials = (userId: username, password: password)
                     completion(true, nil)
                 }
                 else {
-                    completion(false, NSError(domain: "com.Zerui.EMBClient.AuthError", code: 403, userInfo: [NSLocalizedDescriptionKey : "Did not receive valid data from server, this is probably due to authentication failure."]))
+                    completion(false, NSError(domain: "com.Zerui.EMBClient.AuthError",
+                                              code: 403,
+                                              userInfo: [NSLocalizedDescriptionKey : "Failed to authenticate user with iEMB server."]))
                 }
             }
         }.resume()
@@ -182,18 +186,19 @@ extension EMBClient {
             NotificationCenter.default.post(name: .embLoginCredentiaInvalidated, object: nil)
         }
         
-        guard let request1 = request.signed() else {
+        guard let firstRequest = request.signed() else {
             authFailed()
             return
         }
         
-        URLSession.shared.dataTask(with: request1) { (data, res, err) in
+        // attempt to load page data
+        URLSession.shared.dataTask(with: firstRequest) { (data, res, err) in
             guard err == nil else {
                 completion(nil, err)
                 return
             }
             
-            guard isResponseValid(res!) else {
+            guard isPageDataValid(data: data!) else {
                 
                 // has repsponse but invalid
                 // might be dut to outdated auth cookie
@@ -204,13 +209,14 @@ extension EMBClient {
                     }
                     
                     // retry fetching page
+                    // since login is successfull, .signed() will not be nil
                     URLSession.shared.dataTask(with: request.signed()!) { (data, res, err) in
                         guard let data = data else {
                             completion(nil, error!)
                             return
                         }
                         
-                        guard isResponseValid(res!) else {
+                        guard isPageDataValid(data: data) else {
                             authFailed()
                             return
                         }
@@ -229,6 +235,8 @@ extension EMBClient {
     
 }
 
-fileprivate func isResponseValid(_ response: URLResponse)-> Bool {
-    return response.expectedContentLength > 2066
+// Check for login form which is a more reliable indicator of Auth status.
+fileprivate let matchedBinary = "type=\"password\"".data(using: .utf8)!
+fileprivate func isPageDataValid(data: Data)-> Bool {
+    return data.range(of: matchedBinary) == nil
 }

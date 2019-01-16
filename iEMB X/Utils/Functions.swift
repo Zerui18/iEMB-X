@@ -8,7 +8,7 @@
 
 import UIKit
 
-func notificationFeedback(ofType type: UINotificationFeedbackType) {
+func notificationFeedback(ofType type: UINotificationFeedbackGenerator.FeedbackType) {
     DispatchQueue.main.async {
         notificationFeedbackGenerator.notificationOccurred(type)
         notificationFeedbackGenerator.prepare()

@@ -26,7 +26,7 @@ class LoginViewController: UIViewController {
     private let usernameField = AuthView(frame: .zero)
     private let passwordField = AuthView(frame: .zero)
     private let loginButton = UIButton(type: .custom)
-    private let spinner = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
+    private let spinner = UIActivityIndicatorView(style: .whiteLarge)
     
     // MARK: Lifecycle Methods
     override func viewDidLoad() {
@@ -51,7 +51,7 @@ class LoginViewController: UIViewController {
         passwordField.icon = #imageLiteral(resourceName: "ic_lock")
         passwordField.isSecureTextEntry = true
         
-        loginButton.setTitle("Login", for: UIControlState())
+        loginButton.setTitle("Login", for: UIControl.State())
         loginButton.backgroundColor = #colorLiteral(red: 0.937254902, green: 0.937254902, blue: 0.937254902, alpha: 0.8998287671)
         loginButton.setTitleColor(.darkGray, for: .normal)
         loginButton.setTitleColor(.black, for: .highlighted)
@@ -126,7 +126,7 @@ class LoginViewController: UIViewController {
                     notificationFeedback(ofType: .error)
                     self.spinner.stopAnimating()
                     UIView.animate(withDuration: 0.3) {
-                        self.passwordField.alpha = 1.0
+                        self.loginButton.alpha = 1.0
                     }
                     self.view.isUserInteractionEnabled = true
                     return
