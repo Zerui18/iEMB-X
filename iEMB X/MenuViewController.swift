@@ -26,13 +26,13 @@ class MenuViewController: UITableViewController {
 
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 6
+        return 5
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier) as! BoardCell
         cell.tag = indexPath.row
-        if indexPath.row == 5 {
+        if indexPath.row == 4 {
             cell.titleLabel.text = "Settings"
             cell.iconView.image = #imageLiteral(resourceName: "settings")
             cell.applyNormalStyle()
