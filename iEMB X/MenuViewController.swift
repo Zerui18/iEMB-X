@@ -13,8 +13,8 @@ class MenuViewController: UITableViewController {
     
     var cellIdentifier = "cellRight"
     
-    let boardIds = [1048, 1039, 1049, 1050, 1053]
-    var boardVCs: [UINavigationController] = [1048, 1039, 1049, 1050, 1053].map {
+    let boardIds = [1048, 1039, 1049, 1050]
+    var boardVCs: [UINavigationController] = [1048, 1039, 1049, 1050].map {
         let ctr = Constants.mainStoryboard.instantiateViewController(withIdentifier: "boardVC") as! BoardTableController
         ctr.currentBoard = $0
         return UINavigationController(rootViewController: ctr)
@@ -123,7 +123,7 @@ extension MenuViewController: UIAdaptivePresentationControllerDelegate, CariocaM
     }
     
     func cariocaMenuDidSelect(_ menu: CariocaMenu, indexPath: IndexPath) {
-        if indexPath.row == 5 {
+        if indexPath.row == 4 {
             let index = menuViewController.boardVCs.index(of: menuViewController.presentedBoardVC.navigationController!)!
             menu.updateIndicatorsImage(boardIcons[index])
             let settingsVC = storyboard!.instantiateViewController(withIdentifier: "settingsVC") as! SettingsViewController

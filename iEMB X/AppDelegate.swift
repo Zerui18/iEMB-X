@@ -85,7 +85,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     @objc private func presentLoginScreen() {
         DispatchQueue.main.async {
             menuViewController.presentedBoardVC.navigationController?.popToRootViewController(animated: false)
-            menuViewController.presentedBoardVC.tableView.reloadData()
             LoginViewController().present(in: self.window!.rootViewController!)
         }
     }

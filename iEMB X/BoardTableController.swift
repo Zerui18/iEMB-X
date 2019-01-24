@@ -104,6 +104,8 @@ class BoardTableController: UITableViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         if shouldUpdateBoardOnAppear {
+            // this only happens on credentials invalidation and relogin
+            tableView.reloadData() // reload to prevent out of sync
             updateBoard()
             shouldUpdateBoardOnAppear = false
         }
