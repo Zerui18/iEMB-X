@@ -236,7 +236,7 @@ class ViewPostController: UIViewController {
         
         // load previous reply, if any
         if let option = post.responseOption, let content = post.responseContent {
-            optionsSegment.selectedSegmentIndex = ["A","B","C","D","E"].index(of: option)!
+            optionsSegment.selectedSegmentIndex = ["A","B","C","D","E"].firstIndex(of: option)!
             responseTextView.text = content
         }
     }

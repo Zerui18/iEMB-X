@@ -37,7 +37,7 @@ public class EMBClient {
 
 public extension EMBClient {
     
-    public func login(username: String, password: String, then completion: @escaping (Bool, Error?)->Void) {
+    func login(username: String, password: String, then completion: @escaping (Bool, Error?)->Void) {
         var loginRequest = URLRequest(url: APIEndpoints.loginURL)
         loginRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         loginRequest.httpMethod = "post"
@@ -65,7 +65,7 @@ public extension EMBClient {
         }.resume()
     }
     
-    public func reLogin(then completion: @escaping (Bool, Error?)->Void) {
+    func reLogin(then completion: @escaping (Bool, Error?)->Void) {
         let user = EMBUser.shared.credentials!
         login(username: user.userId, password: user.password, then: completion)
     }

@@ -124,7 +124,7 @@ extension MenuViewController: UIAdaptivePresentationControllerDelegate, CariocaM
     
     func cariocaMenuDidSelect(_ menu: CariocaMenu, indexPath: IndexPath) {
         if indexPath.row == 4 {
-            let index = menuViewController.boardVCs.index(of: menuViewController.presentedBoardVC.navigationController!)!
+            let index = menuViewController.boardVCs.firstIndex(of: menuViewController.presentedBoardVC.navigationController!)!
             menu.updateIndicatorsImage(boardIcons[index])
             let settingsVC = storyboard!.instantiateViewController(withIdentifier: "settingsVC") as! SettingsViewController
             settingsVC.present(in: baseViewController)

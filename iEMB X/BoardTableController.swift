@@ -201,11 +201,11 @@ class BoardTableController: UITableViewController {
     
     fileprivate func reloadCell(forPost post: Post) {
         if isFilteringThroughSearch {
-            if let postIndex = filteredPosts.index(of: post) {
+            if let postIndex = filteredPosts.firstIndex(of: post) {
                 tableView.reloadRows(at: [IndexPath(row: postIndex, section: 0)], with: .automatic)
             }
         }
-        else if let postIndex = allPostsToDisplay.index(of: post) {
+        else if let postIndex = allPostsToDisplay.firstIndex(of: post) {
             let indexPaths = [IndexPath(row: postIndex, section: 0)]
             
             if isFilteringUnread{

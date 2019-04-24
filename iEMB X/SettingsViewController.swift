@@ -73,7 +73,7 @@ class SettingsViewController: UIViewController {
             $0.layer.cornerRadius = 15
         }
         
-        let index = durs.index(of: backgroungFetchInterval)!
+        let index = durs.firstIndex(of: backgroungFetchInterval)!
         showSelected(button: buttons[index])
     }
     
@@ -146,7 +146,7 @@ class SettingsViewController: UIViewController {
     
     @IBAction func buttonSelected(_ sender: UIButton) {
         selectionFeedback()
-        let prevSelected = buttons[durs.index(of: backgroungFetchInterval)!]
+        let prevSelected = buttons[durs.firstIndex(of: backgroungFetchInterval)!]
         showDeslected(button: prevSelected)
         showSelected(button: sender)
         backgroungFetchInterval = durs[sender.tag]
