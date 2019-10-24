@@ -17,7 +17,16 @@ class MenuViewController: UITableViewController {
     var boardVCs: [UINavigationController] = [1048, 1039, 1049, 1050].map {
         let ctr = Constants.mainStoryboard.instantiateViewController(withIdentifier: "boardVC") as! BoardTableController
         ctr.currentBoard = $0
-        return UINavigationController(rootViewController: ctr)
+        let navVc = UINavigationController(rootViewController: ctr)
+        // fix for iOS 13
+        // reconfigure navBars to use translucent backgrounds
+        // instead of the new default transparent
+        if #available(iOS 13.0, *) {
+            let app = UINavigationBarAppearance()
+            navVc.navigationBar.standardAppearance = app
+            navVc.navigationBar.scrollEdgeAppearance = app
+        }
+        return navVc
     }
     
     var boardIcons = [#imageLiteral(resourceName: "student"),#imageLiteral(resourceName: "service"),#imageLiteral(resourceName: "psb"),#imageLiteral(resourceName: "lost_found"),#imageLiteral(resourceName: "serve"),#imageLiteral(resourceName: "settings")]
@@ -121,12 +130,13 @@ extension MenuViewController: UIAdaptivePresentationControllerDelegate, CariocaM
     func adaptivePresentationStyle(for controller: UIPresentationController, traitCollection: UITraitCollection) -> UIModalPresentationStyle {
         return .none
     }
-    
+        
     func cariocaMenuDidSelect(_ menu: CariocaMenu, indexPath: IndexPath) {
         if indexPath.row == 4 {
             let index = menuViewController.boardVCs.firstIndex(of: menuViewController.presentedBoardVC.navigationController!)!
             menu.updateIndicatorsImage(boardIcons[index])
             let settingsVC = storyboard!.instantiateViewController(withIdentifier: "settingsVC") as! SettingsViewController
+            settingsVC.modalPresentationStyle = .formSheet
             settingsVC.present(in: baseViewController)
             return
         }

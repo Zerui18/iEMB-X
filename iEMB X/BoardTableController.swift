@@ -51,8 +51,8 @@ class BoardTableController: UITableViewController {
     fileprivate var isFilteringUnread = false
     
     
-    /// Cache of selected indexPath.
-    fileprivate var selectedIndexPath: IndexPath?
+//    /// Cache of selected indexPath.
+//    fileprivate var selectedIndexPath: IndexPath?
     
     fileprivate let searchController = UISearchController(searchResultsController: nil)
     
@@ -80,24 +80,24 @@ class BoardTableController: UITableViewController {
             return
         }
         
-        let index = selectedIndexPath
+//        let index = selectedIndexPath
         coordinator.animate(alongsideTransition: {_ in
             self.showUIComponents()
-            if index != nil {
-                (self.tableView.cellForRow(at: index!) as? PostCell)?.showDeselection()
-            }
+//            if index != nil {
+//                (self.tableView.cellForRow(at: index!) as? PostCell)?.showDeselection()
+//            }
         }, completion: {context in
             if context.isCancelled {
                 UIView.animate(withDuration: 0.3) {
                     self.hideUIComponents()
-                    if index != nil {
-                        (self.tableView.cellForRow(at: index!) as? PostCell)?.showSelection()
-                    }
+//                    if index != nil {
+//                        (self.tableView.cellForRow(at: index!) as? PostCell)?.showSelection()
+//                    }
                 }
             }
-            else {
-                self.selectedIndexPath = nil
-            }
+//            else {
+//                self.selectedIndexPath = nil
+//            }
         })
     }
     
@@ -242,7 +242,7 @@ class BoardTableController: UITableViewController {
     func boardUpdated(for newPosts: [Post]) {
         self.lastRefreshed = Date().timeIntervalSince1970
         if !newPosts.isEmpty {
-            self.selectedIndexPath = nil
+//            self.selectedIndexPath = nil
             
             let count: Int
             
@@ -284,15 +284,16 @@ extension BoardTableController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        selectedIndexPath = indexPath
-        (tableView.visibleCell(at: indexPath) as? PostCell)?.showSelection()
+//        selectedIndexPath = indexPath
+        (tableView.visibleCell(at: indexPath) as? PostCell)?.showDeselection()
         let vc = storyboard!.instantiateViewController(withIdentifier: "viewVC") as! ViewPostController
+        vc.modalPresentationStyle = .overFullScreen
         vc.post = displayedPosts[indexPath.row]
         vc.transitioningDelegate = self
         vc.present(in: self)
-        UIView.animate(withDuration: Constants.presentTransitionDuration) {
-            self.hideUIComponents()
-        }
+//        UIView.animate(withDuration: Constants.presentTransitionDuration) {
+//            self.hideUIComponents()
+//        }
     }
     
     override func tableView(_ tableView: UITableView, willBeginEditingRowAt indexPath: IndexPath) {
