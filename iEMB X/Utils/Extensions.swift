@@ -17,15 +17,15 @@ extension UIViewController {
 }
 
 extension UIColor {
-    static let information = #colorLiteral(red: 0.3882352941, green: 0.8549019608, blue: 0.2196078431, alpha: 1)
-    static let important = #colorLiteral(red: 1, green: 0.5843137255, blue: 0, alpha: 1)
-    static let urgent = #colorLiteral(red: 1, green: 0.231372549, blue: 0.1882352941, alpha: 1)
+    static let information = UIColor.systemGreen
+    static let important = UIColor.systemOrange
+    static let urgent = UIColor.systemRed
 }
 
 extension UITableView {
     
     func visibleCell(at indexPath: IndexPath)-> UITableViewCell? {
-        return visibleCells.first {
+        visibleCells.first {
             self.indexPath(for: $0) == indexPath
         }
     }
@@ -68,10 +68,4 @@ extension UIAlertController {
         addAction(UIAlertAction(title: "OK", style: .cancel){_ in handler?()})
     }
     
-}
-
-infix operator =>
-
-func =>(_ obj: Any, _ typeClass: AnyClass) -> Bool {
-    return type(of: obj) == typeClass
 }

@@ -12,7 +12,7 @@ import QuickLook
 class FilePreviewController: QLPreviewController, QLPreviewControllerDataSource {
     
     override var prefersStatusBarHidden: Bool {
-        return true
+        true
     }
         
     var file: URL!
@@ -25,11 +25,11 @@ class FilePreviewController: QLPreviewController, QLPreviewControllerDataSource 
     }
 
     func numberOfPreviewItems(in controller: QLPreviewController) -> Int {
-        return 1
+        1
     }
     
     func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
-        return file as NSURL
+        file as NSURL
     }
     
     deinit {

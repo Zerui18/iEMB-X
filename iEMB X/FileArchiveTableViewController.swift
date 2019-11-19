@@ -10,13 +10,18 @@ import UIKit
 import QuickLook
 
 class FileArchiveTableViewController: UITableViewController {
+    
+    var files: [URL]!
+    lazy var clearButton = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(clearPressed))
 
+    // MARK: Lifecycle Methods
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Cached Files"
         tableView.tableFooterView = UIView()
         navigationItem.largeTitleDisplayMode = .automatic
-        files = try! FileManager.default.contentsOfDirectory(at: Constants.cachedFilesURL, includingPropertiesForKeys: nil, options: [])
+        navigationItem.rightBarButtonItem = clearButton
+        updateUI()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -26,12 +31,15 @@ class FileArchiveTableViewController: UITableViewController {
         })
     }
     
-    var files: [URL]!
+    func updateUI() {
+        files = try! FileManager.default.contentsOfDirectory(at: Constants.cachedFilesURL, includingPropertiesForKeys: nil, options: [])
+        tableView.reloadData()
+    }
 
     // MARK: - Table view data source
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return files != nil ? files.count:0
+        files != nil ? files.count:0
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -41,7 +49,7 @@ class FileArchiveTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
-        return .delete
+        .delete
     }
     
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
@@ -62,7 +70,20 @@ class FileArchiveTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 74
+        74
+    }
+    
+    // MARK: Selector Methods
+    @objc private func clearPressed() {
+        let alr = UIAlertController(title: "Clear Files?", message: "this will delete all cached files", preferredStyle: .actionSheet)
+        alr.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alr.addAction(UIAlertAction(title: "Clear", style: .destructive) {_ in
+            for file in self.files {
+                try? FileManager.default.removeItem(at: file)
+                self.updateUI()
+            }
+        })
+        alr.present(in: self)
     }
     
 }

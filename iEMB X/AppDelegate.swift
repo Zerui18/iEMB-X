@@ -50,7 +50,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         baseViewController.view.addSubview(menuViewController.boardVCs[0].view)
         
         cariocaMenu.addInView(baseViewController.view)
-        window?.rootViewController = baseViewController
+        window!.rootViewController = baseViewController
         
         cariocaMenu.showIndicator(position: CariocaMenuIndicatorViewPosition.center, offset: 0)
         window!.makeKeyAndVisible()
@@ -126,7 +126,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
             
             
-            let ctr = menuViewController.boardVCs[0].viewControllers[0] as! BoardTableController
+            guard let ctr = menuViewController.boardVCs[0].viewControllers[0] as? BoardTableController
+                else { return }
             ctr.boardUpdated(for: posts)
             
             var c1 = 0, c2 = 0, c3 = 0
@@ -138,7 +139,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 }
             }
             
-            var content = "Categorie(s):"
+            var content = "Categories:"
             for (icon, cnt) in zip("🛑⚠️✅", [c1, c2, c3]) where cnt > 0 {
                 content += "  \(icon)\(cnt)"
             }

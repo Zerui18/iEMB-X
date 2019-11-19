@@ -10,45 +10,66 @@ import UIKit
 import CoreData
 import EMBClient
 
+
 var backgroungFetchInterval: TimeInterval {
     get {
-        return max(userDefaults.double(forKey: "bg_fetch"), 30*60)
+        max(userDefaults.double(forKey: "bg_fetch"), 30*60)
     }
     set {
         userDefaults.set(newValue, forKey: "bg_fetch")
     }
 }
 
+// MARK: SettingsViewController
 class SettingsViewController: UIViewController {
     
+    // MARK: Properties
     override var prefersStatusBarHidden: Bool {
-        return false
+        false
     }
     
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return .portrait
+        .portrait
     }
     
-    @IBOutlet var buttons: [UIButton]!
+    var durationOptions: [TimeInterval] = [30*60, 60*60, 120*60, UIApplication.backgroundFetchIntervalNever]
+    
+    @IBOutlet weak var dismissButton: UIButton!
+    @IBOutlet var optionButtons: [UIButton]!
     @IBOutlet weak var clearButton: UIButton!
     @IBOutlet weak var logoutButton: UIButton!
     @IBOutlet weak var linkedLabel: UITextView!
-    
-    var durs: [TimeInterval] = [30*60, 60*60, 120*60, UIApplication.backgroundFetchIntervalNever]
 
+    // MARK: Lifecycle Methods
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        menuViewController.tableView(menuViewController.tableView, didSelectRowAt: IndexPath(row: 0, section: 0))
+        cariocaMenu.showIndicator(position: .center, offset: 0)
     }
     
     private func setupUI() {
         let style = NSMutableParagraphStyle()
         style.alignment = .center
         
+        var descriptionAttrs = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 15, weight: .regular),
+                                .paragraphStyle: style]
+        
+        if #available(iOS 13.0, *) {
+            descriptionAttrs[.foregroundColor] = UIColor.secondaryLabel
+        }
+        else {
+            descriptionAttrs[.foregroundColor] = UIColor.darkGray
+        }
+        
         let str = NSMutableAttributedString(string: """
         · the actual interval is usually slightly longer than this
         · you will also need to enable this in Settings
-        """, attributes: [.font:UIFont.systemFont(ofSize: 15, weight: .regular), .paragraphStyle: style])
+        """, attributes: descriptionAttrs)
         str.addAttribute(.link, value: NSURL(string: UIApplication.openSettingsURLString)!, range: NSRange(location: str.length-8, length: 8))
         linkedLabel.attributedText = str
         linkedLabel.delegate = self
@@ -66,15 +87,50 @@ class SettingsViewController: UIViewController {
         logoutButton.layer.cornerRadius = 7
         logoutButton.addTarget(self, action: #selector(logoutClicked), for: .touchUpInside)
         
-        buttons.sort(by: {$0.tag < $1.tag})
-        buttons.forEach {
+        optionButtons.sort(by: {$0.tag < $1.tag})
+        optionButtons.forEach {
             $0.clipsToBounds = true
-            $0.layer.borderColor = #colorLiteral(red: 0.1058823529, green: 0.6784313725, blue: 0.9725490196, alpha: 1).cgColor
+            $0.layer.borderColor = UIColor.systemBlue.cgColor
             $0.layer.cornerRadius = 15
         }
         
-        let index = durs.firstIndex(of: backgroungFetchInterval)!
-        showSelected(button: buttons[index])
+        let index = durationOptions.firstIndex(of: backgroungFetchInterval)!
+        showSelected(button: optionButtons[index])
+    }
+    
+    func showSelected(button: UIButton) {
+        let ani = CABasicAnimation(keyPath: #keyPath(CALayer.borderWidth))
+        ani.fromValue = 0
+        ani.toValue = 2
+        ani.fillMode = CAMediaTimingFillMode.forwards
+        ani.isRemovedOnCompletion = false
+        button.layer.add(ani, forKey: nil)
+        button.setTitleColor(.systemBlue, for: .normal)
+    }
+    
+    func showDeslected(button: UIButton) {
+        let ani = CABasicAnimation(keyPath: #keyPath(CALayer.borderWidth))
+        ani.fromValue = 2
+        ani.toValue = 0
+        ani.fillMode = CAMediaTimingFillMode.forwards
+        ani.isRemovedOnCompletion = false
+        button.layer.add(ani, forKey: nil)
+        button.setTitleColor(.systemGray, for: .normal)
+    }
+    
+    // MARK: Selector Methods
+    @IBAction func buttonSelected(_ sender: UIButton) {
+        selectionFeedback()
+        let prevSelected = optionButtons[durationOptions.firstIndex(of: backgroungFetchInterval)!]
+        showDeslected(button: prevSelected)
+        showSelected(button: sender)
+        backgroungFetchInterval = durationOptions[sender.tag]
+    }
+    
+    @IBAction func dismissVC() {
+        menuViewController.tableView(menuViewController.tableView, didSelectRowAt: IndexPath(row: 0, section: 0))
+        cariocaMenu.showIndicator(position: .center, offset: 0)
+        dismiss(animated: true)
     }
     
     @objc func clearClicked() {
@@ -123,45 +179,11 @@ class SettingsViewController: UIViewController {
         }))
         alr.present(in: self)
     }
-    
-    func showSelected(button: UIButton) {
-        let ani = CABasicAnimation(keyPath: #keyPath(CALayer.borderWidth))
-        ani.fromValue = 0
-        ani.toValue = 2
-        ani.fillMode = CAMediaTimingFillMode.forwards
-        ani.isRemovedOnCompletion = false
-        button.layer.add(ani, forKey: nil)
-        button.setTitleColor(#colorLiteral(red: 0.1058823529, green: 0.6784313725, blue: 0.9725490196, alpha: 1), for: .normal)
-    }
-    
-    func showDeslected(button: UIButton) {
-        let ani = CABasicAnimation(keyPath: #keyPath(CALayer.borderWidth))
-        ani.fromValue = 2
-        ani.toValue = 0
-        ani.fillMode = CAMediaTimingFillMode.forwards
-        ani.isRemovedOnCompletion = false
-        button.layer.add(ani, forKey: nil)
-        button.setTitleColor(.lightGray, for: .normal)
-    }
-    
-    @IBAction func buttonSelected(_ sender: UIButton) {
-        selectionFeedback()
-        let prevSelected = buttons[durs.firstIndex(of: backgroungFetchInterval)!]
-        showDeslected(button: prevSelected)
-        showSelected(button: sender)
-        backgroungFetchInterval = durs[sender.tag]
-    }
-    
-    @IBAction func dismissVC() {
-        menuViewController.tableView(menuViewController.tableView, didSelectRowAt: IndexPath(row: 0, section: 0))
-        cariocaMenu.showIndicator(position: .center, offset: 0)
-        dismiss(animated: true)
-    }
 }
 
 extension SettingsViewController: UITextViewDelegate {
     func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
-        return true
+        true
     }
 
 }

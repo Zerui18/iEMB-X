@@ -27,7 +27,13 @@ class FileCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         backgroundColor = nil
-        selectedBackgroundView = UIVisualEffectView(effect: UIBlurEffect(style: .extraLight))
+        let view = UIView()
+        if #available(iOS 13.0, *) {
+            view.backgroundColor = .secondarySystemFill
+        } else {
+            view.backgroundColor = UIColor.white.withAlphaComponent(0.5)
+        }
+        selectedBackgroundView = view
         selectedBackgroundView?.clipsToBounds = true
         selectedBackgroundView?.layer.cornerRadius = 7
     }

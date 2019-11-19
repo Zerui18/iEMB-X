@@ -10,12 +10,12 @@ import UIKit
 
 class BaseViewController: UIViewController {
     
-    let imageView = UIImageView(image: #imageLiteral(resourceName: "hci_light"))
+    let imageView = UIImageView(image: UIImage(named: "bg_hci")!)
     
     override func viewDidLoad() {
         super.viewDidLoad()
         let (w, h) = (view.bounds.width, view.bounds.height)
-        
+
         imageView.frame = CGRect(x: 0, y: 0, width: min(w, h), height: max(w, h))
         imageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(imageView)
@@ -24,7 +24,7 @@ class BaseViewController: UIViewController {
         imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         imageView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         imageView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        
+
         view.layoutIfNeeded()
     }
 }

@@ -11,22 +11,40 @@ import Components
 import EMBClient
 
 class LoginViewController: UIViewController {
-    
+        
     override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
+        .lightContent
     }
     
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask{
-        return .portrait
+        .portrait
     }
 
     // MARK: Private Properties
-    private let bgImageView = UIImageView(image: #imageLiteral(resourceName: "hci_dark"))
+    private let bgImageView = UIImageView(image: UIImage(named: "bg_hci"))
     private let iconImageView = UIImageView(image: #imageLiteral(resourceName: "icon_light"))
     private let usernameField = AuthView(frame: .zero)
     private let passwordField = AuthView(frame: .zero)
     private let loginButton = UIButton(type: .custom)
-    private let spinner = UIActivityIndicatorView(style: .whiteLarge)
+    private let spinner: UIActivityIndicatorView = {
+        if #available(iOS 13.0, *) {
+            return UIActivityIndicatorView(style: .large)
+        } else {
+            return UIActivityIndicatorView(style: .whiteLarge)
+        }
+    }()
+    
+    init() {
+        super.init(nibName: nil, bundle: nil)
+        // prevent interactive dismissal
+        if #available(iOS 13.0, *) {
+            self.isModalInPresentation = true
+        }
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     // MARK: Lifecycle Methods
     override func viewDidLoad() {
@@ -52,9 +70,15 @@ class LoginViewController: UIViewController {
         passwordField.isSecureTextEntry = true
         
         loginButton.setTitle("Login", for: UIControl.State())
-        loginButton.backgroundColor = #colorLiteral(red: 0.937254902, green: 0.937254902, blue: 0.937254902, alpha: 0.8998287671)
-        loginButton.setTitleColor(.darkGray, for: .normal)
-        loginButton.setTitleColor(.black, for: .highlighted)
+        if #available(iOS 13.0, *) {
+            loginButton.backgroundColor = .systemBackground
+            loginButton.setTitleColor(.label, for: .normal)
+            print(UIColor.systemBackground.cgColor)
+        } else {
+            loginButton.backgroundColor = UIColor.white.withAlphaComponent(0.9)
+            loginButton.setTitleColor(.darkGray, for: .normal)
+        }
+        loginButton.setTitleColor(.lightGray, for: .highlighted)
         loginButton.titleLabel?.font = UIFont.systemFont(ofSize: 26, weight: .medium)
         loginButton.clipsToBounds = true
         
@@ -66,10 +90,11 @@ class LoginViewController: UIViewController {
         view.addSubview(spinner)
         
         // setup constraints
-        bgImageView.widthAnchor.constraint(equalTo: bgImageView.heightAnchor, multiplier: bgImageView.bounds.width / bgImageView.bounds.height).isActive = true
         bgImageView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        bgImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        bgImageView.contentMode = .scaleAspectFit
+        bgImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        bgImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        bgImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        bgImageView.contentMode = .scaleAspectFill
         
         iconImageView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: 0.33).isActive = true
         iconImageView.heightAnchor.constraint(equalTo: iconImageView.widthAnchor, multiplier: iconImageView.bounds.height/iconImageView.bounds.width).isActive = true

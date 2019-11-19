@@ -28,7 +28,7 @@ class DismissAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         
-        guard let fromVC = transitionContext.viewController(forKey: .from) as? ViewPostController,
+        guard let fromVC = transitionContext.viewController(forKey: .from) as? ViewPostControllerLegacy,
             let toVC = transitionContext.viewController(forKey: .to) else {
             return
         }
@@ -67,14 +67,6 @@ class DismissAnimator: NSObject, UIViewControllerAnimatedTransitioning {
                 }
                 toVC.view.removeFromSuperview()
                 scrollView.showsVerticalScrollIndicator = true
-            }
-            else {
-                // fix for iOS 13, where I believe
-                // baseViewController - being the toVC -
-                // had its view removed from superview - window -
-                // when the dismiss animator is invoked
-                let window = AppDelegate.shared.window!
-                window.addSubview(baseViewController.view)
             }
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         })

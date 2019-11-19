@@ -20,6 +20,6 @@ struct APIEndpoints {
         return URL(string: "https://iemb.hci.edu.sg/Board/content/\(id)?board=\(boardId)&isArchived=False")!
     }
     
-    static let responseURL = URL(string: "https://iemb.hci.edu.sg/board/ProcessResponse")!
+    static let replyURL = URL(string: "https://iemb.hci.edu.sg/board/ProcessResponse")!
     
 }

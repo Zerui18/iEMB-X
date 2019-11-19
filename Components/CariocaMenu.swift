@@ -158,8 +158,15 @@ open class CariocaMenu : NSObject, UIGestureRecognizerDelegate {
     open var sidePanLeft = UIScreenEdgePanGestureRecognizer()
     fileprivate var panGestureRecognizer = UIPanGestureRecognizer()
     
-    fileprivate var defaultShapeColor: UIColor = UIColor(red:0.07, green:0.73, blue:0.86, alpha:1)
-    fileprivate var defaultMenuBlurStyle: UIBlurEffect.Style = UIBlurEffect.Style.extraLight
+    fileprivate var defaultShapeColor: UIColor = .systemBlue
+    
+    fileprivate var defaultMenuBlurStyle: UIBlurEffect.Style = {
+        if #available(iOS 13.0, *) {
+            return .systemMaterial
+        } else {
+            return .extraLight
+        }
+    }()
     
     ///The datasource of the menu
     var dataSource:CariocaMenuDataSource
@@ -476,11 +483,9 @@ open class CariocaMenu : NSObject, UIGestureRecognizerDelegate {
         Adds an indicator on left edge of screen
     */
     fileprivate func addIndicator() {
-                
-        let customShapeColor = dataSource.getShapeColor?()
-        
+                        
         //TODO: Check if the indicator already exists
-        let indicator = CariocaMenuIndicatorView(size:CGSize(width: 47, height: 40), shapeColor: customShapeColor != nil ? customShapeColor! : defaultShapeColor)
+        let indicator = CariocaMenuIndicatorView(size:CGSize(width: 47, height: 40), shapeColor: defaultShapeColor)
         indicator.addInView(hostView!)
         leftIndicatorView = indicator
         

@@ -35,7 +35,7 @@ class MenuViewController: UITableViewController {
 
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 5
+        5
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -99,23 +99,19 @@ extension MenuViewController: CariocaMenuDataSource {
     }
     
     func getMenuView()->UIView {
-        return self.view
-    }
-    
-    func getShapeColor() -> UIColor {
-        return UIColor(red:0.07, green:0.83, blue:0.86, alpha:1)
+        self.view
     }
     
     func heightByMenuItem()->CGFloat {
-        return self.tableView(self.tableView, heightForRowAt: IndexPath(item: 0, section: 0))
+        self.tableView(self.tableView, heightForRowAt: IndexPath(item: 0, section: 0))
     }
     
     func numberOfMenuItems()->Int {
-        return self.tableView(self.tableView, numberOfRowsInSection: 0)
+        self.tableView(self.tableView, numberOfRowsInSection: 0)
     }
     
     func iconForRowAtIndexPath(_ indexPath:IndexPath)->UIImage {
-        return boardIcons[indexPath.row]
+        boardIcons[indexPath.row]
     }
     
     func setCellIdentifierForEdge(_ identifier: String) {
@@ -128,7 +124,7 @@ extension MenuViewController: CariocaMenuDataSource {
 extension MenuViewController: UIAdaptivePresentationControllerDelegate, CariocaMenuDelegate {
     
     func adaptivePresentationStyle(for controller: UIPresentationController, traitCollection: UITraitCollection) -> UIModalPresentationStyle {
-        return .none
+        .none
     }
         
     func cariocaMenuDidSelect(_ menu: CariocaMenu, indexPath: IndexPath) {

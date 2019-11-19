@@ -19,7 +19,7 @@ extension Post {
 
     @NSManaged public var author: String?
     @NSManaged public var board: Int64
-    @NSManaged public var canRespond: Bool
+    @NSManaged public var canReply: Bool
     @NSManaged public var contentData: NSData?
     @NSManaged public var date: String?
     @NSManaged public var id: Int64

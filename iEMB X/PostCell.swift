@@ -9,8 +9,8 @@
 import UIKit
 import EMBClient
 
-fileprivate let systemFontNormal = UIFont.systemFont(ofSize: 20, weight: UIFont.Weight.medium)
-fileprivate let systemFontHeavy = UIFont.systemFont(ofSize: 20, weight: UIFont.Weight.heavy)
+fileprivate let systemFontNormal = UIFont.systemFont(ofSize: 20, weight: .regular)
+fileprivate let systemFontHeavy = UIFont.systemFont(ofSize: 20, weight: .semibold)
 
 class PostCell: UITableViewCell {
     
@@ -39,6 +39,12 @@ class PostCell: UITableViewCell {
         super.awakeFromNib()
         backgroundColor = .clear
         visualEffectContainer.layer.cornerRadius = 7
+        
+        // fallback for older iOS since .material blur style is unavailable
+        guard #available(iOS 13, *) else {
+            visualEffectContainer.effect = UIBlurEffect(style: .extraLight)
+            return
+        }
     }
     
     func showSelection() {

@@ -16,7 +16,7 @@ class PresentAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         
-        guard let toVC = transitionContext.viewController(forKey: .to) as?ViewPostController else {
+        guard let toVC = transitionContext.viewController(forKey: .to) as?ViewPostControllerLegacy else {
             return
         }
         
