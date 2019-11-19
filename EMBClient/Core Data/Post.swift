@@ -61,7 +61,6 @@ public class Post: NSManagedObject {
         }
         else {
             let postURL = APIEndpoints.postURL(forId: Int(id), boardId: Int(board))
-            print(postURL)
             
             func processAndSave(html: String) {
                 self.attachments = []

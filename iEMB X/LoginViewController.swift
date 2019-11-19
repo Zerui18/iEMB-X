@@ -73,7 +73,6 @@ class LoginViewController: UIViewController {
         if #available(iOS 13.0, *) {
             loginButton.backgroundColor = .systemBackground
             loginButton.setTitleColor(.label, for: .normal)
-            print(UIColor.systemBackground.cgColor)
         } else {
             loginButton.backgroundColor = UIColor.white.withAlphaComponent(0.9)
             loginButton.setTitleColor(.darkGray, for: .normal)
