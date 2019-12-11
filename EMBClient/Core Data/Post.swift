@@ -113,9 +113,7 @@ public class Post: NSManagedObject {
                     }
                     self.canReply = html.contains("<form id=\"replyForm\"")
                     self.isRead = true
-                    DispatchQueue.main.async {
-                        NotificationCenter.default.post(name: .postContentDidLoad, object: self)
-                    }
+                    NotificationCenter.default.post(name: .postIsReadUpdated, object: self)
                 }
                 
             }

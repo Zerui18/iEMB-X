@@ -134,7 +134,7 @@ class SettingsViewController: UIViewController {
     }
     
     @objc func clearClicked() {
-        let alr = UIAlertController(title: "Clear Cache?", message: "this only clears the contents of the posts", preferredStyle: .actionSheet)
+        let alr = UIAlertController(title: "Clear Cache?", message: "this only clears the contents of the posts", preferredStyle: UIDevice.current.userInterfaceIdiom != .pad ? .actionSheet:.alert)
         alr.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         alr.addAction(UIAlertAction(title: "Clear", style: .default) {_ in
             do {
@@ -155,7 +155,7 @@ class SettingsViewController: UIViewController {
     }
     
     @objc func logoutClicked() {
-        let alr = UIAlertController(title: "Logout?", message: "all your cached posts and files will be cleared", preferredStyle: .actionSheet)
+        let alr = UIAlertController(title: "Logout?", message: "all your cached posts and files will be cleared", preferredStyle: UIDevice.current.userInterfaceIdiom != .pad ? .actionSheet:.alert)
         alr.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         alr.addAction(UIAlertAction(title: "Logout", style: .destructive, handler: { _ in
             do {

@@ -38,30 +38,56 @@ public class EMBClient {
 public extension EMBClient {
     
     func login(username: String, password: String, then completion: @escaping (Bool, Error?)->Void) {
-        var loginRequest = URLRequest(url: APIEndpoints.loginURL)
-        loginRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        loginRequest.httpMethod = "post"
-        loginRequest.httpBody = try! JSONSerialization.data(withJSONObject: ["userName": username, "password": password], options: [])
+        // clear cookies for the sake of sanitization
+        HTTPCookieStorage.shared.removeCookies(since: Date(timeIntervalSince1970: 0))
         
-        EMBUser.shared.logout()
-        
-        URLSession.shared.dataTask(with: loginRequest) { (data, response, error) in
-            if error != nil {
-                completion(false, error)
-            }
-            else {
-                let dict = try! JSONSerialization.jsonObject(with: data!, options: []) as! [String: Any]
-                let success = dict["Success"] as! Bool
-                if success && EMBUser.shared.saveSessionId() {
-                    EMBUser.shared.credentials = (userId: username, password: password)
-                    completion(true, nil)
-                }
+        // for latest update to iemb.hci.edu.sg, where a verification token is used
+        URLSession.shared.dataTask(with: APIEndpoints.loginPageURL) { (data, response, error) in
+
+            // extract the verification token
+            let html = String(data: data!, encoding: .utf8)!
+            let tokenRegex = try! NSRegularExpression(pattern: "<input name=\"__RequestVerificationToken\" .+? value=\"(.+?)\"", options: [])
+            guard let matchedToken = html ~ tokenRegex
                 else {
                     completion(false, NSError(domain: "com.Zerui.EMBClient.AuthError",
                                               code: 403,
-                                              userInfo: [NSLocalizedDescriptionKey : "Failed to authenticate user with iEMB server."]))
-                }
+                                              userInfo: [NSLocalizedDescriptionKey : "Failed to obtain verification token."]))
+                    return
             }
+            let token = (html as NSString).substring(with: matchedToken.range(at: 1))
+            
+            // and now we can build and send our login request
+            var loginRequest = URLRequest(url: APIEndpoints.loginURL)
+            let headers = [
+              "Referer": "https://iemb.hci.edu.sg/",
+              "Origin": "https://iemb.hci.edu.sg",
+              "Content-Type": "application/x-www-form-urlencoded",
+              "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+              "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.4 Safari/605.1.15"
+            ]
+            loginRequest.allHTTPHeaderFields = headers
+            loginRequest.httpMethod = "post"
+            loginRequest.httpBody = "UserName=\(username.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)&Password=\(password.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)&__RequestVerificationToken=\(token.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)&submitbut=Submit".data(using: .utf8)!
+            
+            EMBUser.shared.logout()
+            
+            URLSession.shared.dataTask(with: loginRequest) { (data, response, error) in
+                if error != nil {
+                    completion(false, error)
+                }
+                else {
+                    let success = String(data: data!, encoding: .utf8)!.contains("/Content/table.css")
+                    if success && EMBUser.shared.saveSessionId() {
+                        EMBUser.shared.credentials = (userId: username, password: password)
+                        completion(true, nil)
+                    }
+                    else {
+                        completion(false, NSError(domain: "com.Zerui.EMBClient.AuthError",
+                                                  code: 403,
+                                                  userInfo: [NSLocalizedDescriptionKey : "Failed to authenticate user with iEMB server."]))
+                    }
+                }
+            }.resume()
         }.resume()
     }
     
@@ -102,6 +128,7 @@ extension EMBClient {
                 let id = Int(copy.substring(with: contentMatch.range(at: 1)))!
                 let board = Int(copy.substring(with: contentMatch.range(at: 2)))!
                 if self.newestPostIndex(forBoard: board) < id {
+                    // new post, add to DB
                     posts.append(Post(
                         title: copy.substring(with: contentMatch.range(at: 3)).removingHTMLEncoding,
                         author: copy.substring(with: authorMatch.range(at: 1)),
@@ -111,6 +138,13 @@ extension EMBClient {
                         importance: Importance(rawValue: copy.substring(with: importanceMatch.range(at: 1)))!,
                         isRead: markRead)
                     )
+                }
+                else {
+                    // post already saved, check for isRead changes
+                    // there is definitely an existing Post object
+                    let existingPost = allPosts[board]!.first(where: { $0.id == id })!
+                    existingPost.isRead = markRead
+                    NotificationCenter.default.post(name: .postIsReadUpdated, object: existingPost)
                 }
             }
         }

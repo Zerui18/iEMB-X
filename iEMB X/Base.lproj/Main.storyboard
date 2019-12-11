@@ -547,23 +547,14 @@
                                 <viewLayoutGuide key="contentLayoutGuide" id="39O-bp-gnC"/>
                                 <viewLayoutGuide key="frameLayoutGuide" id="4Vw-eb-OQV"/>
                             </scrollView>
-                            <button hidden="YES" opaque="NO" clipsSubviews="YES" alpha="0.0" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OPe-Rt-qDl">
-                                <rect key="frame" x="325" y="609" width="35" height="35"/>
-                                <color key="backgroundColor" red="0.13902606870000001" green="0.13902606870000001" blue="0.13902606870000001" alpha="0.75" colorSpace="custom" customColorSpace="sRGB"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="35" id="Svm-Zt-2cW"/>
-                                    <constraint firstAttribute="width" constant="35" id="s6s-AQ-Hsq"/>
-                                </constraints>
-                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <state key="normal" image="send"/>
-                            </button>
                             <button opaque="NO" userInteractionEnabled="NO" alpha="0.0" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zve-ue-PfT">
                                 <rect key="frame" x="303" y="496" width="48" height="48"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="48" id="QR2-EL-udp"/>
                                     <constraint firstAttribute="height" constant="48" id="bka-o8-VsJ"/>
                                 </constraints>
-                                <state key="normal" image="arrowshape.turn.up.left" catalog="system">
+                                <inset key="imageEdgeInsets" minX="6" minY="6" maxX="6" maxY="6"/>
+                                <state key="normal" image="ic_reply">
                                     <color key="titleShadowColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
                                 <connections>
@@ -577,9 +568,7 @@
                             <constraint firstItem="7ff-5e-NCd" firstAttribute="trailing" secondItem="zve-ue-PfT" secondAttribute="trailing" constant="24" id="OUo-Nw-fR2"/>
                             <constraint firstItem="57i-2S-bSI" firstAttribute="leading" secondItem="7ff-5e-NCd" secondAttribute="leading" constant="8" id="P0C-MX-KeL"/>
                             <constraint firstItem="El6-UV-y1H" firstAttribute="trailing" secondItem="7ff-5e-NCd" secondAttribute="trailing" id="Q25-19-OBa"/>
-                            <constraint firstItem="7ff-5e-NCd" firstAttribute="bottom" secondItem="OPe-Rt-qDl" secondAttribute="bottom" constant="80" id="Vux-DI-axG"/>
                             <constraint firstItem="El6-UV-y1H" firstAttribute="leading" secondItem="7ff-5e-NCd" secondAttribute="leading" id="Xqm-LK-R06"/>
-                            <constraint firstItem="7ff-5e-NCd" firstAttribute="trailing" secondItem="OPe-Rt-qDl" secondAttribute="trailing" constant="15" id="ihx-yj-gFW"/>
                             <constraint firstAttribute="bottom" secondItem="El6-UV-y1H" secondAttribute="bottom" constant="20" symbolic="YES" id="kU7-hc-hd0"/>
                             <constraint firstItem="7ff-5e-NCd" firstAttribute="bottom" secondItem="zve-ue-PfT" secondAttribute="bottom" constant="180" id="oc0-WY-PUi"/>
                             <constraint firstItem="kia-1N-YaS" firstAttribute="leading" secondItem="7ff-5e-NCd" secondAttribute="leading" constant="8" id="os8-00-fTZ"/>
@@ -615,9 +604,9 @@
                                 <rect key="frame" x="8" y="0.0" width="359" height="812"/>
                                 <subviews>
                                     <visualEffectView opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4Ik-rM-Ocz">
-                                        <rect key="frame" x="0.0" y="10" width="359" height="403.66666666666669"/>
+                                        <rect key="frame" x="0.0" y="10" width="359" height="403"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="VwB-3S-k4S">
-                                            <rect key="frame" x="0.0" y="0.0" width="359" height="403.66666666666669"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="359" height="403"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" Attachments" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tFh-IC-reK">
@@ -782,11 +771,11 @@
         </scene>
     </scenes>
     <resources>
-        <image name="arrowshape.turn.up.left" catalog="system" width="64" height="52"/>
         <image name="back" width="72" height="72"/>
         <image name="bg_hci" width="669.5" height="1448"/>
         <image name="ic_down" width="48" height="48"/>
         <image name="ic_filter" width="48" height="48"/>
+        <image name="ic_reply" width="215" height="215"/>
         <image name="pdf" width="89.5" height="91.5"/>
         <image name="send" width="88.5" height="88.5"/>
         <image name="star" width="72" height="72"/>

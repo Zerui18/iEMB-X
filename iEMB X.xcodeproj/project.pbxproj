@@ -139,6 +139,7 @@
 		22F5F74F1F6D676A00029277 /* Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Attachment.swift; sourceTree = "<group>"; };
 		22FDA6E91F761C2300358230 /* FilePreviewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewController.swift; sourceTree = "<group>"; };
 		22FDF2B01F7D27910054A05B /* CariocaMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CariocaMenu.swift; sourceTree = "<group>"; };
+		BF405BEC23A12C380054929B /* iEMB X.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "iEMB X.entitlements"; sourceTree = "<group>"; };
 		BF553D1D2383B784009FC540 /* ReplyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyViewController.swift; sourceTree = SOURCE_ROOT; };
 		BF553D1F23840AF4009FC540 /* ViewPostControllerLegacy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewPostControllerLegacy.swift; sourceTree = "<group>"; };
 		BF553D2323840B36009FC540 /* DismissAnimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DismissAnimator.swift; sourceTree = "<group>"; };
@@ -245,6 +246,7 @@
 		226C288A1F694A53007C9DBD /* iEMB X */ = {
 			isa = PBXGroup;
 			children = (
+				BF405BEC23A12C380054929B /* iEMB X.entitlements */,
 				226C288F1F694A53007C9DBD /* Main.storyboard */,
 				226C28941F694A53007C9DBD /* LaunchScreen.storyboard */,
 				226C288B1F694A53007C9DBD /* AppDelegate.swift */,
@@ -741,15 +743,17 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = "iEMB X/iEMB X.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 789MW96BQB;
 				INFOPLIST_FILE = "$(SRCROOT)/iEMB X/Supporting Files/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 2.0.0;
+				MARKETING_VERSION = 2.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Zerui.iEMB-X";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -763,15 +767,17 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = "iEMB X/iEMB X.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 789MW96BQB;
 				INFOPLIST_FILE = "$(SRCROOT)/iEMB X/Supporting Files/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 2.0.0;
+				MARKETING_VERSION = 2.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Zerui.iEMB-X";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

@@ -10,7 +10,7 @@ import Foundation
 
 public extension Notification.Name {
     
-    static let postContentDidLoad = Notification.Name("PostDidLoadNotification")
+    static let postIsReadUpdated = Notification.Name("PostIsReadUpdatedNotification")
     
     static let embLoginCredentiaInvalidated = Notification.Name("EMBLoginCredentialsInvalidatedNotification")
     

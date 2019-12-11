@@ -9,7 +9,8 @@
 import Foundation
 
 struct APIEndpoints {
-    static let loginURL = URL(string: "https://iemb.hci.edu.sg/home/ValidateUser")!
+    static let loginPageURL = URL(string: "https://iemb.hci.edu.sg")!
+    static let loginURL = URL(string: "https://iemb.hci.edu.sg/home/login")!
     static let boardBaseURL = URL(string: "https://iemb.hci.edu.sg/Board/Detail")!
     
     static func boardURL(forId id: Int)-> URL {

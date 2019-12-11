@@ -75,7 +75,7 @@ class FileArchiveTableViewController: UITableViewController {
     
     // MARK: Selector Methods
     @objc private func clearPressed() {
-        let alr = UIAlertController(title: "Clear Files?", message: "this will delete all cached files", preferredStyle: .actionSheet)
+        let alr = UIAlertController(title: "Clear Files?", message: "this will delete all cached files", preferredStyle: UIDevice.current.userInterfaceIdiom != .pad ? .actionSheet:.alert)
         alr.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         alr.addAction(UIAlertAction(title: "Clear", style: .destructive) {_ in
             for file in self.files {

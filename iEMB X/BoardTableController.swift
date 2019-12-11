@@ -126,7 +126,7 @@ class BoardTableController: UITableViewController {
         
         filterButton.target = self
         filterButton.action = #selector(toggleUnreadFilter)
-        NotificationCenter.default.addObserver(self, selector: #selector(postDidUpdate(_:)), name: .postContentDidLoad, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(postDidUpdate(_:)), name: .postIsReadUpdated, object: nil)
     }
     
     // MARK: Selector Methods
@@ -196,20 +196,22 @@ class BoardTableController: UITableViewController {
     }
     
     fileprivate func reloadCell(forPost post: Post) {
-        if isSearchActive {
-            if let postIndex = searchedPosts.firstIndex(of: post) {
-                tableView.reloadRows(at: [IndexPath(row: postIndex, section: 0)], with: .automatic)
+        DispatchQueue.main.async {
+            if self.isSearchActive {
+                if let postIndex = self.searchedPosts.firstIndex(of: post) {
+                    self.tableView.reloadRows(at: [IndexPath(row: postIndex, section: 0)], with: .automatic)
+                }
             }
-        }
-        else if let postIndex = filteredPosts.firstIndex(of: post) {
-            let indexPaths = [IndexPath(row: postIndex, section: 0)]
-            
-            if isFilterActive{
-                unreadPosts.remove(at: postIndex)
-                tableView.deleteRows(at: indexPaths, with: .automatic)
-            }
-            else{
-                tableView.reloadRows(at: indexPaths, with: .automatic)
+            else if let postIndex = self.filteredPosts.firstIndex(of: post) {
+                let indexPaths = [IndexPath(row: postIndex, section: 0)]
+                
+                if self.isFilterActive{
+                    self.unreadPosts.remove(at: postIndex)
+                    self.tableView.deleteRows(at: indexPaths, with: .automatic)
+                }
+                else{
+                    self.tableView.reloadRows(at: indexPaths, with: .automatic)
+                }
             }
         }
     }
