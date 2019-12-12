@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import Foundation
+import EMBClient
 
 
 extension UIViewController {
@@ -69,3 +69,15 @@ extension UIAlertController {
     }
     
 }
+
+//extension Array where Element == Post {
+//    
+//    /// Returns tableView indexPaths representing the posts of the given array in the receiver.
+//    func indexPaths(ofPosts arr: [Post])-> [IndexPath] {
+//        arr.compactMap { post in
+//            self.firstIndex(of: post).flatMap { index in
+//                IndexPath(row: index, section: 0)
+//            }
+//        }
+//    }
+//}

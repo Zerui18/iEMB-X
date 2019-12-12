@@ -143,8 +143,16 @@ extension EMBClient {
                     // post already saved, check for isRead changes
                     // there is definitely an existing Post object
                     let existingPost = allPosts[board]!.first(where: { $0.id == id })!
-                    existingPost.isRead = markRead
-                    NotificationCenter.default.post(name: .postIsReadUpdated, object: existingPost)
+                    // update post's isRead if necessary
+                    if existingPost.isRead != markRead {
+                        existingPost.isRead = markRead
+                        // clear cached content if read -> unread
+                        // in case of post content update
+                        if !markRead {
+                            existingPost.contentData = nil
+                        }
+                        NotificationCenter.default.post(name: .postIsReadUpdated, object: existingPost)
+                    }
                 }
             }
         }
@@ -220,6 +228,7 @@ extension EMBClient {
             NotificationCenter.default.post(name: .embLoginCredentiaInvalidated, object: nil)
         }
         
+        // initial check, returns nil if no cookie if found
         guard let firstRequest = request.signed() else {
             authFailed()
             return

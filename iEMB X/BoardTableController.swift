@@ -18,7 +18,7 @@ class BoardTableController: UITableViewController {
     
     var shouldUpdateBoardOnAppear = false
     
-    /// Interactive Dismisser for presented ViewPostVCs.
+    /// Interactive Dismisser for presented ViewPostVCs. (Legacy)
     let interactor = Interactor()
     
     // MARK: Private Properties
@@ -58,7 +58,7 @@ class BoardTableController: UITableViewController {
     
     fileprivate var lastRefreshed: TimeInterval {
         get {
-            return userDefaults.double(forKey: "lastRefreshed_\(self.currentBoard)")
+            userDefaults.double(forKey: "lastRefreshed_\(self.currentBoard)")
         }
         set {
             userDefaults.setValue(newValue, forKey: "lastRefreshed_\(self.currentBoard)")
@@ -109,7 +109,7 @@ class BoardTableController: UITableViewController {
         searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
         searchController.searchBar.delegate = self
-        searchController.searchBar.scopeButtonTitles = ["Title","Author","Marked"]
+        searchController.searchBar.scopeButtonTitles = ["Title", "Author", "Marked"]
         
         navigationItem.searchController = searchController
         navigationController?.navigationBar.prefersLargeTitles = true
@@ -137,19 +137,20 @@ class BoardTableController: UITableViewController {
     }
     
     @objc private func updateBoard() {
+        // initial safety check for auth cookie
         guard EMBUser.shared.isAuthenticated() else {
             NotificationCenter.default.post(name: .embLoginCredentiaInvalidated, object: nil)
             return
         }
         
-        refreshControl?.beginRefreshing()
-        navigationItem.rightBarButtonItem?.isEnabled = false
+        refreshControl!.beginRefreshing()
+        navigationItem.rightBarButtonItem!.isEnabled = false
         EMBClient.shared.updatePosts(forBoard: currentBoard) { (posts, error) in
             
-            defer{
+            defer {
                 DispatchQueue.main.async {
-                    self.refreshControl?.endRefreshing()
-                    self.navigationItem.rightBarButtonItem?.isEnabled = true
+                    self.refreshControl!.endRefreshing()
+                    self.navigationItem.rightBarButtonItem!.isEnabled = true
                 }
             }
             
@@ -205,11 +206,14 @@ class BoardTableController: UITableViewController {
             else if let postIndex = self.filteredPosts.firstIndex(of: post) {
                 let indexPaths = [IndexPath(row: postIndex, section: 0)]
                 
-                if self.isFilterActive{
-                    self.unreadPosts.remove(at: postIndex)
-                    self.tableView.deleteRows(at: indexPaths, with: .automatic)
+                if self.isFilterActive {
+                    // if post became read, remove it from unreadPosts
+                    if post.isRead {
+                        self.unreadPosts.remove(at: postIndex)
+                        self.tableView.deleteRows(at: indexPaths, with: .automatic)
+                    }
                 }
-                else{
+                else {
                     self.tableView.reloadRows(at: indexPaths, with: .automatic)
                 }
             }
@@ -378,7 +382,7 @@ extension BoardTableController: UISearchResultsUpdating, UISearchBarDelegate {
     
 }
 
-// MARK: Transitions
+// MARK: Transitions (Legacy)
 extension BoardTableController: UIViewControllerTransitioningDelegate {
     
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
