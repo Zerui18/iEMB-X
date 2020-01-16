@@ -141,17 +141,18 @@ extension EMBClient {
                 }
                 else {
                     // post already saved, check for isRead changes
-                    // there is definitely an existing Post object
-                    let existingPost = allPosts[board]!.first(where: { $0.id == id })!
-                    // update post's isRead if necessary
-                    if existingPost.isRead != markRead {
-                        existingPost.isRead = markRead
-                        // clear cached content if read -> unread
-                        // in case of post content update
-                        if !markRead {
-                            existingPost.contentData = nil
+                    // there is POTENTIALLY an existing Post object
+                    if let existingPost = allPosts[board]!.first(where: { $0.id == id }) {
+                        // update post's isRead if necessary
+                        if existingPost.isRead != markRead {
+                            existingPost.isRead = markRead
+                            // clear cached content if read -> unread
+                            // in case of post content update
+                            if !markRead {
+                                existingPost.contentData = nil
+                            }
+                            NotificationCenter.default.post(name: .postIsReadUpdated, object: existingPost)
                         }
-                        NotificationCenter.default.post(name: .postIsReadUpdated, object: existingPost)
                     }
                 }
             }
