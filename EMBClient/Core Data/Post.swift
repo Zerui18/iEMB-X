@@ -119,7 +119,7 @@ public class Post: NSManagedObject {
             }
             
             // load post html and pass it into the process(html:) function
-            EMBClient.shared.loadPage(request: URLRequest(url: postURL)) { (html, error) in
+            EMBClient.shared.loadPage(request: URLRequest(url: postURL).iembModified) { (html, error) in
                 if error != nil {
                     self.callback?(error)
                 }
@@ -139,7 +139,7 @@ public class Post: NSManagedObject {
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         request.httpMethod = "post"
         request.httpBody = "boardid=\(board)&topic=\(id)&replyto=0&UserRating=\(option)&replyContent=\(content)&PostMessage=Post  Reply&Cancel=Cancel".data(using: .utf8)
-        EMBClient.shared.loadPage(request: request) { (_, error) in
+        EMBClient.shared.loadPage(request: request.iembModified) { (_, error) in
             if error == nil {
                 self.responseOption = option
                 self.responseContent = content

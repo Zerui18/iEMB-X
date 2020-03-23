@@ -71,7 +71,7 @@ public extension EMBClient {
             
             EMBUser.shared.logout()
             
-            URLSession.shared.dataTask(with: loginRequest) { (data, response, error) in
+            URLSession.shared.dataTask(with: loginRequest.iembModified) { (data, response, error) in
                 if error != nil {
                     completion(false, error)
                 }
@@ -170,7 +170,7 @@ extension EMBClient {
     }
     
     public func updatePosts(forBoard board: Int, completion: @escaping([Post]?, Error?)->Void) {
-        loadPage(request: URLRequest(url: APIEndpoints.boardURL(forId: board))) { (html, error) in
+        loadPage(request: URLRequest(url: APIEndpoints.boardURL(forId: board)).iembModified) { (html, error) in
             guard error == nil else {
                 completion(nil, error)
                 return
@@ -242,7 +242,7 @@ extension EMBClient {
                 return
             }
             
-            guard isPageDataValid(data: data!) else {
+            guard (res! as! HTTPURLResponse).statusCode == 200 else {
                 
                 // has repsponse but invalid
                 // might be dut to outdated auth cookie
@@ -260,7 +260,7 @@ extension EMBClient {
                             return
                         }
                         
-                        guard isPageDataValid(data: data) else {
+                        guard (res! as! HTTPURLResponse).statusCode == 200 else {
                             authFailed()
                             return
                         }
@@ -279,8 +279,8 @@ extension EMBClient {
     
 }
 
-// Check for login form which is a more reliable indicator of Auth status.
-fileprivate let matchedBinary = "type=\"password\"".data(using: .utf8)!
-fileprivate func isPageDataValid(data: Data)-> Bool {
-    return data.range(of: matchedBinary) == nil
-}
+//// Check for login form which is a more reliable indicator of Auth status.
+//fileprivate let matchedBinary = "type=\"password\"".data(using: .utf8)!
+//fileprivate func isPageDataValid(data: Data)-> Bool {
+//    return data.range(of: matchedBinary) == nil
+//}

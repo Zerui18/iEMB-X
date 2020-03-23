@@ -14,3 +14,17 @@ infix operator ~
 func ~(_ lhs: String, _ rhs: NSRegularExpression)-> NSTextCheckingResult? {
     return rhs.firstMatch(in: lhs, options: [], range: NSRange(location: 0, length: lhs.count))
 }
+
+extension URLRequest {
+    
+    /// Returns a copy of the request, with the appropriate modifications for iEMB.
+    var iembModified: URLRequest {
+        var copy = self
+        var headers = copy.allHTTPHeaderFields ?? [:]
+        // Modify headers.
+        headers["Referer"] = "https://iemb.hci.edu.sg/"
+        copy.allHTTPHeaderFields = headers
+        return copy
+    }
+    
+}
