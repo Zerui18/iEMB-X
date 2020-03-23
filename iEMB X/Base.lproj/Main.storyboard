@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina5_9" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15510"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -143,19 +143,19 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="hpx-MJ-QZ6">
-                                <rect key="frame" x="20" y="180" width="335" height="200"/>
+                                <rect key="frame" x="20" y="180" width="335" height="198.66666666666663"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Background Refresh Interval" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KWk-Vm-4gu">
-                                        <rect key="frame" x="35.666666666666657" y="0.0" width="264" height="26.666666666666668"/>
+                                        <rect key="frame" x="35.666666666666657" y="0.0" width="264" height="25.333333333333332"/>
                                         <fontDescription key="fontDescription" type="system" weight="medium" pointSize="21"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="dvO-Tg-w9T">
-                                        <rect key="frame" x="12" y="36.666666666666657" width="311" height="69"/>
+                                        <rect key="frame" x="12" y="35.33333333333335" width="311" height="68.666666666666686"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="C3I-1x-q28">
-                                                <rect key="frame" x="0.0" y="0.0" width="68.666666666666671" height="69"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="68.666666666666671" height="68.666666666666671"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" secondItem="C3I-1x-q28" secondAttribute="height" multiplier="1:1" id="gq0-Ws-Vob"/>
                                                 </constraints>
@@ -168,7 +168,7 @@
                                                 </connections>
                                             </button>
                                             <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ehe-MU-Vl4">
-                                                <rect key="frame" x="80.666666666666671" y="0.0" width="69.000000000000014" height="69"/>
+                                                <rect key="frame" x="80.666666666666671" y="0.0" width="69.000000000000014" height="68.666666666666671"/>
                                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="20"/>
                                                 <state key="normal" title="1hr">
                                                     <color key="titleColor" systemColor="secondaryLabelColor" red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
@@ -178,7 +178,7 @@
                                                 </connections>
                                             </button>
                                             <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CYT-Xa-ass">
-                                                <rect key="frame" x="161.66666666666666" y="0.0" width="68.666666666666657" height="69"/>
+                                                <rect key="frame" x="161.66666666666666" y="0.0" width="68.666666666666657" height="68.666666666666671"/>
                                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="20"/>
                                                 <state key="normal" title="2hr">
                                                     <color key="titleColor" systemColor="secondaryLabelColor" red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
@@ -188,7 +188,7 @@
                                                 </connections>
                                             </button>
                                             <button opaque="NO" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qp9-6z-bLM">
-                                                <rect key="frame" x="242.33333333333329" y="0.0" width="68.666666666666657" height="69"/>
+                                                <rect key="frame" x="242.33333333333329" y="0.0" width="68.666666666666657" height="68.666666666666671"/>
                                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="30"/>
                                                 <state key="normal" title="∞">
                                                     <color key="titleColor" systemColor="secondaryLabelColor" red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
@@ -205,7 +205,7 @@
                                         </constraints>
                                     </stackView>
                                     <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" text="· the actual interval is usually slightly longer than this· you will also need to enable this in Settings" textAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="byO-gM-rFn">
-                                        <rect key="frame" x="0.0" y="115.66666666666669" width="335" height="84.333333333333314"/>
+                                        <rect key="frame" x="0.0" y="114" width="335" height="84.666666666666686"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="84.5" id="vpG-It-3jw"/>
                                         </constraints>
@@ -279,7 +279,6 @@
                             <constraint firstItem="b3X-lG-Bes" firstAttribute="top" secondItem="NqT-fh-Cbq" secondAttribute="top" constant="35" id="iKe-44-kJR"/>
                             <constraint firstItem="hpx-MJ-QZ6" firstAttribute="leading" secondItem="NqT-fh-Cbq" secondAttribute="leading" constant="20" id="ir9-jB-48G"/>
                             <constraint firstItem="hV2-iJ-78I" firstAttribute="bottom" secondItem="NqT-fh-Cbq" secondAttribute="bottom" constant="-24" id="kEs-mO-aR2"/>
-                            <constraint firstAttribute="bottom" secondItem="hpx-MJ-QZ6" secondAttribute="bottom" constant="378" id="u6J-tn-WSg"/>
                             <constraint firstItem="b3X-lG-Bes" firstAttribute="leading" secondItem="NqT-fh-Cbq" secondAttribute="leading" constant="128" id="uvJ-0H-L2l"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="NqT-fh-Cbq"/>
@@ -604,9 +603,9 @@
                                 <rect key="frame" x="8" y="0.0" width="359" height="812"/>
                                 <subviews>
                                     <visualEffectView opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4Ik-rM-Ocz">
-                                        <rect key="frame" x="0.0" y="10" width="359" height="403"/>
+                                        <rect key="frame" x="0.0" y="10" width="359" height="403.33333333333331"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="VwB-3S-k4S">
-                                            <rect key="frame" x="0.0" y="0.0" width="359" height="403"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="359" height="403.33333333333331"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" Attachments" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tFh-IC-reK">
