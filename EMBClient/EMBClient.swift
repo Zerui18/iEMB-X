@@ -237,12 +237,12 @@ extension EMBClient {
         
         // attempt to load page data
         URLSession.shared.dataTask(with: firstRequest) { (data, res, err) in
-            guard err == nil else {
-                completion(nil, err)
+            guard let data = data else {
+                completion(nil, err!)
                 return
             }
             
-            guard (res! as! HTTPURLResponse).statusCode == 200 else {
+            guard (res! as! HTTPURLResponse).statusCode == 200 && isPageDataValid(data: data) else {
                 
                 // has repsponse but invalid
                 // might be dut to outdated auth cookie
@@ -260,7 +260,7 @@ extension EMBClient {
                             return
                         }
                         
-                        guard (res! as! HTTPURLResponse).statusCode == 200 else {
+                        guard (res! as! HTTPURLResponse).statusCode == 200 && isPageDataValid(data: data) else {
                             authFailed()
                             return
                         }
@@ -272,15 +272,15 @@ extension EMBClient {
                 return
             }
             
-            completion(String(data: data!, encoding: .utf8), nil)
+            completion(String(data: data, encoding: .utf8), nil)
             
         }.resume()
     }
     
 }
 
-//// Check for login form which is a more reliable indicator of Auth status.
-//fileprivate let matchedBinary = "type=\"password\"".data(using: .utf8)!
-//fileprivate func isPageDataValid(data: Data)-> Bool {
-//    return data.range(of: matchedBinary) == nil
-//}
+// Check for login form which is a more reliable indicator of Auth status.
+fileprivate let matchedBinary = "type=\"password\"".data(using: .utf8)!
+fileprivate func isPageDataValid(data: Data)-> Bool {
+    return data.range(of: matchedBinary) == nil
+}
