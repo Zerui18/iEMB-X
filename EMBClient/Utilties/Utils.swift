@@ -20,11 +20,31 @@ extension URLRequest {
     /// Returns a copy of the request, with the appropriate modifications for iEMB.
     var iembModified: URLRequest {
         var copy = self
-        var headers = copy.allHTTPHeaderFields ?? [:]
-        // Modify headers.
-        headers["Referer"] = "https://iemb.hci.edu.sg/"
-        copy.allHTTPHeaderFields = headers
+        copy.setValue("https://iemb.hci.edu.sg/", forHTTPHeaderField: "Referer")
         return copy
     }
     
+    /// Returns a copy of the request, with the headers filled with auth cookies. Returns nil if auth parameters haven't been saved.
+    var signed: URLRequest? {
+        guard let id = EMBUser.shared.sessionId, let auth = EMBUser.shared.authToken else {
+            return nil
+        }
+        var mutable = self
+        mutable.setValue("ASP.NET_SessionId=\(id); AuthenticationToken=\(auth)", forHTTPHeaderField: "Cookie")
+        return mutable
+    }
+
+    
+}
+
+/// URLSession(Task)Delagate that prevents automatic HTML redirect.
+class NoRedirectDelegate : NSObject, URLSessionDelegate, URLSessionTaskDelegate {
+    func urlSession(_ session: URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse, newRequest request: URLRequest, completionHandler: @escaping (URLRequest?) -> Void) {
+        completionHandler(nil)
+    }
+}
+
+/// Helper function that retrieves the value of a cookies with the given name from the shared HTTPCookiesStorage.
+func cookie(named name: String)-> String? {
+    return HTTPCookieStorage.shared.cookies?.first(where: { $0.name == name })?.value
 }

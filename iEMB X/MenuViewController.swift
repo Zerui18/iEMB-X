@@ -7,14 +7,17 @@
 //
 
 import UIKit
+import EMBClient
 import Components
 
 class MenuViewController: UITableViewController {
     
     var cellIdentifier = "cellRight"
     
-    let boardIds = [1048, 1039, 1049, 1050]
-    var boardVCs: [UINavigationController] = [1048, 1039, 1049, 1050].map {
+    var boardIds: [Int] {
+        EMBClient.boardIds
+    }
+    lazy var boardVCs: [UINavigationController] = boardIds.map {
         let ctr = Constants.mainStoryboard.instantiateViewController(withIdentifier: "boardVC") as! BoardTableController
         ctr.currentBoard = $0
         let navVc = UINavigationController(rootViewController: ctr)
@@ -29,21 +32,23 @@ class MenuViewController: UITableViewController {
         return navVc
     }
     
-    var boardIcons = [#imageLiteral(resourceName: "student"),#imageLiteral(resourceName: "service"),#imageLiteral(resourceName: "psb"),#imageLiteral(resourceName: "lost_found"),#imageLiteral(resourceName: "serve"),#imageLiteral(resourceName: "settings")]
+    var boardIcons = [UIImage(named: "ic_student")!, UIImage(named: "ic_hbl")!, UIImage(named: "settings")!]
     
     var presentedBoardVC: BoardTableController!
 
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        5
+        boardIds.count + 1
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier) as! BoardCell
         cell.tag = indexPath.row
-        if indexPath.row == 4 {
+        // manually setup settings row
+        // which is at the end
+        if indexPath.row == boardIds.count {
             cell.titleLabel.text = "Settings"
-            cell.iconView.image = #imageLiteral(resourceName: "settings")
+            cell.iconView.image = UIImage(named: "settings")!
             cell.applyNormalStyle()
             return cell
         }
@@ -128,7 +133,8 @@ extension MenuViewController: UIAdaptivePresentationControllerDelegate, CariocaM
     }
         
     func cariocaMenuDidSelect(_ menu: CariocaMenu, indexPath: IndexPath) {
-        if indexPath.row == 4 {
+        // handle present settings if the last row is selected
+        if indexPath.row == boardIds.count {
             let index = menuViewController.boardVCs.firstIndex(of: menuViewController.presentedBoardVC.navigationController!)!
             menu.updateIndicatorsImage(boardIcons[index])
             let settingsVC = storyboard!.instantiateViewController(withIdentifier: "settingsVC") as! SettingsViewController
@@ -137,6 +143,7 @@ extension MenuViewController: UIAdaptivePresentationControllerDelegate, CariocaM
             return
         }
         
+        // else formula present board vc
         let vc = boardVCs[indexPath.row]
         
         presentedBoardVC.navigationController!.view.removeFromSuperview()

@@ -603,9 +603,9 @@
                                 <rect key="frame" x="8" y="0.0" width="359" height="812"/>
                                 <subviews>
                                     <visualEffectView opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4Ik-rM-Ocz">
-                                        <rect key="frame" x="0.0" y="10" width="359" height="403.33333333333331"/>
+                                        <rect key="frame" x="0.0" y="10" width="359" height="403.66666666666669"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="VwB-3S-k4S">
-                                            <rect key="frame" x="0.0" y="0.0" width="359" height="403.33333333333331"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="359" height="403.66666666666669"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" Attachments" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tFh-IC-reK">

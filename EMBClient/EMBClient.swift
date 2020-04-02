@@ -13,6 +13,7 @@ import CoreData
 public class EMBClient {
     
     public static let shared = EMBClient(dataStoreHelper: CoreDataHelper.shared)
+    public static let boardIds = [1048, 1057]
     
     fileprivate var dataStoreHelper: CoreDataHelper
     
@@ -24,7 +25,7 @@ public class EMBClient {
     
     public init(dataStoreHelper: CoreDataHelper) {
         self.dataStoreHelper = dataStoreHelper
-        allPosts = Dictionary(uniqueKeysWithValues: zip([1039, 1048, 1049, 1050, 1053], [[Post]](repeating: [], count: 5)))
+        allPosts = Dictionary(uniqueKeysWithValues: zip(EMBClient.boardIds, [[Post]](repeating: [], count: EMBClient.boardIds.count)))
         for post in Post.fetchAll() {
             allPosts[Int(post.board)]!.append(post)
         }
@@ -35,26 +36,37 @@ public class EMBClient {
     
 }
 
+fileprivate let loginSessionDelegate = NoRedirectDelegate()
+fileprivate let loginSession = URLSession(configuration: .default, delegate: loginSessionDelegate, delegateQueue: nil)
+
 public extension EMBClient {
     
     func login(username: String, password: String, then completion: @escaping (Bool, Error?)->Void) {
-        // clear cookies for the sake of sanitization
-        HTTPCookieStorage.shared.removeCookies(since: Date(timeIntervalSince1970: 0))
+        // In case logout was not called.
+        EMBUser.shared.logout()
         
         // for latest update to iemb.hci.edu.sg, where a verification token is used
-        URLSession.shared.dataTask(with: APIEndpoints.loginPageURL) { (data, response, error) in
+        loginSession.dataTask(with: APIEndpoints.loginPageURL) { (data, response, error) in
 
             // extract the verification token
             let html = String(data: data!, encoding: .utf8)!
             let tokenRegex = try! NSRegularExpression(pattern: "<input name=\"__RequestVerificationToken\" .+? value=\"(.+?)\"", options: [])
-            guard let matchedToken = html ~ tokenRegex
+            guard let matchedToken = html ~ tokenRegex,
+                    // also extract the token from Set-Cookie
+                    let tokenCookie = cookie(named: "__RequestVerificationToken")?
+                                        .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
                 else {
                     completion(false, NSError(domain: "com.Zerui.EMBClient.AuthError",
                                               code: 403,
                                               userInfo: [NSLocalizedDescriptionKey : "Failed to obtain verification token."]))
                     return
             }
+            // actual html token extraction
             let token = (html as NSString).substring(with: matchedToken.range(at: 1))
+                            .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
+            // escape username & password just in case..
+            let usernameEscaped = username.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
+            let passwordEscaped = password.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
             
             // and now we can build and send our login request
             var loginRequest = URLRequest(url: APIEndpoints.loginURL)
@@ -63,24 +75,25 @@ public extension EMBClient {
               "Origin": "https://iemb.hci.edu.sg",
               "Content-Type": "application/x-www-form-urlencoded",
               "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-              "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.4 Safari/605.1.15"
+              "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.4 Safari/605.1.15",
+              "Cookie" : "__RequestVerificationToken=\(tokenCookie);"
             ]
             loginRequest.allHTTPHeaderFields = headers
             loginRequest.httpMethod = "post"
-            loginRequest.httpBody = "UserName=\(username.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)&Password=\(password.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)&__RequestVerificationToken=\(token.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)&submitbut=Submit".data(using: .utf8)!
-            
-            EMBUser.shared.logout()
-            
-            URLSession.shared.dataTask(with: loginRequest.iembModified) { (data, response, error) in
+            loginRequest.httpBody = "__RequestVerificationToken=\(token)&UserName=\(usernameEscaped)&Password=\(passwordEscaped)&submitbut=Submit".data(using: .utf8)!
+
+            // send login request to /home/login
+            loginSession.dataTask(with: loginRequest) { (data1, response, error) in
                 if error != nil {
                     completion(false, error)
                 }
                 else {
-                    let success = String(data: data!, encoding: .utf8)!.contains("/Content/table.css")
-                    if success && EMBUser.shared.saveSessionId() {
+                    // try to save auth cookies
+                    if EMBUser.shared.saveCookies() {
                         EMBUser.shared.credentials = (userId: username, password: password)
                         completion(true, nil)
                     }
+                    // cookie(s) not found, login failed
                     else {
                         completion(false, NSError(domain: "com.Zerui.EMBClient.AuthError",
                                                   code: 403,
@@ -190,34 +203,19 @@ extension EMBClient {
     }
     
     /**
-     Deletes all locally cached attachments & contents of the posts. Used for clearing out disk space.
+     Deletes all locally cached attachments & posts.
      */
-    public func trimCache() throws {
+    public func clearCache() throws {
+        // clear attachments
         try FileManager.default.removeItem(at: cachedFilesURL)
         try FileManager.default.createDirectory(at: cachedFilesURL, withIntermediateDirectories: false, attributes: nil)
+        // clear core data
         try CoreDataHelper.shared.delete(fetchRequest: Attachment.fetchRequest())
-        allPosts.forEach {
-            $0.value.forEach {
-                $0.content = nil
-                $0.contentData = nil
-            }
-        }
-        try CoreDataHelper.shared.saveContext()
-    }
-    
-    /**
-     Deletes all cookies, cached posts & attachments and clears all posts from memory. Used for wiping user-data when logging out / re-logging in.
-     */
-    public func resetCache() throws {
-        allPosts = Dictionary(uniqueKeysWithValues: zip([1039, 1048, 1049, 1050, 1053], [[Post]](repeating: [], count: 5)))
-        HTTPCookieStorage.shared.removeCookies(since: Date(timeIntervalSince1970: 0))
-        try FileManager.default.removeItem(at: cachedFilesURL)
-        try FileManager.default.createDirectory(at: cachedFilesURL, withIntermediateDirectories: false, attributes: nil)
         try CoreDataHelper.shared.delete(fetchRequest: Post.fetchRequest())
-        try CoreDataHelper.shared.delete(fetchRequest: Attachment.fetchRequest())
         try CoreDataHelper.shared.saveContext()
+        // reset allPosts
+        allPosts = Dictionary(uniqueKeysWithValues: zip(EMBClient.boardIds, [[Post]](repeating: [], count: EMBClient.boardIds.count)))
     }
-    
     
     /**
      Loads data with the provided request on URLSession.shared. Will validate received data to check for auth-error. Retries the request after re-authentication
@@ -230,7 +228,7 @@ extension EMBClient {
         }
         
         // initial check, returns nil if no cookie if found
-        guard let firstRequest = request.signed() else {
+        guard let firstRequest = request.signed else {
             authFailed()
             return
         }
@@ -242,7 +240,7 @@ extension EMBClient {
                 return
             }
             
-            guard (res! as! HTTPURLResponse).statusCode == 200 && isPageDataValid(data: data) else {
+            guard (res! as! HTTPURLResponse).statusCode == 200 && isNotLoginPage(data: data) else {
                 
                 // has repsponse but invalid
                 // might be dut to outdated auth cookie
@@ -254,13 +252,13 @@ extension EMBClient {
                     
                     // retry fetching page
                     // since login is successfull, .signed() will not be nil
-                    URLSession.shared.dataTask(with: request.signed()!) { (data, res, err) in
+                    URLSession.shared.dataTask(with: request.signed!) { (data, res, err) in
                         guard let data = data else {
                             completion(nil, error!)
                             return
                         }
                         
-                        guard (res! as! HTTPURLResponse).statusCode == 200 && isPageDataValid(data: data) else {
+                        guard (res! as! HTTPURLResponse).statusCode == 200 && isNotLoginPage(data: data) else {
                             authFailed()
                             return
                         }
@@ -281,6 +279,6 @@ extension EMBClient {
 
 // Check for login form which is a more reliable indicator of Auth status.
 fileprivate let matchedBinary = "type=\"password\"".data(using: .utf8)!
-fileprivate func isPageDataValid(data: Data)-> Bool {
+fileprivate func isNotLoginPage(data: Data)-> Bool {
     return data.range(of: matchedBinary) == nil
 }

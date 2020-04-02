@@ -33,7 +33,7 @@ public class EMBUser {
         }
     }
     
-    fileprivate var sessionId: String? {
+    var sessionId: String? {
         get {
             return userDefaults.string(forKey: "sessId")
         }
@@ -42,45 +42,42 @@ public class EMBUser {
         }
     }
     
+    var authToken: String? {
+        get {
+            userDefaults.string(forKey: "authT")
+        }
+        set {
+            userDefaults.set(newValue, forKey: "authT")
+        }
+    }
+    
     public func hasSavedCredentials()-> Bool {
         return credentials != nil
     }
     
     public func isAuthenticated()-> Bool {
-        return sessionId != nil
+        return sessionId != nil && authToken != nil
     }
     
-    public func saveSessionId()-> Bool {
-        guard let cookie = HTTPCookieStorage.shared.cookies?.first(where: {$0.name=="ASP.NET_SessionId"}) else {
+    public func saveCookies()-> Bool {
+        guard let cookie1 = cookie(named: "ASP.NET_SessionId"),
+                    let cookie2 = cookie(named: "AuthenticationToken")
+            else {
             return false
         }
-        sessionId = cookie.value
+        sessionId = cookie1
+        authToken = cookie2
         return true
     }
     
-    func removeSessionId() {
-        if let cookies = HTTPCookieStorage.shared.cookies(for: APIEndpoints.loginURL),
-            let cookie = cookies.first(where: {$0.name=="ASP.NET_SessionId"}) {
-            HTTPCookieStorage.shared.deleteCookie(cookie)
-        }
+    func clearCookies() {
+        HTTPCookieStorage.shared.removeCookies(since: Date(timeIntervalSince1970: 0))
         sessionId = nil
+        authToken = nil
     }
     
     public func logout() {
         credentials = nil
-        removeSessionId()
+        clearCookies()
     }
-}
-
-extension URLRequest {
-    
-    func signed()-> URLRequest? {
-        guard let id = EMBUser.shared.sessionId else {
-            return nil
-        }
-        var mutable = self
-        mutable.setValue("ASP.NET_SessionId=" + id, forHTTPHeaderField: "Cookie")
-        return mutable
-    }
-    
 }

@@ -57,6 +57,7 @@
 		BF553D2A23840BD2009FC540 /* DismissAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF553D2323840B36009FC540 /* DismissAnimator.swift */; };
 		BF553D2B23840BD2009FC540 /* Interactor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF553D2423840B36009FC540 /* Interactor.swift */; };
 		BF553D2C23840BD2009FC540 /* PresentAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF553D2523840B36009FC540 /* PresentAnimator.swift */; };
+		BF63A950242E36060033CA65 /* Posts+ReadAll.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF63A94F242E36060033CA65 /* Posts+ReadAll.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -145,6 +146,7 @@
 		BF553D2323840B36009FC540 /* DismissAnimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DismissAnimator.swift; sourceTree = "<group>"; };
 		BF553D2423840B36009FC540 /* Interactor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Interactor.swift; sourceTree = "<group>"; };
 		BF553D2523840B36009FC540 /* PresentAnimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PresentAnimator.swift; sourceTree = "<group>"; };
+		BF63A94F242E36060033CA65 /* Posts+ReadAll.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Posts+ReadAll.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -215,6 +217,7 @@
 			isa = PBXGroup;
 			children = (
 				226C28A31F695641007C9DBD /* Post.swift */,
+				BF63A94F242E36060033CA65 /* Posts+ReadAll.swift */,
 				22F5F74F1F6D676A00029277 /* Attachment.swift */,
 				01C522EA201B6EB8001938DE /* Attachment+CoreDataProperties.swift */,
 				01C522EC201B6EB8001938DE /* Post+CoreDataProperties.swift */,
@@ -487,6 +490,7 @@
 				01C522DF201B4C51001938DE /* RegexConstants.swift in Sources */,
 				01C522E5201B4CC0001938DE /* Notification_Name+Extension.swift in Sources */,
 				01C522E3201B4CA6001938DE /* String+HTMLUnEscape.swift in Sources */,
+				BF63A950242E36060033CA65 /* Posts+ReadAll.swift in Sources */,
 				0175C8132008F94D0030909E /* Downloader.swift in Sources */,
 				0175C8152008FAEA0030909E /* CoreDataHelper.swift in Sources */,
 				0175C80E2008F6C40030909E /* Post.swift in Sources */,
@@ -745,12 +749,12 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = "iEMB X/iEMB X.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 789MW96BQB;
 				INFOPLIST_FILE = "$(SRCROOT)/iEMB X/Supporting Files/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 2.0.3;
+				MARKETING_VERSION = 2.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Zerui.iEMB-X";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = NO;
@@ -769,12 +773,12 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = "iEMB X/iEMB X.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 789MW96BQB;
 				INFOPLIST_FILE = "$(SRCROOT)/iEMB X/Supporting Files/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 2.0.3;
+				MARKETING_VERSION = 2.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Zerui.iEMB-X";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = NO;

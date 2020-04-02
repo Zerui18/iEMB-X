@@ -25,15 +25,16 @@ class BoardTableController: UITableViewController {
     /// Barbutton that toggles unread filter.
     @IBOutlet private weak var filterButton: UIBarButtonItem!
     
-    /**
-     Posts left after applying filter (if applicable).
-     */
+    private lazy var filesButton = UIBarButtonItem(barButtonSystemItem: .organize, target: self, action: #selector(openFilesCtr))
+    
+    /// BarButton that replaces the folders BarButton when filesButton is active.
+    private lazy var readAllButton = UIBarButtonItem(title: "Read All", style: .plain, target: self, action: #selector(showReadAllPrompt))
+    
+    /// Posts left after applying filter (if applicable).
     fileprivate var filteredPosts: [Post] {
         isFilterActive ? unreadPosts:EMBClient.shared.allPosts[currentBoard]!
     }
-    /**
-     Posts left after applying filter and search (if applicable).
-     */
+    ///Posts left after applying filter and search (if applicable).
     fileprivate var filteredSearchedPosts: [Post] {
         isSearchActive ? searchedPosts:filteredPosts
     }
@@ -50,10 +51,7 @@ class BoardTableController: UITableViewController {
     /// Flag indicating whether unread-filter is active.
     fileprivate var isFilterActive = false
     
-    
-//    /// Cache of selected indexPath.
-//    fileprivate var selectedIndexPath: IndexPath?
-    
+    /// The search controller that provides the posts search functionality.
     fileprivate let searchController = UISearchController(searchResultsController: nil)
     
     fileprivate var lastRefreshed: TimeInterval {
@@ -116,7 +114,7 @@ class BoardTableController: UITableViewController {
         navigationItem.largeTitleDisplayMode = .always
         navigationItem.hidesSearchBarWhenScrolling = false
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .organize, target: self, action: #selector(openFilesCtr))
+        navigationItem.rightBarButtonItem = filesButton
         
         refreshControl = UIRefreshControl()
         refreshControl!.addTarget(self, action: #selector(updateBoard), for: .valueChanged)
@@ -176,7 +174,7 @@ class BoardTableController: UITableViewController {
     }
     
     @objc private func toggleUnreadFilter() {
-        isFilterActive = !isFilterActive
+        isFilterActive.toggle()
         
         UIView.animate(withDuration: 0.2) {
             if #available(iOS 13.0, *) {
@@ -184,6 +182,8 @@ class BoardTableController: UITableViewController {
             } else {
                 self.filterButton.tintColor = self.isFilterActive ? .blue:.lightGray
             }
+            
+            self.navigationItem.rightBarButtonItem = self.isFilterActive ? self.readAllButton:self.filesButton
         }
         
         if isFilterActive {
@@ -194,6 +194,41 @@ class BoardTableController: UITableViewController {
         }
         
         tableView.reloadSections([0], with: .right)
+    }
+    
+    @objc private func showReadAllPrompt() {
+        // find all unread posts
+        let targetPosts = EMBClient.shared.allPosts[currentBoard]!.filter({ !$0.isRead })
+        if targetPosts.isEmpty {
+            return
+        }
+        
+        // prepare confirmation alert
+        let confirmAlert = UIAlertController(title: "Read All", message: "This will mark \(targetPosts.count) posts as read. Please ensure that you have read through the important posts.", preferredStyle: .alert)
+        confirmAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        confirmAlert.addAction(UIAlertAction(title: "Confirm", style: .default, handler: { _ in
+            
+            // alert showing progress
+            let progressAlert = UIAlertController(title: "Marking Posts", message: "...", preferredStyle: .alert)
+            progressAlert.present(in: self)
+            
+            // begin read all
+            targetPosts.readAll(progress: { (nMarked) in
+                progressAlert.message = String(format: "%03d / %03d", nMarked, targetPosts.count)
+            }) {
+                progressAlert.title = "Completed"
+                progressAlert.message = "remember to read impt. posts :)"
+                // since postRead notifications aren't sent
+                // manually reload unread posts and call reloadData to update display
+                self.unreadPosts = EMBClient.shared.allPosts[self.currentBoard]!.filter{!$0.isRead}
+                self.tableView.reloadData()
+                
+                // add dismiss option
+                progressAlert.addAction(UIAlertAction(title: "Done", style: .cancel))
+            }
+            
+        }))
+        confirmAlert.present(in: self)
     }
     
     fileprivate func reloadCell(forPost post: Post) {

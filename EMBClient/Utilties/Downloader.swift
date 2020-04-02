@@ -24,7 +24,7 @@ class Downloader: NSObject, URLSessionDownloadDelegate {
         destination = destinationURL
         progressBlock = block
         completionBlock = handler
-        task = session.downloadTask(with: URLRequest(url: sourceURL).signed()!)
+        task = session.downloadTask(with: URLRequest(url: sourceURL).signed!)
         task.resume()
     }
     

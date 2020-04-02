@@ -42,12 +42,84 @@ public class Post: NSManagedObject {
     
     private var callback: ((Error?)->Void)?
     
+    private func processAndSave(html: String) {
+        let postURL = APIEndpoints.postURL(forId: Int(id), boardId: Int(board))
+        
+        self.attachments = []
+        
+        // Mark isLoading to false before return.
+        defer {
+            self.isLoadingMessage = false
+        }
+        
+        
+        // Locate main content.
+        if let index = html.range(of: "id=\"hyplink-css-style\">")?.upperBound {
+            
+            var extract = String(html[index...])
+            let endIndex = extract.range(of: "<script src=\"/Scripts")!.lowerBound
+            extract = String(extract[..<endIndex])
+            
+            // extract iframes
+            iframeRegex.matches(in: extract, options: [], range: NSMakeRange(0, extract.count)).forEach {
+                if $0.numberOfRanges == 2 {
+                    let url = URL(string: (extract as NSString).substring(with: $0.range(at: 1)), relativeTo: postURL)!
+                    self.addToAttachments(Attachment(url: url, name: url.host ?? "link", type: .embedding))
+                }
+            }
+            
+            // remove iframes
+            extract = iframeRemovalRegex.stringByReplacingMatches(in: extract, options: [], range: NSMakeRange(0, extract.count), withTemplate: "")
+            
+            do {
+                // initialize attributed string
+                self.content = try NSMutableAttributedString(data: extract.data(using: .utf8)!, options: [.documentType: NSAttributedString.DocumentType.html, .characterEncoding: String.Encoding.utf8.rawValue], documentAttributes: nil)
+                let fullRange = NSRange(location: 0, length: self.content!.length)
+                
+                // fix font (size + 3) & (font = system)
+                self.content!.enumerateAttribute(.font, in: fullRange) { (attribute, range, _) in
+                    let font = attribute as! UIFont
+                    let newFont = UIFont.systemFont(ofSize: font.pointSize+3)
+                    self.content!.addAttribute(.font, value: newFont, range: range)
+                }
+                // remove all background colors
+                self.content!.addAttribute(.backgroundColor, value: UIColor.clear, range: fullRange)
+                
+                self.contentData = try self.content!.data(from: fullRange,
+                                                          documentAttributes: [.documentType: NSAttributedString.DocumentType.rtfd]) as NSData
+            }
+            catch {
+                print("error decoding extracted html ", error)
+                self.callback?(error)
+                return
+            }
+            
+            // Extract attachments.
+            let fileMatches = fileRegex.matches(in: html, options: [], range: NSRange.init(location: 0, length: html.count))
+            let copy = html as NSString
+            for match in fileMatches where match.numberOfRanges > 4 {
+                let name = copy.substring(with: match.range(at: 1))
+                // Piece together the actual URL to the attachment.
+                let url = URL(string: "https://iemb.hci.edu.sg/Board/ShowFile?t=2&ctype=\(copy.substring(with: match.range(at: 4)))&id=\(copy.substring(with: match.range(at: 2)))&file=\(name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)&boardId=\(copy.substring(with: match.range(at: 3)))")!
+                self.addToAttachments(Attachment(url: url, name: name, type: .file))
+            }
+            self.canReply = html.contains("<form id=\"replyForm\"")
+            self.isRead = true
+        }
+        
+    }
+    
+    
+    /// Tell the Post object to begin loading its contents, with a completion block when it loads.
     public func loadContent(completion: @escaping (Error?)->Void) {
         self.callback = completion
+        
+        // Check that we aren't loading actively.
         if isLoadingMessage {
             return
         }
         isLoadingMessage = true
+        
         if let data = self.contentData as Data? {
             do {
                 self.content = try NSMutableAttributedString(data: data, options: [.documentType: NSAttributedString.DocumentType.rtfd], documentAttributes: nil)
@@ -62,69 +134,13 @@ public class Post: NSManagedObject {
         else {
             let postURL = APIEndpoints.postURL(forId: Int(id), boardId: Int(board))
             
-            func processAndSave(html: String) {
-                self.attachments = []
-                self.isLoadingMessage = false
-                if let index = html.range(of: "id=\"hyplink-css-style\">")?.upperBound {
-                    
-                    var extract = String(html[index...])
-                    let endIndex = extract.range(of: "<script src=\"/Scripts")!.lowerBound
-                    extract = String(extract[..<endIndex])
-                    
-                    // extract iframes
-                    iframeRegex.matches(in: extract, options: [], range: NSMakeRange(0, extract.count)).forEach {
-                        if $0.numberOfRanges == 2 {
-                            let url = URL(string: (extract as NSString).substring(with: $0.range(at: 1)), relativeTo: postURL)!
-                            self.addToAttachments(Attachment(url: url, name: url.host ?? "link", type: .embedding))
-                        }
-                    }
-                    
-                    // remove iframes
-                    extract = iframeRemovalRegex.stringByReplacingMatches(in: extract, options: [], range: NSMakeRange(0, extract.count), withTemplate: "")
-                    
-                    do {
-                        // initialize attributed string
-                        self.content = try NSMutableAttributedString(data: extract.data(using: .utf8)!, options: [.documentType: NSAttributedString.DocumentType.html, .characterEncoding: String.Encoding.utf8.rawValue], documentAttributes: nil)
-                        let fullRange = NSRange(location: 0, length: self.content!.length)
-                        
-                        // fix font (size + 3) & (font = system)
-                        self.content!.enumerateAttribute(.font, in: fullRange) { (attribute, range, _) in
-                            let font = attribute as! UIFont
-                            let newFont = UIFont.systemFont(ofSize: font.pointSize+3)
-                            self.content!.addAttribute(.font, value: newFont, range: range)
-                        }
-                        // remove all background colors
-                        self.content!.addAttribute(.backgroundColor, value: UIColor.clear, range: fullRange)
-                        
-                        self.contentData = try self.content!.data(from: fullRange,
-                                                                  documentAttributes: [.documentType: NSAttributedString.DocumentType.rtfd]) as NSData
-                    }
-                    catch {
-                        print("error decoding extracted html ", error)
-                        self.callback?(error)
-                        return
-                    }
-                    let fileMatches = fileRegex.matches(in: html, options: [], range: NSRange.init(location: 0, length: html.count))
-                    let copy = html as NSString
-                    for match in fileMatches where match.numberOfRanges > 4 {
-                        let name = copy.substring(with: match.range(at: 1))
-                        let url = URL(string: "https://iemb.hci.edu.sg/Board/ShowFile?t=2&ctype=\(copy.substring(with: match.range(at: 4)))&id=\(copy.substring(with: match.range(at: 2)))&file=\(name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)&boardId=\(copy.substring(with: match.range(at: 3)))")!
-                        self.addToAttachments(Attachment(url: url, name: name, type: .file))
-                    }
-                    self.canReply = html.contains("<form id=\"replyForm\"")
-                    self.isRead = true
-                    NotificationCenter.default.post(name: .postIsReadUpdated, object: self)
-                }
-                
-            }
-            
             // load post html and pass it into the process(html:) function
             EMBClient.shared.loadPage(request: URLRequest(url: postURL).iembModified) { (html, error) in
                 if error != nil {
                     self.callback?(error)
                 }
                 else {
-                    processAndSave(html: html!)
+                    self.processAndSave(html: html!)
                     self.callback?(nil)
                     try? CoreDataHelper.shared.saveContext()
                 }
@@ -133,6 +149,30 @@ public class Post: NSManagedObject {
         }
     }
     
+    
+    /// Mark the post as read in iEMB and update its isRead property. Note that this method should be called after a reLogin as it doesn't automatically reLogin.
+    public func markRead(completion: @escaping (Bool, Error?) -> Void) {
+        let postURL = APIEndpoints.postURL(forId: Int(id), boardId: Int(board))
+        
+        // ensure that we can create a signed request
+        guard var request = URLRequest(url: postURL).iembModified.signed else {
+            completion(false, nil)
+            return
+        }
+        request.httpMethod = "HEAD"
+        
+        // send
+        URLSession.shared.dataTask(with: request) { _, _, error in
+            if error == nil {
+                self.isRead = true
+            }
+            // completion callback
+            completion(error == nil, error)
+        }.resume()
+    }
+    
+    
+    /// Send reply given the option, content and a completion callback.
     public func sendReply(option: String, content: String, completion: @escaping(Error?)-> Void) {
         let content = content.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
         var request = URLRequest(url: APIEndpoints.replyURL)
@@ -154,6 +194,7 @@ public class Post: NSManagedObject {
         }
     }
     
+    /// Returns the formatted attributed string that's to be displayed to the user when he opens the post.
     public func compoundMessage()-> NSMutableAttributedString? {
         if let c = content {
             // enforce uni-colored text for dark mode compatibility (iOS 13+)

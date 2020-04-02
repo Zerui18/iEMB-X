@@ -134,21 +134,21 @@ class SettingsViewController: UIViewController {
     }
     
     @objc func clearClicked() {
-        let alr = UIAlertController(title: "Clear Cache?", message: "this only clears the contents of the posts", preferredStyle: UIDevice.current.userInterfaceIdiom != .pad ? .actionSheet:.alert)
+        let alr = UIAlertController(title: "Clear Cache?", message: "this will remove all cached data (attachments, posts)", preferredStyle: UIDevice.current.userInterfaceIdiom != .pad ? .actionSheet:.alert)
         alr.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         alr.addAction(UIAlertAction(title: "Clear", style: .default) {_ in
             do {
-                _ = try CoreDataHelper.shared.mainContext.execute(NSBatchDeleteRequest(fetchRequest: Attachment.fetchRequest()))
-                EMBClient.shared.allPosts.forEach {
-                    $0.value.forEach {
-                        $0.content = nil
-                        $0.contentData = nil
-                    }
+                for boardID in menuViewController.boardIds {
+                    userDefaults.removeObject(forKey: "lastRefreshed_\(boardID)")
                 }
-                try CoreDataHelper.shared.saveContext()
+                try EMBClient.shared.clearCache()
+                menuViewController.boardVCs.forEach {
+                    let ctr = ($0.viewControllers[0] as! BoardTableController)
+                    ctr.reset()
+                }
             }
             catch {
-                print(error)
+                UIAlertController(title: "Error Reseting Cache", message: error.localizedDescription).present(in: self)
             }
         })
         alr.present(in: self)
@@ -160,7 +160,7 @@ class SettingsViewController: UIViewController {
         alr.addAction(UIAlertAction(title: "Logout", style: .destructive, handler: { _ in
             do {
                 EMBUser.shared.logout()
-                try EMBClient.shared.resetCache()
+                try EMBClient.shared.clearCache()
                 for boardID in menuViewController.boardIds {
                     userDefaults.removeObject(forKey: "lastRefreshed_\(boardID)")
                 }

@@ -38,7 +38,8 @@ struct Constants {
     static let idToBoardName = [1048 : "Student",
                                 1049 : "PSB",
                                 1039 : "Service",
-                                1050 : "Lost & Found"]
+                                1050 : "Lost & Found",
+                                1057 : "HBL"]
     
     static let cachedFilesURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("Files")
     
