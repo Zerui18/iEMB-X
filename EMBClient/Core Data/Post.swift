@@ -42,6 +42,11 @@ public class Post: NSManagedObject {
     
     private var callback: ((Error?)->Void)?
     
+    private func setRead(isRead: Bool = true) {
+        self.isRead = isRead
+        NotificationCenter.default.post(name: .postIsReadUpdated, object: self)
+    }
+    
     private func processAndSave(html: String) {
         let postURL = APIEndpoints.postURL(forId: Int(id), boardId: Int(board))
         
@@ -104,9 +109,8 @@ public class Post: NSManagedObject {
                 self.addToAttachments(Attachment(url: url, name: name, type: .file))
             }
             self.canReply = html.contains("<form id=\"replyForm\"")
-            self.isRead = true
+            self.setRead()
         }
-        
     }
     
     
@@ -164,7 +168,7 @@ public class Post: NSManagedObject {
         // send
         URLSession.shared.dataTask(with: request) { _, _, error in
             if error == nil {
-                self.isRead = true
+                self.setRead()
             }
             // completion callback
             completion(error == nil, error)

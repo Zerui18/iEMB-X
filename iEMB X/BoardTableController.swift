@@ -232,24 +232,24 @@ class BoardTableController: UITableViewController {
     }
     
     fileprivate func reloadCell(forPost post: Post) {
-        DispatchQueue.main.async {
-            if self.isSearchActive {
-                if let postIndex = self.searchedPosts.firstIndex(of: post) {
-                    self.tableView.reloadRows(at: [IndexPath(row: postIndex, section: 0)], with: .automatic)
+        DispatchQueue.main.async { [self] in
+            if isSearchActive {
+                if let postIndex = searchedPosts.firstIndex(of: post) {
+                    tableView.reloadRows(at: [IndexPath(row: postIndex, section: 0)], with: .automatic)
                 }
             }
-            else if let postIndex = self.filteredPosts.firstIndex(of: post) {
+            else if let postIndex = filteredPosts.firstIndex(of: post) {
                 let indexPaths = [IndexPath(row: postIndex, section: 0)]
                 
-                if self.isFilterActive {
+                if isFilterActive {
                     // if post became read, remove it from unreadPosts
                     if post.isRead {
-                        self.unreadPosts.remove(at: postIndex)
-                        self.tableView.deleteRows(at: indexPaths, with: .automatic)
+                        unreadPosts.remove(at: postIndex)
+                        tableView.deleteRows(at: indexPaths, with: .automatic)
                     }
                 }
                 else {
-                    self.tableView.reloadRows(at: indexPaths, with: .automatic)
+                    tableView.reloadRows(at: indexPaths, with: .automatic)
                 }
             }
         }
